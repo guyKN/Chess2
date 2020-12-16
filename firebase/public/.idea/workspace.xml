@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="CSS File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="e90b498051e4ade6ff4fdc066190d3d5b018009e" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1jrYHwrMOO8VVBD6ag2rfKj3H0r" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="js.last.introduce.type" value="CONST" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\guykn\Documents\FirebaseProjects\Chess2\js\engine\Pieces" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\guykn\Documents\FirebaseProjects\Chess3\public\js\engine\Pieces\pieceUtil" />
+      <recent name="C:\Users\guykn\Documents\FirebaseProjects\Chess3\public\js\engine\Moves" />
+      <recent name="C:\Users\guykn\Documents\FirebaseProjects\Chess2\js\engine\Pieces" />
+      <recent name="C:\Users\guykn\Documents\FirebaseProjects\Chess2\js\ui" />
+      <recent name="C:\Users\guykn\Documents\FirebaseProjects\Chess2\js" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Attach to Node.js/Chrome.Chrome">
+    <configuration name="Chrome" type="ChromiumRemoteDebugType" factoryName="Chromium Remote" port="9229">
+      <method v="2" />
+    </configuration>
+    <configuration name="Firefox" type="FirefoxRemoteDebugType">
+      <method v="2" />
+    </configuration>
+    <configuration name="CChessCpp" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/CChessCpp" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Attach to Node.js/Chrome.Chrome" />
+      <item itemvalue="Firefox Remote.Firefox" />
+      <item itemvalue="JavaScript Debug.CChessCpp" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.CChessCpp" />
+        <item itemvalue="JavaScript Debug.CChessCpp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="" />
+      <created>1604563593548</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1604563593548</updated>
+      <workItem from="1604563594568" duration="61559000" />
+      <workItem from="1604678038453" duration="5980000" />
+      <workItem from="1604685023774" duration="4936000" />
+      <workItem from="1604777896617" duration="2823000" />
+      <workItem from="1604826935374" duration="1490000" />
+      <workItem from="1604832303354" duration="1273000" />
+      <workItem from="1604856006550" duration="3339000" />
+      <workItem from="1604926954233" duration="703000" />
+      <workItem from="1605101622815" duration="320000" />
+      <workItem from="1605128769008" duration="9000" />
+      <workItem from="1605537050887" duration="408000" />
+      <workItem from="1605801309434" duration="1775000" />
+      <workItem from="1605887692948" duration="2000" />
+      <workItem from="1605954851930" duration="845000" />
+      <workItem from="1605961144213" duration="3000" />
+      <workItem from="1606139048192" duration="294000" />
+      <workItem from="1606145874719" duration="1334000" />
+      <workItem from="1606298923586" duration="390000" />
+      <workItem from="1606312320155" duration="10389000" />
+      <workItem from="1606388915587" duration="1050000" />
+      <workItem from="1606402841997" duration="2519000" />
+      <workItem from="1606407294720" duration="2000000" />
+      <workItem from="1606465796380" duration="2593000" />
+      <workItem from="1606643235786" duration="13055000" />
+      <workItem from="1606676789914" duration="4353000" />
+      <workItem from="1606742793699" duration="833000" />
+      <workItem from="1606927722007" duration="1247000" />
+      <workItem from="1607004656992" duration="5948000" />
+      <workItem from="1607021561460" duration="11336000" />
+      <workItem from="1607071109711" duration="16826000" />
+      <workItem from="1607941369177" duration="3000" />
+      <workItem from="1607943586911" duration="23000" />
+      <workItem from="1607959617858" duration="1517000" />
+      <workItem from="1607963897528" duration="223000" />
+      <workItem from="1608025756526" duration="4941000" />
+      <workItem from="1608037635496" duration="5212000" />
+      <workItem from="1608044843040" duration="258000" />
+      <workItem from="1608045112722" duration="1147000" />
+      <workItem from="1608066145911" duration="1239000" />
+      <workItem from="1608073110326" duration="845000" />
+    </task>
+    <task id="LOCAL-00001" summary="First Commit">
+      <created>1606146393380</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1606146393380</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Make Castle Work except for check">
+      <created>1606407388835</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1606407388835</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add castling">
+      <created>1606643251558</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1606643251558</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Make everything work">
+      <created>1606664193772</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1606664193772</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Add sounds">
+      <created>1606683500942</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1606683500942</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add simple AI">
+      <created>1607078848028</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1607078848028</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First Commit" />
+    <MESSAGE value="Make Castle Work except for check" />
+    <MESSAGE value="Add castling" />
+    <MESSAGE value="Make everything work" />
+    <MESSAGE value="Add sounds" />
+    <MESSAGE value="Add simple AI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add simple AI" />
+  </component>
+</project>

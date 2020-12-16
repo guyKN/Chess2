@@ -1,0 +1,134 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"e90c170c-bffd-4cd6-9c13-b55c1621290e\" name=\"Default Changelist\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/.name\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/Chess3.iml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/codeStyles\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/css/pieceImages.css\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/css/pieces.css\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/index.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/Constants.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/AbstractMove.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Board.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Move.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/MoveList.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/PiecePosition.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/Bishop.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/EmptyPiece.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/King.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/Knight.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/Pawn.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/Piece.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/Queen.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/Rook.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/SimpleMovingPiece.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/engine/Pieces/SlidingPiece.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/main.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/ui/ChessSquareHTMLElement.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/js/ui/chessBoardHTMLElement.js\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"HTML File\" />\r\n        <option value=\"CSS File\" />\r\n        <option value=\"JavaScript File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$/..\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"1jrYHwrMOO8VVBD6ag2rfKj3H0r\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"DefaultHtmlFileTemplate\" value=\"HTML File\" />\r\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\r\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\r\n    <property name=\"js.last.introduce.type\" value=\"CONST\" />\r\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$/..\" />\r\n    <property name=\"list.type.of.created.stylesheet\" value=\"CSS\" />\r\n    <property name=\"node.js.detected.package.eslint\" value=\"true\" />\r\n    <property name=\"node.js.detected.package.tslint\" value=\"true\" />\r\n    <property name=\"node.js.path.for.package.eslint\" value=\"project\" />\r\n    <property name=\"node.js.path.for.package.tslint\" value=\"project\" />\r\n    <property name=\"node.js.selected.package.eslint\" value=\"(autodetect)\" />\r\n    <property name=\"node.js.selected.package.tslint\" value=\"(autodetect)\" />\r\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.keymap\" />\r\n    <property name=\"vue.rearranger.settings.migration\" value=\"true\" />\r\n  </component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\guykn\\Documents\\FirebaseProjects\\Chess2\\js\\engine\\Pieces\" />\r\n    </key>\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\guykn\\Documents\\FirebaseProjects\\Chess2\\js\\engine\\Pieces\" />\r\n      <recent name=\"C:\\Users\\guykn\\Documents\\FirebaseProjects\\Chess2\\js\\ui\" />\r\n      <recent name=\"C:\\Users\\guykn\\Documents\\FirebaseProjects\\Chess2\\js\" />\r\n      <recent name=\"C:\\Users\\guykn\\Documents\\FirebaseProjects\\Chess2\\css\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"index.html\" type=\"JavascriptDebugType\" temporary=\"true\" nameIsGenerated=\"true\" uri=\"http://localhost:63342/Chess2/index.html\" useBuiltInWebServerPort=\"true\">\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"JavaScript Debug.index.html\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"e90c170c-bffd-4cd6-9c13-b55c1621290e\" name=\"Default Changelist\" comment=\"\" />\r\n      <created>1604563593548</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1604563593548</updated>\r\n      <workItem from=\"1604563594568\" duration=\"61559000\" />\r\n      <workItem from=\"1604678038453\" duration=\"5980000\" />\r\n      <workItem from=\"1604685023774\" duration=\"4936000\" />\r\n      <workItem from=\"1604777896617\" duration=\"2823000\" />\r\n      <workItem from=\"1604826935374\" duration=\"1490000\" />\r\n      <workItem from=\"1604832303354\" duration=\"1273000\" />\r\n      <workItem from=\"1604856006550\" duration=\"3339000\" />\r\n      <workItem from=\"1604926954233\" duration=\"703000\" />\r\n      <workItem from=\"1605101622815\" duration=\"320000\" />\r\n      <workItem from=\"1605128769008\" duration=\"9000\" />\r\n      <workItem from=\"1605537050887\" duration=\"408000\" />\r\n      <workItem from=\"1605801309434\" duration=\"1775000\" />\r\n      <workItem from=\"1605887692948\" duration=\"2000\" />\r\n      <workItem from=\"1605954851930\" duration=\"845000\" />\r\n      <workItem from=\"1605961144213\" duration=\"3000\" />\r\n      <workItem from=\"1606139048192\" duration=\"294000\" />\r\n      <workItem from=\"1606145874719\" duration=\"505000\" />\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"WindowStateProjectService\">\r\n    <state x=\"396\" y=\"140\" key=\"#Inspections\" timestamp=\"1604691089160\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"396\" y=\"140\" key=\"#Inspections/0.0.1536.920@0.0.1536.920\" timestamp=\"1604691089160\" />\r\n    <state x=\"225\" y=\"116\" key=\"#com.intellij.execution.impl.EditConfigurationsDialog\" timestamp=\"1604573509891\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"225\" y=\"116\" key=\"#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.920@0.0.1536.920\" timestamp=\"1604573509891\" />\r\n    <state x=\"575\" y=\"177\" key=\"#com.intellij.ide.util.MemberChooser\" timestamp=\"1604858177120\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"575\" y=\"177\" key=\"#com.intellij.ide.util.MemberChooser/0.0.1536.920@0.0.1536.920\" timestamp=\"1604858177120\" />\r\n    <state x=\"500\" y=\"208\" key=\"#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog\" timestamp=\"1604599225372\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"500\" y=\"208\" key=\"#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.920@0.0.1536.920\" timestamp=\"1604599225372\" />\r\n    <state x=\"279\" y=\"106\" key=\"SettingsEditor\" timestamp=\"1604827026318\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"279\" y=\"106\" key=\"SettingsEditor/0.0.1536.920@0.0.1536.920\" timestamp=\"1604827026318\" />\r\n    <state x=\"477\" y=\"164\" width=\"582\" height=\"592\" key=\"find.popup\" timestamp=\"1605955261333\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"477\" y=\"164\" width=\"582\" height=\"592\" key=\"find.popup/0.0.1536.920@0.0.1536.920\" timestamp=\"1605955261333\" />\r\n    <state x=\"431\" y=\"196\" width=\"672\" height=\"678\" key=\"search.everywhere.popup\" timestamp=\"1605801670374\">\r\n      <screen x=\"0\" y=\"0\" width=\"1536\" height=\"920\" />\r\n    </state>\r\n    <state x=\"431\" y=\"196\" width=\"672\" height=\"678\" key=\"search.everywhere.popup/0.0.1536.920@0.0.1536.920\" timestamp=\"1605801670374\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/workspace.xml	(revision e90b498051e4ade6ff4fdc066190d3d5b018009e)
++++ .idea/workspace.xml	(date 1606158136295)
+@@ -1,34 +1,19 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="BranchesTreeState">
++    <expand>
++      <path>
++        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
++        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
++      </path>
++    </expand>
++    <select />
++  </component>
+   <component name="ChangeListManager">
+     <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
+-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/Chess3.iml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/css/pieceImages.css" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/css/pieces.css" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/Constants.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/AbstractMove.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Board.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Move.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/MoveList.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/PiecePosition.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/Bishop.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/EmptyPiece.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/King.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/Knight.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/Pawn.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/Piece.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/Queen.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/Rook.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/SimpleMovingPiece.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/engine/Pieces/SlidingPiece.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/ui/ChessSquareHTMLElement.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/js/ui/chessBoardHTMLElement.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/js/engine/Pieces/SimpleMovingPiece.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/engine/Pieces/SimpleMovingPiece.js" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -45,6 +30,11 @@
+     </option>
+   </component>
+   <component name="Git.Settings">
++    <option name="RECENT_BRANCH_BY_REPOSITORY">
++      <map>
++        <entry key="$PROJECT_DIR$/.." value="master" />
++      </map>
++    </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+   </component>
+   <component name="ProjectId" id="1jrYHwrMOO8VVBD6ag2rfKj3H0r" />
+@@ -114,12 +104,36 @@
+       <workItem from="1605954851930" duration="845000" />
+       <workItem from="1605961144213" duration="3000" />
+       <workItem from="1606139048192" duration="294000" />
+-      <workItem from="1606145874719" duration="505000" />
++      <workItem from="1606145874719" duration="1334000" />
+     </task>
++    <task id="LOCAL-00001" summary="First Commit">
++      <created>1606146393380</created>
++      <option name="number" value="00001" />
++      <option name="presentableId" value="LOCAL-00001" />
++      <option name="project" value="LOCAL" />
++      <updated>1606146393380</updated>
++    </task>
++    <option name="localTasksCounter" value="2" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+     <option name="version" value="3" />
++  </component>
++  <component name="Vcs.Log.Tabs.Properties">
++    <option name="TAB_STATES">
++      <map>
++        <entry key="MAIN">
++          <value>
++            <State />
++          </value>
++        </entry>
++      </map>
++    </option>
++    <option name="oldMeFiltersMigrated" value="true" />
++  </component>
++  <component name="VcsManagerConfiguration">
++    <MESSAGE value="First Commit" />
++    <option name="LAST_COMMIT_MESSAGE" value="First Commit" />
+   </component>
+   <component name="WindowStateProjectService">
+     <state x="396" y="140" key="#Inspections" timestamp="1604691089160">
+@@ -138,6 +152,14 @@
+       <screen x="0" y="0" width="1536" height="920" />
+     </state>
+     <state x="500" y="208" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.920@0.0.1536.920" timestamp="1604599225372" />
++    <state x="383" y="48" key="CommitChangelistDialog2" timestamp="1606146392932">
++      <screen x="0" y="0" width="1536" height="920" />
++    </state>
++    <state x="383" y="48" key="CommitChangelistDialog2/0.0.1536.920@0.0.1536.920" timestamp="1606146392932" />
++    <state x="550" y="203" key="FileChooserDialogImpl" timestamp="1606146366410">
++      <screen x="0" y="0" width="1536" height="920" />
++    </state>
++    <state x="550" y="203" key="FileChooserDialogImpl/0.0.1536.920@0.0.1536.920" timestamp="1606146366410" />
+     <state x="279" y="106" key="SettingsEditor" timestamp="1604827026318">
+       <screen x="0" y="0" width="1536" height="920" />
+     </state>
+@@ -146,9 +168,9 @@
+       <screen x="0" y="0" width="1536" height="920" />
+     </state>
+     <state x="477" y="164" width="582" height="592" key="find.popup/0.0.1536.920@0.0.1536.920" timestamp="1605955261333" />
+-    <state x="431" y="196" width="672" height="678" key="search.everywhere.popup" timestamp="1605801670374">
++    <state x="431" y="196" width="672" height="678" key="search.everywhere.popup" timestamp="1606147033171">
+       <screen x="0" y="0" width="1536" height="920" />
+     </state>
+-    <state x="431" y="196" width="672" height="678" key="search.everywhere.popup/0.0.1536.920@0.0.1536.920" timestamp="1605801670374" />
++    <state x="431" y="196" width="672" height="678" key="search.everywhere.popup/0.0.1536.920@0.0.1536.920" timestamp="1606147033171" />
+   </component>
+ </project>
+\ No newline at end of file

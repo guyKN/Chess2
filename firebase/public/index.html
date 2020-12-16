@@ -1,0 +1,68 @@
+<!--todo: improve sounds, seprate sound for move, capture, check, and checkmate?-->
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="css/pieceImages.css">
+    <link rel="stylesheet" href="css/pieces.css">
+    <link rel="icon" href="icon.ico">
+</head>
+<body>
+    <div id="board-container">
+
+    </div>
+    <div id="bottom-info-wrapper">
+        <div id="bottom-info">
+            <p id="winner-display"></p>
+        </div>
+    </div>
+
+    <div id="restart-button-wrapper">
+        <button id="restart" style="visibility: hidden;" onclick="restartGame()">Play Again</button>
+    </div>
+
+
+    <script src="js/engine/PiecePosition.js"></script>
+
+    <script src="js/Constants.js"></script>
+    <script src="js/ui/chessBoardHTMLElement.js"></script>
+    <script src="js/ui/ChessSquareHTMLElement.js"></script>
+
+    <script src="js/engine/Moves/Move.js"></script>
+    <script src="js/engine/Moves/SimpleMove.js"></script>
+    <script src="js/engine/Moves/CastleMove.js"></script>
+    <script src="js/engine/Moves/PromotionMove.js"></script>
+    <script src="js/engine/Moves/PawnForward2Move.js"></script>
+    <script src="js/engine/Moves/EnPassantMove.js"></script>
+    <script src="js/engine/Moves/MoveList.js"></script>
+
+    <script src="js/ai/PieceValueTable.js"></script>
+
+    <script src="js/engine/Pieces/pieceUtil/Piece.js"></script>
+    <script src="js/engine/Pieces/pieceUtil/SimpleMovingPiece.js"></script>
+    <script src="js/engine/Pieces/pieceUtil/SlidingPiece.js"></script>
+
+
+    <script src="js/engine/Pieces/EmptyPiece.js"></script>
+    <script src="js/engine/Pieces/Pawn.js"></script>
+    <script src="js/engine/Pieces/King.js"></script>
+    <script src="js/engine/Pieces/Knight.js"></script>
+    <script src="js/engine/Pieces/Queen.js"></script>
+    <script src="js/engine/Pieces/Rook.js"></script>
+    <script src="js/engine/Pieces/Bishop.js"></script>
+
+    <script src="js/ai/alphaBetaSearch.js"></script>
+
+    <script src="js/engine/Board.js"></script>
+
+    <script src="js/webAssembly/chessWasm.js"></script>
+    <script src="js/webAssembly/nativeInterface.js"></script>
+
+    <script src="js/main.js"></script>
+
+
+</body>
+</html>

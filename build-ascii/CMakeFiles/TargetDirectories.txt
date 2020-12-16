@@ -1,0 +1,3 @@
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/edit_cache.dir
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir
