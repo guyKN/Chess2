@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named chessAscii
+# Target rules for targets named chessWasm
 
 # Build rule for target.
-chessAscii: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 chessAscii
-.PHONY : chessAscii
+chessWasm: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 chessWasm
+.PHONY : chessWasm
 
 # fast build rule for target.
-chessAscii/fast:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/build
-.PHONY : chessAscii/fast
+chessWasm/fast:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/build
+.PHONY : chessWasm/fast
 
 src/Bitboards.o: src/Bitboards.cpp.o
 
@@ -129,7 +129,7 @@ src/Bitboards.o: src/Bitboards.cpp.o
 
 # target to build an object file
 src/Bitboards.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Bitboards.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o
 .PHONY : src/Bitboards.cpp.o
 
 src/Bitboards.i: src/Bitboards.cpp.i
@@ -138,7 +138,7 @@ src/Bitboards.i: src/Bitboards.cpp.i
 
 # target to preprocess a source file
 src/Bitboards.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Bitboards.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Bitboards.cpp.i
 .PHONY : src/Bitboards.cpp.i
 
 src/Bitboards.s: src/Bitboards.cpp.s
@@ -147,7 +147,7 @@ src/Bitboards.s: src/Bitboards.cpp.s
 
 # target to generate assembly for a file
 src/Bitboards.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Bitboards.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Bitboards.cpp.s
 .PHONY : src/Bitboards.cpp.s
 
 src/ChessBoard.o: src/ChessBoard.cpp.o
@@ -156,7 +156,7 @@ src/ChessBoard.o: src/ChessBoard.cpp.o
 
 # target to build an object file
 src/ChessBoard.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o
 .PHONY : src/ChessBoard.cpp.o
 
 src/ChessBoard.i: src/ChessBoard.cpp.i
@@ -165,7 +165,7 @@ src/ChessBoard.i: src/ChessBoard.cpp.i
 
 # target to preprocess a source file
 src/ChessBoard.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.i
 .PHONY : src/ChessBoard.cpp.i
 
 src/ChessBoard.s: src/ChessBoard.cpp.s
@@ -174,7 +174,7 @@ src/ChessBoard.s: src/ChessBoard.cpp.s
 
 # target to generate assembly for a file
 src/ChessBoard.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.s
 .PHONY : src/ChessBoard.cpp.s
 
 src/Move.o: src/Move.cpp.o
@@ -183,7 +183,7 @@ src/Move.o: src/Move.cpp.o
 
 # target to build an object file
 src/Move.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Move.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Move.cpp.o
 .PHONY : src/Move.cpp.o
 
 src/Move.i: src/Move.cpp.i
@@ -192,7 +192,7 @@ src/Move.i: src/Move.cpp.i
 
 # target to preprocess a source file
 src/Move.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Move.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Move.cpp.i
 .PHONY : src/Move.cpp.i
 
 src/Move.s: src/Move.cpp.s
@@ -201,7 +201,7 @@ src/Move.s: src/Move.cpp.s
 
 # target to generate assembly for a file
 src/Move.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Move.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Move.cpp.s
 .PHONY : src/Move.cpp.s
 
 src/MoveInputData.o: src/MoveInputData.cpp.o
@@ -210,7 +210,7 @@ src/MoveInputData.o: src/MoveInputData.cpp.o
 
 # target to build an object file
 src/MoveInputData.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o
 .PHONY : src/MoveInputData.cpp.o
 
 src/MoveInputData.i: src/MoveInputData.cpp.i
@@ -219,7 +219,7 @@ src/MoveInputData.i: src/MoveInputData.cpp.i
 
 # target to preprocess a source file
 src/MoveInputData.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.i
 .PHONY : src/MoveInputData.cpp.i
 
 src/MoveInputData.s: src/MoveInputData.cpp.s
@@ -228,7 +228,7 @@ src/MoveInputData.s: src/MoveInputData.cpp.s
 
 # target to generate assembly for a file
 src/MoveInputData.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.s
 .PHONY : src/MoveInputData.cpp.s
 
 src/MoveList.o: src/MoveList.cpp.o
@@ -237,7 +237,7 @@ src/MoveList.o: src/MoveList.cpp.o
 
 # target to build an object file
 src/MoveList.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/MoveList.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveList.cpp.o
 .PHONY : src/MoveList.cpp.o
 
 src/MoveList.i: src/MoveList.cpp.i
@@ -246,7 +246,7 @@ src/MoveList.i: src/MoveList.cpp.i
 
 # target to preprocess a source file
 src/MoveList.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/MoveList.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveList.cpp.i
 .PHONY : src/MoveList.cpp.i
 
 src/MoveList.s: src/MoveList.cpp.s
@@ -255,7 +255,7 @@ src/MoveList.s: src/MoveList.cpp.s
 
 # target to generate assembly for a file
 src/MoveList.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/MoveList.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveList.cpp.s
 .PHONY : src/MoveList.cpp.s
 
 src/jsInterface.o: src/jsInterface.cpp.o
@@ -264,7 +264,7 @@ src/jsInterface.o: src/jsInterface.cpp.o
 
 # target to build an object file
 src/jsInterface.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/jsInterface.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o
 .PHONY : src/jsInterface.cpp.o
 
 src/jsInterface.i: src/jsInterface.cpp.i
@@ -273,7 +273,7 @@ src/jsInterface.i: src/jsInterface.cpp.i
 
 # target to preprocess a source file
 src/jsInterface.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/jsInterface.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/jsInterface.cpp.i
 .PHONY : src/jsInterface.cpp.i
 
 src/jsInterface.s: src/jsInterface.cpp.s
@@ -282,7 +282,7 @@ src/jsInterface.s: src/jsInterface.cpp.s
 
 # target to generate assembly for a file
 src/jsInterface.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/jsInterface.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/jsInterface.cpp.s
 .PHONY : src/jsInterface.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -291,7 +291,7 @@ src/main.o: src/main.cpp.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/main.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -300,7 +300,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/main.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -309,7 +309,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/main.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/types.o: src/types.cpp.o
@@ -318,7 +318,7 @@ src/types.o: src/types.cpp.o
 
 # target to build an object file
 src/types.cpp.o:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/types.cpp.o
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/types.cpp.o
 .PHONY : src/types.cpp.o
 
 src/types.i: src/types.cpp.i
@@ -327,7 +327,7 @@ src/types.i: src/types.cpp.i
 
 # target to preprocess a source file
 src/types.cpp.i:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/types.cpp.i
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/types.cpp.i
 .PHONY : src/types.cpp.i
 
 src/types.s: src/types.cpp.s
@@ -336,7 +336,7 @@ src/types.s: src/types.cpp.s
 
 # target to generate assembly for a file
 src/types.cpp.s:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/types.cpp.s
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/types.cpp.s
 .PHONY : src/types.cpp.s
 
 # Help Target
@@ -347,7 +347,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... chessAscii"
+	@echo "... chessWasm"
 	@echo "... src/Bitboards.o"
 	@echo "... src/Bitboards.i"
 	@echo "... src/Bitboards.s"

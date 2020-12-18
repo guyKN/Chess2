@@ -24,14 +24,11 @@ using std::cout;
         }
 }
 
-int main() {
-    initLookupTables();
-    Bitboard out[8];
-    Bitboard in = maskOf(SQ_C3) | maskOf(SQ_E7) | maskOf(SQ_G7) | maskOfRank(RANK_2) | maskOfFile(FILE_D);
-    printBitboard(in);
-    Bitboard legalMoves = queenMovesFrom_slow(SQ_E5, in);
-    printBitboard(legalMoves);
 
+
+int main() {
+
+    initLookupTables();
     return 0;
 #ifdef TO_COMMAND_LINE
     playGame();

@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/chessAscii.dir/all
+all: CMakeFiles/chessWasm.dir/all
 
 .PHONY : all
 
@@ -63,36 +63,36 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/chessAscii.dir/clean
+clean: CMakeFiles/chessWasm.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/chessAscii.dir
+# Target rules for target CMakeFiles/chessWasm.dir
 
 # All Build rule for target.
-CMakeFiles/chessAscii.dir/all:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/depend
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target chessAscii"
-.PHONY : CMakeFiles/chessAscii.dir/all
+CMakeFiles/chessWasm.dir/all:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/depend
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target chessWasm"
+.PHONY : CMakeFiles/chessWasm.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/chessAscii.dir/rule: cmake_check_build_system
+CMakeFiles/chessWasm.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles 9
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/chessAscii.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/chessWasm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles 0
-.PHONY : CMakeFiles/chessAscii.dir/rule
+.PHONY : CMakeFiles/chessWasm.dir/rule
 
 # Convenience name for target.
-chessAscii: CMakeFiles/chessAscii.dir/rule
+chessWasm: CMakeFiles/chessWasm.dir/rule
 
-.PHONY : chessAscii
+.PHONY : chessWasm
 
 # clean rule for target.
-CMakeFiles/chessAscii.dir/clean:
-	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/clean
-.PHONY : CMakeFiles/chessAscii.dir/clean
+CMakeFiles/chessWasm.dir/clean:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/clean
+.PHONY : CMakeFiles/chessWasm.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

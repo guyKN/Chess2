@@ -6,13 +6,15 @@
 #define CHESS_BITBOARD_H
 
 #include "ChessBoard.h"
+#include <random>
+
 
 namespace Chess {
 
     //todo:remove
     Bitboard rookRelevantSquaresMask(Square square);
     Bitboard bishopRelevantSquaresMask(Square square);
-    Bitboard toggleBits(Bitboard bitboard, Bitboard* outputArray);
+    void toggleBits(Bitboard bitboard, Bitboard* outputArray);
     Bitboard rookMovesFrom_slow(Square square, Bitboard otherPieces);
     Bitboard bishopMovesFrom_slow(Square square, Bitboard otherPieces);
     Bitboard queenMovesFrom_slow(Square square, Bitboard otherPieces);
@@ -85,7 +87,8 @@ namespace Chess {
         return signedShift<totalShift>(bitboard & mask);
     }
 
-
+    Bitboard randomBitboard();
+    Bitboard randomBitboard_fewBits();
 /// code below shamelessly stolen from stockfish
 /// https://github.com/official-stockfish/Stockfish
 /// thank you stockfish

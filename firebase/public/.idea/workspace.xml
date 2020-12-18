@@ -13,7 +13,20 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="" />
+    <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../../.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build-ascii/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../build/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +47,7 @@
         <entry key="$PROJECT_DIR$/.." value="e90b498051e4ade6ff4fdc066190d3d5b018009e" />
       </map>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="ProjectId" id="1jrYHwrMOO8VVBD6ag2rfKj3H0r" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -143,6 +156,7 @@
       <workItem from="1608045112722" duration="1147000" />
       <workItem from="1608066145911" duration="1239000" />
       <workItem from="1608073110326" duration="845000" />
+      <workItem from="1608129260749" duration="396000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <created>1606146393380</created>

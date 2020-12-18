@@ -4,7 +4,22 @@
 
 #include "Bitboards.h"
 
+
 namespace Chess {
+
+    Bitboard randomBitboard() {
+        Bitboard u1, u2, u3, u4;
+        u1 = (Bitboard)(rand()) & 0xFFFF; u2 = (Bitboard)(rand()) & 0xFFFF;
+        u3 = (Bitboard)(rand()) & 0xFFFF; u4 = (Bitboard)(rand()) & 0xFFFF;
+        return u1 | (u2 << 16) | (u3 << 32) | (u4 << 48);
+    }
+    Bitboard randomBitboard_fewBits(){
+        return randomBitboard() & randomBitboard() & randomBitboard();
+    }
+
+
+
+
 
     const Bitboard rankShiftMasks[5] = {~maskOfRank(RANK_1) & ~maskOfRank(RANK_2),
                                         ~maskOfRank(RANK_1),
@@ -86,7 +101,7 @@ namespace Chess {
                expandUntilCollision<-1, -1>(squareMask, otherPieces);
     }
 
-    Bitboard queenMovesFrom_slow(Square square, Bitboard otherPieces){
+    Bitboard queenMovesFrom_slow(Square square, Bitboard otherPieces) {
         return bishopMovesFrom_slow(square, otherPieces) | rookMovesFrom_slow(square, otherPieces);
     }
 
@@ -112,7 +127,7 @@ namespace Chess {
     ///for every 1 in the bitboard, output an array where that one turns into a 0 or a 1
     ///eg. 10010 turns into [00000,10000,00010,10010]
     ///the length of the output array must be equal to 2^(number of 1s in the Bitboard)
-    Bitboard toggleBits(Bitboard bitboard, Bitboard *outputArray) {
+    void toggleBits(Bitboard bitboard, Bitboard *outputArray) {
         int population = populationCout(bitboard);
         cout << "population: " << population << "\n";
         unsigned int numCombinations = 1u << population;
@@ -135,6 +150,64 @@ namespace Chess {
         }
     }
 
+    void magicHashAll(Bitboard hashFactor, Bitboard *inputArray, Bitboard *outputArray, unsigned int arrayLength) {
+        for (int i = 0; i < arrayLength; i++, inputArray++, outputArray++) {
+            *outputArray = *inputArray * hashFactor;
+        }
+    }
+
+    int maxShiftThatKeepsDifference(Bitboard bitboard1, Bitboard bitboard2) {
+        int shift = 63;
+        while (shift > 0 && ((bitboard1 >> shift) == (bitboard2 >> shift))){
+            shift--;
+        }
+        return shift;
+    }
+
+    int maxPossibleShift(Bitboard *movesArray, Bitboard *hashedArray, unsigned int arrayLength, int currentBest) {
+        int maxPossibleShift =64;
+        for (int i = 0; i < arrayLength; i++) {
+            for (int j = i+1; j < arrayLength; j++) {
+                if (movesArray[i] != movesArray[j]){
+                    int currentMaxPossibleShift = maxShiftThatKeepsDifference(hashedArray[i], hashedArray[j]);
+                    if (currentMaxPossibleShift < maxPossibleShift){
+                        maxPossibleShift = currentMaxPossibleShift;
+                    }
+                }
+            }
+        }
+        return maxPossibleShift;
+    }
+
+    //todo: allocate arrays on heap?
+    void initBishopLookup(Square square) {
+        Bitboard relevantSquares = bishopRelevantSquaresMask(square);
+        int numRelevantSquares = populationCout(relevantSquares);
+        unsigned int numPermutations = 1u << numRelevantSquares;
+        Bitboard boardPositions[numPermutations];
+        Bitboard legalMoves[numPermutations];
+        Bitboard hashed[numPermutations];
+        toggleBits(relevantSquares, &boardPositions[0]);
+        for (int i = 0; i < numPermutations; ++i) {
+            legalMoves[i] = bishopMovesFrom_slow(square, boardPositions[i]);
+        }
+
+        int overallBestShift = 0;
+        int bestMagicHashFactor=0;
+        for(int i=0;i<100000;i++){
+            Bitboard magicHashFactor = randomBitboard_fewBits();
+            magicHashAll(magicHashFactor, legalMoves, hashed, numPermutations);
+            int bestShift = maxPossibleShift(legalMoves, hashed, numPermutations, overallBestShift);
+            if(bestShift > overallBestShift){
+                overallBestShift = bestShift;
+                bestMagicHashFactor = magicHashFactor;
+            }
+        }
+        cout << "best shift:" << overallBestShift << "\n";
+        printBitboard(bestMagicHashFactor);
+    }
+
+
     Bitboard knightMovesLookup[NUM_SQUARES];
     Bitboard kingMovesLookup[NUM_SQUARES];
 
@@ -150,6 +223,7 @@ namespace Chess {
 
     void initLookupTables() {
         if (!lookUpTablesReady) {
+            initBishopLookup(SQ_E3);
             initKingAndKnight();
             lookUpTablesReady = true;
         }
