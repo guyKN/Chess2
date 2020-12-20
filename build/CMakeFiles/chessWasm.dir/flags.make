@@ -4,7 +4,7 @@
 # compile CXX with /home/guyknaan/webassembly/emsdk/upstream/emscripten/em++
 CXX_FLAGS =   -std=gnu++17
 
-CXX_DEFINES = -DTO_WASM
+CXX_DEFINES = -DTO_WASM -DUSE_SEEDS
 
 CXX_INCLUDES = @CMakeFiles/chessWasm.dir/includes_CXX.rsp
 

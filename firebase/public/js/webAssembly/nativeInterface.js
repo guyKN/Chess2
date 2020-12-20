@@ -18,7 +18,7 @@ class NativeChessBoard{
     }
 
     get(piecePosition){
-        const piecesById = [Pieces.WHITE_PAWN, Pieces.WHITE_KNIGHT, Pieces.WHITE_KING, Pieces.BLACK_PAWN, Pieces.BLACK_KNIGHT, Pieces.BLACK_KING, Pieces.EMPTY];
+        const piecesById = [Pieces.WHITE_PAWN, Pieces.WHITE_KNIGHT, Pieces.WHITE_BISHOP, Pieces.WHITE_KING, Pieces.BLACK_PAWN, Pieces.BLACK_KNIGHT, Pieces.BLACK_BISHOP, Pieces.BLACK_KING, Pieces.EMPTY];
         const pieceId = Module._pieceOn(piecePosition.squareId);
         return piecesById[pieceId];
     }

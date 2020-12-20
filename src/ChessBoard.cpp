@@ -159,6 +159,25 @@ namespace Chess {
         }
     }
 
+    template<Player player>
+    void ChessBoard::generateBishopMoves(MoveList &moveList){
+        constexpr Piece bishopPiece = makePiece(PIECE_TYPE_BISHOP, player);
+        constexpr Player opponent = ~player;
+        Bitboard bishops = getBitboardOf(bishopPiece);
+        Bitboard availableSquares = ~bitboardOf(player);
+        Bitboard otherPieces = bitboardOf(player) | bitboardOf(opponent);
+        while (bishops){
+            Square srcSquare = popLsb(&bishops);
+            printBitboard(otherPieces);
+            Bitboard bishopMoves = bishopMovesFrom(srcSquare, otherPieces & notSquareMask(srcSquare)) & availableSquares;
+            while (bishopMoves){
+                Square dstSquare = popLsb(&bishopMoves);
+                moveList.addMove(Move(srcSquare, dstSquare, bishopPiece, pieceOn(dstSquare)));
+            }
+        }
+    }
+
+
 
 
     template<Player player>
@@ -181,6 +200,7 @@ namespace Chess {
         generatePawnCaptures<player, 1>(moveList);
         generatePawnCaptures<player, -1>(moveList);
         generateKnightMoves<player>(moveList);
+        generateBishopMoves<player>(moveList);
         generateKingMoves<player>(moveList);
     }
 
@@ -224,7 +244,7 @@ namespace Chess {
         }
     }
 
-    const Piece ChessBoard::startingBoard[] = {PIECE_NONE, PIECE_WHITE_KNIGHT, PIECE_NONE, PIECE_NONE, PIECE_WHITE_KING, PIECE_NONE,
+    const Piece ChessBoard::startingBoard[] = {PIECE_NONE, PIECE_WHITE_KNIGHT, PIECE_WHITE_BISHOP, PIECE_NONE, PIECE_WHITE_KING, PIECE_WHITE_BISHOP,
                                                PIECE_WHITE_KNIGHT, PIECE_NONE,
                                                PIECE_WHITE_PAWN, PIECE_WHITE_PAWN, PIECE_WHITE_PAWN, PIECE_WHITE_PAWN,
                                                PIECE_WHITE_PAWN, PIECE_WHITE_PAWN, PIECE_WHITE_PAWN, PIECE_WHITE_PAWN,
@@ -238,6 +258,6 @@ namespace Chess {
                                                PIECE_NONE, PIECE_NONE,
                                                PIECE_BLACK_PAWN, PIECE_BLACK_PAWN, PIECE_BLACK_PAWN, PIECE_BLACK_PAWN,
                                                PIECE_BLACK_PAWN, PIECE_BLACK_PAWN, PIECE_BLACK_PAWN, PIECE_BLACK_PAWN,
-                                               PIECE_NONE, PIECE_BLACK_KNIGHT, PIECE_NONE, PIECE_NONE, PIECE_BLACK_KING, PIECE_NONE,
+                                               PIECE_NONE, PIECE_BLACK_KNIGHT, PIECE_BLACK_BISHOP, PIECE_NONE, PIECE_BLACK_KING, PIECE_BLACK_BISHOP,
                                                PIECE_BLACK_KNIGHT, PIECE_NONE};
 }

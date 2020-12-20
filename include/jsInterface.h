@@ -35,7 +35,7 @@ Square selectedSquare;
 MoveList movesFromSquare;
 
 void initData(){
-    initLookupTables();
+    initBitboards();
 }
 
 int pieceOn(int square) {

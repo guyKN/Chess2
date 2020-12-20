@@ -26,8 +26,9 @@ namespace Chess {
     constexpr Bitboard BITBOARD_EMPTY = 0;
     constexpr Bitboard BITBOARD_FULL = ~BITBOARD_EMPTY;
 
-//todo: implement
     std::ostream &printBitboard(Bitboard bitboard, std::ostream &os = std::cout);
+
+    std::ostream &printArray(Bitboard *array, int length, ostream &outputStream = std::cout);
 
     enum Square : int {
         SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
@@ -242,6 +243,7 @@ namespace Chess {
     enum PieceType : int {
         PIECE_TYPE_PAWN,
         PIECE_TYPE_KNIGHT,
+        PIECE_TYPE_BISHOP,
         PIECE_TYPE_KING,
         PIECE_TYPE_NONE
     };
@@ -249,9 +251,12 @@ namespace Chess {
     enum Piece : int {
         PIECE_WHITE_PAWN,
         PIECE_WHITE_KNIGHT,
+        PIECE_WHITE_BISHOP,
         PIECE_WHITE_KING,
+
         PIECE_BLACK_PAWN,
         PIECE_BLACK_KNIGHT,
+        PIECE_BLACK_BISHOP,
         PIECE_BLACK_KING,
         PIECE_NONE,
 

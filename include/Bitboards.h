@@ -11,26 +11,36 @@
 
 namespace Chess {
 
-    //todo:remove
-    Bitboard rookRelevantSquaresMask(Square square);
-    Bitboard bishopRelevantSquaresMask(Square square);
-    void toggleBits(Bitboard bitboard, Bitboard* outputArray);
-    Bitboard rookMovesFrom_slow(Square square, Bitboard otherPieces);
-    Bitboard bishopMovesFrom_slow(Square square, Bitboard otherPieces);
-    Bitboard queenMovesFrom_slow(Square square, Bitboard otherPieces);
+    Bitboard bishopMovesFrom_slow(Square square, Bitboard blockers);
 
+        void initBitboards();
 
-    void initLookupTables();
+    struct MagicHasData {
+        int shift;
+        Bitboard mask;
+        Bitboard magicHashFactor;
+        Bitboard* moveLookup;
 
-    const extern Bitboard rankMasks[NUM_RANKS];
+        MagicHasData(int shift, Bitboard mask, Bitboard magicHashFactor, Bitboard *moveLookup) :
+                            shift(shift), mask(mask), magicHashFactor(magicHashFactor),moveLookup(moveLookup) {}
 
-    const extern Bitboard fileMasks[NUM_FILES];
+         MagicHasData():MagicHasData(0, BITBOARD_EMPTY, BITBOARD_EMPTY ,NULL){}
+    };
 
-    const extern Bitboard fileShiftMasks[5];
-    const extern Bitboard rankShiftMasks[5];
 
     extern Bitboard knightMovesLookup[NUM_SQUARES];
     extern Bitboard kingMovesLookup[NUM_SQUARES];
+
+    extern MagicHasData bishopHashData[NUM_SQUARES];
+    extern MagicHasData rookHashData[NUM_SQUARES];
+
+    extern Bitboard rookBishopMoveTable[1000000];
+    const extern Bitboard rankMasks[NUM_RANKS];
+
+    const extern Bitboard fileMasks[NUM_FILES];
+    const extern Bitboard fileShiftMasks[5];
+
+    const extern Bitboard rankShiftMasks[5];
 
     inline Bitboard knightMovesFrom(Square square) {
         return knightMovesLookup[square];
@@ -49,6 +59,14 @@ namespace Chess {
     inline Bitboard maskOfRank(Rank rank) {
         assert(rank_ok(rank));
         return rankMasks[rank];
+    }
+
+    inline Bitboard bishopMovesFrom(Square square, Bitboard otherPieces){
+        MagicHasData magicHasData = bishopHashData[square];
+        otherPieces&=magicHasData.mask;
+        otherPieces*=magicHasData.magicHashFactor;
+        otherPieces>>=magicHasData.shift;
+        return magicHasData.moveLookup[otherPieces];
     }
 
     template<int fileShift>
@@ -89,6 +107,8 @@ namespace Chess {
 
     Bitboard randomBitboard();
     Bitboard randomBitboard_fewBits();
+
+
 /// code below shamelessly stolen from stockfish
 /// https://github.com/official-stockfish/Stockfish
 /// thank you stockfish

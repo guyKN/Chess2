@@ -17,7 +17,7 @@ namespace Chess {
                 os << (squareMask & bitboard ? '1' : '.') << ' ';
                 squareMask <<= 1;
             }
-            os << std::endl;
+            os << "            " << rank << std::endl;
         }
         return os;
     }
@@ -114,7 +114,7 @@ namespace Chess {
     }
 
     char toChar(Piece piece) {
-        char pieceToChar[] = "PNKpnk ";
+        char pieceToChar[] = "PNBKpnbk ";
         assert(piece_ok(piece));
         return pieceToChar[piece];
     }
@@ -126,6 +126,15 @@ namespace Chess {
             }
         }
         return PIECE_INVALID;
+    }
+
+    std::ostream &printArray(Bitboard *array, int length, ostream &outputStream) {
+        outputStream << '{';
+        for(int i=0;i<length;i++){
+            outputStream << std::hex << "0x" << array[i] << ", ";
+        }
+        outputStream << '}' << std::dec;
+
     }
 
 

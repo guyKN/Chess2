@@ -4,10 +4,16 @@ project(Chess)
 set(CMAKE_CXX_STANDARD 17)
 
 option(WASM "Compile to WASM, rather than the command line" OFF)
+option(GENERATE_SEEDS "generate seeds for bishop rook and queen movement, rather than using the pre-existing ones" ON)
+
+if(GENERATE_SEEDS)
+    add_compile_definitions(GENERATE_SEEDS)
+else(GENERATE_SEEDS)
+    add_compile_definitions(USE_SEEDS)
+endif(GENERATE_SEEDS)
+
 if(WASM)
-
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/firebase/public/js/webAssembly")
-
     add_compile_definitions(TO_WASM)
 
     include_directories(include)
@@ -28,6 +34,7 @@ if(WASM)
                 _resetBoard                                                                         \
                 ]'")
 else(WASM)
+    add_compile_options(-m64)
     add_compile_definitions(COMMAND_LINE)
     include_directories(include)
     file(GLOB SOURCES src/*.cpp)

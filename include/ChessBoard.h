@@ -54,6 +54,9 @@ namespace Chess {
         void generateKnightMoves(MoveList &moveList);
 
         template<Player player>
+        void generateBishopMoves(MoveList &moveList);
+
+        template<Player player>
         void generateKingMoves(MoveList &moveList);
 
         template<Player player>

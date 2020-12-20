@@ -221,6 +221,10 @@ EMSCRIPTEN_FORCE_COMPILERS:BOOL=ON
 // If disabled (default), UNIX ar archives (.a) are generated.
 EMSCRIPTEN_GENERATE_BITCODE_STATIC_LIBRARIES:BOOL=OFF
 
+//generate seeds for bishop rook and queen movement, rather than
+// using the pre-existing ones
+GENERATE_SEEDS:BOOL=OFF
+
 //Compile to WASM, rather than the command line
 WASM:BOOL=ON
 

@@ -207,6 +207,10 @@ Chess_BINARY_DIR:STATIC=C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake
 //Value Computed by CMake
 Chess_SOURCE_DIR:STATIC=C:/Users/guykn/Documents/FirebaseProjects/CppChess
 
+//generate seeds for bishop rook and queen movement, rather than
+// using the pre-existing ones
+GENERATE_SEEDS:BOOL=ON
+
 //Compile to WASM, rather than the command line
 WASM:BOOL=OFF
 

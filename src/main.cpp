@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Bitboards.h"
 #include "ChessBoard.h"
+#include <climits>
 
 using namespace Chess;
 using std::cout;
@@ -27,8 +28,7 @@ using std::cout;
 
 
 int main() {
-
-    initLookupTables();
+    initBitboards();
     return 0;
 #ifdef TO_COMMAND_LINE
     playGame();

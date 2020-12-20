@@ -24,6 +24,7 @@
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
+					<Add option="-DGENERATE_SEEDS"/>
 					<Add option="-DCOMMAND_LINE"/>
 					<Add option="-DTO_COMMAND_LINE"/>
 					<Add directory="C:/Users/guykn/Documents/FirebaseProjects/CppChess/include"/>
@@ -50,6 +51,7 @@
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
+					<Add option="-DGENERATE_SEEDS"/>
 					<Add option="-DCOMMAND_LINE"/>
 					<Add option="-DTO_COMMAND_LINE"/>
 					<Add directory="C:/Users/guykn/Documents/FirebaseProjects/CppChess/include"/>
