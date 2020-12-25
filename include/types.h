@@ -197,7 +197,7 @@ namespace Chess {
         FILE_INVALID = -1
     };
 
-    constexpr char FILE_NAMES[] = "ABCDEFGH";
+    constexpr char FILE_NAMES[] = "abcdefgh";
 
     char toChar(File file);
 
@@ -222,6 +222,8 @@ namespace Chess {
         BLACK = false
     };
 
+    std::ostream &operator<<(std::ostream &outputStream, Player player);
+
     constexpr int NUM_PLAYERS = 2;
 
     constexpr inline Player operator~(Player color) {
@@ -237,13 +239,14 @@ namespace Chess {
     }
 
 
-
     constexpr Player STARTING_PLAYER = WHITE;
 
     enum PieceType : int {
         PIECE_TYPE_PAWN,
         PIECE_TYPE_KNIGHT,
         PIECE_TYPE_BISHOP,
+        PIECE_TYPE_ROOK,
+        PIECE_TYPE_QUEEN,
         PIECE_TYPE_KING,
         PIECE_TYPE_NONE
     };
@@ -252,11 +255,15 @@ namespace Chess {
         PIECE_WHITE_PAWN,
         PIECE_WHITE_KNIGHT,
         PIECE_WHITE_BISHOP,
+        PIECE_WHITE_ROOK,
+        PIECE_WHITE_QUEEN,
         PIECE_WHITE_KING,
 
         PIECE_BLACK_PAWN,
         PIECE_BLACK_KNIGHT,
         PIECE_BLACK_BISHOP,
+        PIECE_BLACK_ROOK,
+        PIECE_BLACK_QUEEN,
         PIECE_BLACK_KING,
         PIECE_NONE,
 
@@ -266,14 +273,21 @@ namespace Chess {
         PIECE_LAST_WHITE = PIECE_WHITE_KING,
         PIECE_FIRST_BLACK = PIECE_BLACK_PAWN,
         PIECE_LAST_BLACK = PIECE_BLACK_KING,
+        PIECE_LAST_NOT_EMPTY = PIECE_LAST_BLACK,
         PIECE_INVALID = -1
     };
 
-
     ENABLE_INCR_OPERATORS_ON(Piece)
 
+    char toChar(Piece piece);
 
-    constexpr int NUM_PIECES = PIECE_LAST-PIECE_FIRST+1;
+    char toChar(PieceType pieceType);
+
+    Piece parsePiece(char pieceChar);
+
+
+    constexpr int NUM_PIECES = PIECE_LAST - PIECE_FIRST + 1;
+    constexpr int NUM_NON_EMPTY_PIECES = NUM_PIECES - 1;
 
     constexpr inline Player playerOf(Piece piece) {
         if (piece >= PIECE_FIRST_WHITE && piece <= PIECE_LAST_WHITE) {
@@ -298,14 +312,19 @@ namespace Chess {
     }
 
 
-
-    char toChar(Piece piece);
-
-    Piece parsePiece(char pieceChar);
-
     constexpr inline Piece makePiece(PieceType pieceType, Player player) {
         assert(pieceType != PIECE_TYPE_NONE);
         return static_cast<Piece>(firstPieceOf(player) + pieceType);
+    }
+
+    constexpr inline PieceType pieceTypeOf(Piece piece) {
+        if (piece == PIECE_NONE) {
+            return PIECE_TYPE_NONE;
+        } else if (playerOf(piece) == WHITE) {
+            return static_cast<PieceType>(piece);
+        } else {
+            return static_cast<PieceType>(piece - PIECE_FIRST_BLACK);
+        }
     }
 
 }

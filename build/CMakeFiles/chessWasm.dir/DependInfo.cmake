@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o"
+  "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/GameHistory.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/GameHistory.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Move.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/Move.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveInputData.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveList.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/MoveList.cpp.o"

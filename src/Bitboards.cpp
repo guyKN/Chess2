@@ -4,83 +4,250 @@
 
 #include "Bitboards.h"
 
-
+using std::cout;
 namespace Chess {
 
-    static const int NUM_ATTEMPTS_SEARCH_MAGIC_HASH = 100000000;
+    //todo: is using templates for this actualy a good idea?
+    template<int rankShift, int fileShift, bool includeEdge>
+    Bitboard expandToEdge(Bitboard squareMask);
 
 
-    Bitboard bishopSeeds[NUM_SQUARES] = {0x3004105082045010, 0x4016100600a01080, 0x4010018200411000, 0x4040080200080,
-                                         0x304050400006500, 0x411010590010100, 0x82820cc21202012, 0x21405208200200,
-                                         0x40481010261040,
-                                         0xf0010402808186, 0x4000080081a20200, 0x88c0408100020, 0x204104c0900a4,
-                                         0x4301123010080400, 0x810008904821806, 0xa0041345044, 0x810422042500104,
-                                         0x810304810410440, 0x808144110040,
-                                         0x8105002840123220, 0x200010190a020, 0x4102000100708441, 0x40052020a1200,
-                                         0x200100404c02210c, 0x4209040080a0812, 0x2244442001084800, 0x40112e0004024008,
-                                         0x8202202002403006, 0x20412081c042000, 0x909044800802000, 0x41400408080b0,
-                                         0x720810100640210, 0x408900800042050, 0xa00962021081800, 0x640a8810008a03,
-                                         0x500400804400, 0x2d02060102180, 0x4081082501010, 0x8001060892640400,
-                                         0x401004022026a, 0x8a008443002008, 0x1040120000c80, 0x9208e2802020118,
-                                         0x10014010400201, 0x30e20084002080, 0x1002220942001404, 0x3090240087800c00,
-                                         0x1083182481000084, 0x6080412080044, 0x41020184045a6000, 0x804001202900000,
-                                         0x20020880c00, 0x1616204a0820041, 0x400c21041960000, 0x2080600860000,
-                                         0x504881204002204, 0x82084a00800, 0x8ea05602012c0a20, 0x802008a1080800,
-                                         0x2400008208804, 0x201c0040010c40, 0x804c400c84080202, 0x8931041080080,
-                                         0x2a00050860090};
-    Bitboard rookSeeds[NUM_SQUARES];
+    template<int rankShift, int fileShift>
+    inline Bitboard expandToEdgeExclusive(Bitboard squareMask) {
+        return expandToEdge<rankShift, fileShift, false>(squareMask);
+    }
+
+    template<int rankShift, int fileShift>
+    inline Bitboard expandToEdgeInclusive(Bitboard squareMask) {
+        return expandToEdge<rankShift, fileShift, true>(squareMask);
+    }
+
+    template<int rankShift, int fileShift>
+    Bitboard expandUntilCollision(Bitboard squareMask, Bitboard otherPieces);
+
+
+    static const int NUM_ATTEMPTS_SEARCH_MAGIC_HASH = 1'000'000;
+    static constexpr int LOOKUP_TABLE_LENGTH = 109'526;
+
+    Bitboard bishopSeeds[NUM_SQUARES] = {0x5230100681840d46, 0xb4964c0808a50114, 0x2408908408841c80, 0x8808410904061f,
+                                         0x2106021004c0010a, 0xca41882008047912, 0x7804225490082206, 0x96a9208410111060,
+                                         0x100920385051a583, 0x4401f01081010822, 0x1601101911e10505, 0xa009141c0a800901,
+                                         0x10be460610258502, 0x4403050328c02242, 0x9280942403384821, 0x21082086108220d0,
+                                         0x90e424090041500, 0x1424080224042418, 0x2278049008812108, 0x1044000824001009,
+                                         0x3808405a00008, 0x43a006103031530, 0x5204000282080258, 0x408302284040a18,
+                                         0x81621084c8101060, 0x24d02608301a3e05, 0x60080c0018004690, 0x44148c0028012020,
+                                         0x8004082014002009, 0x5406028108081111, 0x81404001186139e, 0x4a5600208a031128,
+                                         0xc148470202001, 0xc540420005e2e40, 0x831242280250004e, 0x4c092008020901d0,
+                                         0x28a1100400108120, 0x26c010200215800, 0xa080115005c01, 0x80904002a270110,
+                                         0x85241b04400b5064, 0xa000480c9048e420, 0xa1114030003809, 0x208245a018080100,
+                                         0xb040500200800817, 0x854100201720200, 0x80c809640b820400, 0x8618480785620085,
+                                         0xe17105283240b1ce, 0x8603041202420000, 0x28344b2928080000, 0x8000d03842120025,
+                                         0x24440611220a00e5, 0x8904500210091210, 0xb230909d1d140208, 0x20d04212040030a1,
+                                         0x234805108034008, 0xc08c1905082a1200, 0x1002102e69080800, 0xde2600561e841104,
+                                         0x71180c00c0104b15, 0x1012c04430122200, 0x31732060124c8314,
+                                         0x4020080ba100c601};
+
+    Bitboard rookSeeds[NUM_SQUARES] = {0x2080014000822690, 0x9200204100308200, 0x20008408200d120, 0x8100800a0100208,
+                                       0x80260800040080, 0x28802400800b0600, 0x31000c2781000200, 0xc9000048a1001182,
+                                       0x100800c40042087, 0xc43a004201610388, 0x10c1002003c50010, 0x4422000840106200,
+                                       0x213002801003410, 0xc0a200190a007004, 0x9a04002b16541830, 0x9116001844060099,
+                                       0x86008280004000a4, 0x2d48808020004000,
+                                       0x280350020050040, 0x158a2001a0190c0, 0x100c028008000480, 0x4001010008140002,
+                                       0x64140028258a10, 0x8840460000825c09, 0x180188208009c001, 0x99001c040042001,
+                                       0x200e002200118340, 0xc212016a00102140, 0x1c00080080240080, 0x4250200804c0080,
+                                       0xa00022400500837, 0x20c1085e00010a84, 0x1023c000800192, 0x305e0082a2004300,
+                                       0x4840609202004080, 0x90014400c01800, 0xa780500501001801, 0x5c8280c200800c00,
+                                       0x820e81214008510, 0x1402108a5a000114, 0xc1834008e98000, 0xc38200850004001,
+                                       0x1061002001450011, 0x8810010060890010, 0x830d00080251000c, 0x2703000400430008,
+                                       0x3ad0080116040030, 0x4601044100920004, 0x26010180412a0a00, 0x8200400102208100,
+                                       0x480d406203847200, 0x40838a0060401200, 0x9841003800302d00, 0x6066420080040080,
+                                       0xb800810321b7400, 0x41010c5124008200, 0x250800740610433, 0x8098850250604001,
+                                       0x289712ca2000c101, 0x56e8209c10010009, 0x6826002830646056, 0x10720008900b0406,
+                                       0x6844591000980604, 0x8c18464400811466};
 
     int bishopSizeScore = 0;
-
-    constexpr Bitboard MASK_RANK_1 = 0x00000000000000FF;
-    const Bitboard rankMasks[NUM_RANKS] = {MASK_RANK_1, MASK_RANK_1 << 8, MASK_RANK_1 << 16, MASK_RANK_1 << 24,
-                                           MASK_RANK_1 << 32, MASK_RANK_1 << 40, MASK_RANK_1 << 48,
-                                           MASK_RANK_1 << 56};
+    int rookSizeScore = 0;
 
 
-    static constexpr Bitboard MASK_FILE_A = 0x0101010101010101;
-    const Bitboard fileMasks[NUM_FILES] = {MASK_FILE_A, MASK_FILE_A << 1, MASK_FILE_A << 2, MASK_FILE_A << 3,
-                                           MASK_FILE_A << 4,
-                                           MASK_FILE_A << 5, MASK_FILE_A << 6, MASK_FILE_A << 7};
-
-    const Bitboard fileShiftMasks[5] = {~maskOfFile(FILE_A) & ~maskOfFile(FILE_B),
-                                        ~maskOfFile(FILE_A),
+    const Bitboard fileShiftMasks[5] = {~maskOf(FILE_A) & ~maskOf(FILE_B),
+                                        ~maskOf(FILE_A),
                                         BITBOARD_FULL,
-                                        ~maskOfFile(FILE_H),
-                                        ~maskOfFile(FILE_H) & ~maskOfFile(FILE_G)};
+                                        ~maskOf(FILE_H),
+                                        ~maskOf(FILE_H) & ~maskOf(FILE_G)};
 
     Bitboard knightMovesLookup[NUM_SQUARES];
     Bitboard kingMovesLookup[NUM_SQUARES];
 
-    MagicHasData bishopHashData[NUM_SQUARES] = {};
-    MagicHasData rookHashData[NUM_SQUARES] = {};
-    Bitboard rookBishopMoveTable[1000000] = {};
+    SlidingPieceData bishopData[NUM_SQUARES] = {};
+    SlidingPieceData rookData[NUM_SQUARES] = {};
+    Bitboard rookBishopMoveTable[LOOKUP_TABLE_LENGTH] = {};
 
     Bitboard *currentBishopRookLookupPointer = &rookBishopMoveTable[0];
+    int lookupTableLength = 0;
 
 
-    /* Seed */
+    const CastlingData CastlingData::castlingData[NUM_CASTLE_TYPES]{
+            { // white King side
+                    maskOf(SQ_F1) | maskOf(SQ_G1),
+                    maskOf(SQ_E1) | maskOf(SQ_F1) | maskOf(SQ_G1),
+                    maskOf(SQ_E1) | maskOf(SQ_H1),
+                    SQ_E1,
+                    SQ_G1,
+                    SQ_H1,
+                    SQ_F1,
+                    CASTLE_WHITE_KING_SIDE
+            },
+
+            { //white Queen side
+                    maskOf(SQ_B1) | maskOf(SQ_C1) | maskOf(SQ_D1),
+                    maskOf(SQ_D1) | maskOf(SQ_C1) | maskOf(SQ_E1),
+                    maskOf(SQ_A1) | maskOf(SQ_E1),
+                    SQ_E1,
+                    SQ_C1,
+                    SQ_A1,
+                    SQ_D1,
+                    CASTLE_WHITE_QUEEN_SIDE
+            },
+
+            { // black King Side
+                    maskOf(SQ_F8) | maskOf(SQ_G8),
+                    maskOf(SQ_E8) | maskOf(SQ_F8) | maskOf(SQ_G8),
+                    maskOf(SQ_E8) | maskOf(SQ_H8),
+                    SQ_E8,
+                    SQ_G8,
+                    SQ_H8,
+                    SQ_F8,
+                    CASTLE_BLACK_KING_SIDE
+
+            },
+
+            { // black Queen Side
+                    maskOf(SQ_B8) | maskOf(SQ_C8) | maskOf(SQ_D8),
+                    maskOf(SQ_D8) | maskOf(SQ_C8) | maskOf(SQ_E8),
+                    maskOf(SQ_A8) | maskOf(SQ_E8),
+                    SQ_E8,
+                    SQ_C8,
+                    SQ_A8,
+                    SQ_D8,
+                    CASTLE_BLACK_QUEEN_SIDE
+            }
+    };
+
+
+    template<PieceType pieceType>
+    XrayData XrayData::fromSquare(Square square) {
+        static_assert(pieceType == PIECE_TYPE_ROOK || pieceType == PIECE_TYPE_BISHOP, "Must be rook or bishop");
+        SquareMask squareMask = maskOf(square);
+        XrayData xrayData{};
+        if constexpr (pieceType == PIECE_TYPE_ROOK) {
+            xrayData = {
+                    expandToEdgeInclusive<1, 0>(squareMask),
+                    expandToEdgeInclusive<-1, 0>(squareMask),
+                    expandToEdgeInclusive<0, 1>(squareMask),
+                    expandToEdgeInclusive<0, -1>(squareMask)
+            };
+        } else if constexpr (pieceType == PIECE_TYPE_BISHOP) {
+            xrayData = {
+                    expandToEdgeInclusive<1, 1>(squareMask),
+                    expandToEdgeInclusive<-1, -1>(squareMask),
+                    expandToEdgeInclusive<1, -1>(squareMask),
+                    expandToEdgeInclusive<-1, 1>(squareMask)
+            };
+        }
+        xrayData.allDirections = xrayData.direction1 | xrayData.direction2 |
+                                 xrayData.direction3 | xrayData.direction4;
+        return xrayData;
+    }
+
+
+    template<PieceType pieceType>
+    inline Bitboard generateMoves_slow(Square square, Bitboard otherPieces);
+
+    template<>
+    inline Bitboard generateMoves_slow<PIECE_TYPE_BISHOP>(Square square, Bitboard otherPieces) {
+        SquareMask squareMask = maskOf(square);
+        return expandUntilCollision<1, 1>(squareMask, otherPieces) |
+               expandUntilCollision<-1, 1>(squareMask, otherPieces) |
+               expandUntilCollision<1, -1>(squareMask, otherPieces) |
+               expandUntilCollision<-1, -1>(squareMask, otherPieces);
+    }
+
+    template<>
+    inline Bitboard generateMoves_slow<PIECE_TYPE_ROOK>(Square square, Bitboard otherPieces) {
+        SquareMask squareMask = maskOf(square);
+        return expandUntilCollision<1, 0>(squareMask, otherPieces) |
+               expandUntilCollision<-1, 0>(squareMask, otherPieces) |
+               expandUntilCollision<0, 1>(squareMask, otherPieces) |
+               expandUntilCollision<0, -1>(squareMask, otherPieces);
+    }
+
+
+    template<PieceType pieceType>
+    inline Bitboard getBlockersMask(Square square);
+
+    template<>
+    inline Bitboard getBlockersMask<PIECE_TYPE_BISHOP>(Square square) {
+        SquareMask squareMask = maskOf(square);
+        return expandToEdgeExclusive<1, 1>(squareMask) |
+               expandToEdgeExclusive<1, -1>(squareMask) |
+               expandToEdgeExclusive<-1, 1>(squareMask) |
+               expandToEdgeExclusive<-1, -1>(squareMask);
+    }
+
+    template<>
+    inline Bitboard getBlockersMask<PIECE_TYPE_ROOK>(Square square) {
+        SquareMask squareMask = maskOf(square);
+        return expandToEdgeExclusive<1, 0>(squareMask) |
+               expandToEdgeExclusive<-1, 0>(squareMask) |
+               expandToEdgeExclusive<0, 1>(squareMask) |
+               expandToEdgeExclusive<0, -1>(squareMask);
+    }
+
+
+    template<PieceType pieceType>
+    inline Bitboard &seedOf(Square square);
+
+    template<>
+    inline Bitboard &seedOf<PIECE_TYPE_BISHOP>(Square square) {
+        return bishopSeeds[square];
+    }
+
+    template<>
+    inline Bitboard &seedOf<PIECE_TYPE_ROOK>(Square square) {
+        return rookSeeds[square];
+    }
+
+    template<PieceType pieceType>
+    inline int &sizeScoreOf();
+
+    template<>
+    inline int &sizeScoreOf<PIECE_TYPE_BISHOP>() {
+        return bishopSizeScore;
+    }
+
+    template<>
+    inline int &sizeScoreOf<PIECE_TYPE_ROOK>() {
+        return rookSizeScore;
+    }
+
+
     std::random_device rd;
-
-    /* Random number generator */
     std::default_random_engine generator(rd());
-
-    /* Distribution on which to apply the generator */
-    std::uniform_int_distribution<long long unsigned> distribution(BITBOARD_EMPTY,BITBOARD_FULL);
+    std::uniform_int_distribution<long long unsigned> distribution(BITBOARD_EMPTY, BITBOARD_FULL);
 
     Bitboard randomBitboard() {
         return distribution(generator);
     }
 
     Bitboard randomBitboard_fewBits() {
-        return randomBitboard() & randomBitboard() & randomBitboard();
+        return randomBitboard() & randomBitboard();
     }
 
-    const Bitboard rankShiftMasks[5] = {~maskOfRank(RANK_1) & ~maskOfRank(RANK_2),
-                                        ~maskOfRank(RANK_1),
+    const Bitboard rankShiftMasks[5] = {~maskOf(RANK_1) & ~maskOf(RANK_2),
+                                        ~maskOf(RANK_1),
                                         BITBOARD_FULL,
-                                        ~maskOfRank(RANK_8),
-                                        ~maskOfRank(RANK_8) & ~maskOfRank(RANK_7)};
+                                        ~maskOf(RANK_8),
+                                        ~maskOf(RANK_8) & ~maskOf(RANK_7)};
 
 
     Bitboard knightMovesFrom_slow(Bitboard squareMask) {
@@ -105,23 +272,6 @@ namespace Chess {
                shiftWithMask<-1, -1>(squareMask);
     }
 
-
-    template<int rankShift, int fileShift>
-    Bitboard expandToEdge(Bitboard squareMask) {
-        assert(squareMask_ok(static_cast<SquareMask>(squareMask)));
-        constexpr int totalShift = fileShift + rankShift * NUM_FILES;
-        Bitboard shiftMask = rankShiftMask<rankShift>() & fileShiftMask<fileShift>();
-        Bitboard output = BITBOARD_EMPTY;
-
-        squareMask &= shiftMask;
-        while (squareMask) {
-            squareMask = signedShift<totalShift>(squareMask);
-            squareMask &= shiftMask;
-            output |= squareMask;
-        }
-        return output;
-    }
-
     template<int rankShift, int fileShift>
     Bitboard expandUntilCollision(Bitboard squareMask, Bitboard otherPieces) {
         assert(squareMask_ok(static_cast<SquareMask>(squareMask)));
@@ -139,44 +289,26 @@ namespace Chess {
         return output;
     }
 
-    Bitboard rookMovesFrom_slow(Square square, Bitboard otherPieces) {
-        SquareMask squareMask = maskOf(square);
-        return expandUntilCollision<1, 0>(squareMask, otherPieces) |
-               expandUntilCollision<-1, 0>(squareMask, otherPieces) |
-               expandUntilCollision<0, 1>(squareMask, otherPieces) |
-               expandUntilCollision<0, -1>(squareMask, otherPieces);
+    template<int rankShift, int fileShift, bool includeEdge>
+    Bitboard expandToEdge(Bitboard squareMask) {
+        assert(squareMask_ok(static_cast<SquareMask>(squareMask)));
+        constexpr int totalShift = fileShift + rankShift * NUM_FILES;
+        Bitboard shiftMask = rankShiftMask<rankShift>() & fileShiftMask<fileShift>();
+        Bitboard output = BITBOARD_EMPTY;
+        squareMask &= shiftMask;
+        while (squareMask) {
+            squareMask = signedShift<totalShift>(squareMask);
+            if constexpr (includeEdge) {
+                output |= squareMask;
+                squareMask &= shiftMask;
+            } else {
+                squareMask &= shiftMask;
+                output |= squareMask;
+            }
+        }
+        return output;
     }
 
-    Bitboard bishopMovesFrom_slow(Square square, Bitboard blockers) {
-        SquareMask squareMask = maskOf(square);
-        return expandUntilCollision<1, 1>(squareMask, blockers) |
-               expandUntilCollision<-1, 1>(squareMask, blockers) |
-               expandUntilCollision<1, -1>(squareMask, blockers) |
-               expandUntilCollision<-1, -1>(squareMask, blockers);
-    }
-
-    Bitboard queenMovesFrom_slow(Square square, Bitboard otherPieces) {
-        return bishopMovesFrom_slow(square, otherPieces) | rookMovesFrom_slow(square, otherPieces);
-    }
-
-    /// list of all squares that need to be hashed to calculate a rook movement
-    Bitboard rookBlockersMask(Square square) {
-        SquareMask squareMask = maskOf(square);
-
-        return expandToEdge<1, 0>(squareMask) |
-               expandToEdge<-1, 0>(squareMask) |
-               expandToEdge<0, 1>(squareMask) |
-               expandToEdge<0, -1>(squareMask);
-    }
-
-    Bitboard bishopBlockersMask(Square square) {
-        SquareMask squareMask = maskOf(square);
-
-        return expandToEdge<1, 1>(squareMask) |
-               expandToEdge<1, -1>(squareMask) |
-               expandToEdge<-1, 1>(squareMask) |
-               expandToEdge<-1, -1>(squareMask);
-    }
 
     ///for every 1 in the bitboard, output an array where that one turns into a 0 or a 1
     ///eg. 10010 turns into [00000,10000,00010,10010]
@@ -255,16 +387,19 @@ namespace Chess {
     }
 
 
-    void initBishopLookup(Square square, bool useSeeds) {
-        Bitboard blockersMask = bishopBlockersMask(square);
+    template<PieceType pieceType>
+    void initSlidingPieceLookup(Square square, bool useSeeds) {
+        static_assert(pieceType == PIECE_TYPE_BISHOP || pieceType == PIECE_TYPE_ROOK,
+                      "may only do lookup tables for Rook or Bishop");
+        Bitboard blockersMask = getBlockersMask<pieceType>(square);
         int population = populationCout(blockersMask);
         unsigned int numPermutations = 1u << population;
         Bitboard blockers[numPermutations];
         Bitboard legalMoves[numPermutations];
         Bitboard hashed[numPermutations];
-        toggleBits(blockersMask, &blockers[0]);
+        toggleBits(blockersMask, blockers);
         for (int i = 0; i < numPermutations; ++i) {
-            legalMoves[i] = bishopMovesFrom_slow(square, blockers[i]);
+            legalMoves[i] = generateMoves_slow<pieceType>(square, blockers[i]);
         }
         Bitboard magicHashFactor;
         if (!useSeeds) {
@@ -274,9 +409,8 @@ namespace Chess {
                                                               hashed,
                                                               NUM_ATTEMPTS_SEARCH_MAGIC_HASH);
         } else {
-            magicHashFactor = bishopSeeds[square];
+            magicHashFactor = seedOf<pieceType>(square);
         }
-
 
         magicHashAll(magicHashFactor, blockers, hashed, numPermutations);
         int shift = maxPossibleShift(legalMoves, hashed, numPermutations, 0);
@@ -284,32 +418,42 @@ namespace Chess {
         int maxIndex = 0;
         for (int i = 0; i < numPermutations; ++i) {
             hashed[i] >>= shift;
-            Bitboard &moves = currentBishopRookLookupPointer[hashed[i]];
-            moves = legalMoves[i];
+            currentBishopRookLookupPointer[hashed[i]] = legalMoves[i];
             if (hashed[i] > maxIndex) {
                 maxIndex = hashed[i];
             }
         }
 
-        MagicHasData magicHasData;
-        magicHasData.mask = blockersMask;
-        magicHasData.shift = shift;
-        magicHasData.magicHashFactor = magicHashFactor;
-        magicHasData.moveLookup = currentBishopRookLookupPointer;
+        MagicHasData magicHashData{
+                shift,
+                blockersMask,
+                magicHashFactor,
+                currentBishopRookLookupPointer
+        };
 
-        bishopHashData[square] = magicHasData;
+        XrayData xrayData = XrayData::fromSquare<pieceType>(square);
+        slidingPieceDataOf<pieceType>(square).magicHashData = magicHashData;
+        slidingPieceDataOf<pieceType>(square).xrayData = xrayData;
+
         currentBishopRookLookupPointer += maxIndex;
 
         if (!useSeeds) {
-            bishopSeeds[square] = magicHashFactor;
-            bishopSizeScore += 64 - shift;
+            lookupTableLength += maxIndex;
+            seedOf<pieceType>(square) = magicHashFactor;
+            sizeScoreOf<pieceType>() += 64 - shift;
         }
     }
 
     void printSeeds() {
-        cout << "Bishop Seeds: ";
+        cout << "Bishop Seeds: \n";
         printArray(bishopSeeds, NUM_SQUARES) << "\n\n";
-        cout << "Bishop Score: " << std::dec << bishopSizeScore << "\n";
+        cout << "Rook Seeds: \n";
+        printArray(rookSeeds, NUM_SQUARES) << "\n\n";
+
+        cout << "Bishop Score: " << std::dec << sizeScoreOf<PIECE_TYPE_BISHOP>() << "\n";
+        cout << "Rook Score: " << std::dec << sizeScoreOf<PIECE_TYPE_ROOK>() << "\n";
+        cout << "Lookup table Length: " << lookupTableLength << "\n";
+
     }
 
 
@@ -319,13 +463,18 @@ namespace Chess {
             knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
             kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
 #ifdef USE_SEEDS
-            initBishopLookup(square, true);
+            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, true);
+            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, true);
 #elif defined(GENERATE_SEEDS)
-            initBishopLookup(square, false);
+            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, false);
+            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, false);
+
 #else
 #error must either use seeds or generate seeds
 #endif
         }
+
+        cout << std::dec << lookupTableLength << "\n";
 
 #ifdef GENERATE_SEEDS
         printSeeds();
@@ -339,7 +488,6 @@ namespace Chess {
         if (!lookUpTablesReady) {
             initLookupTables();
             lookUpTablesReady = true;
-            //assert(false);
         }
     }
 

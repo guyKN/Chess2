@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.obj"
+  "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/GameHistory.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/GameHistory.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Move.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/Move.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveInputData.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveList.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/MoveList.cpp.obj"
@@ -18,6 +19,7 @@ set(CMAKE_CXX_COMPILER_ID "MSVC")
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
   "COMMAND_LINE"
+  "GENERATE_SEEDS"
   "TO_COMMAND_LINE"
   )
 

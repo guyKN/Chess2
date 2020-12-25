@@ -3,21 +3,26 @@
 
 CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o
  ../include/Bitboards.h
- ../include/ChessBoard.h
- ../include/Move.h
- ../include/MoveInputData.h
- ../include/MoveList.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp
 CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o
  ../include/Bitboards.h
  ../include/ChessBoard.h
+ ../include/GameHistory.h
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/MoveList.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp
+CMakeFiles/chessWasm.dir/src/GameHistory.cpp.o
+ ../include/Bitboards.h
+ ../include/GameHistory.h
+ ../include/Move.h
+ ../include/MoveInputData.h
+ ../include/types.h
+ /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/GameHistory.cpp
 CMakeFiles/chessWasm.dir/src/Move.cpp.o
+ ../include/Bitboards.h
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/types.h
@@ -27,6 +32,7 @@ CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveInputData.cpp
 CMakeFiles/chessWasm.dir/src/MoveList.cpp.o
+ ../include/Bitboards.h
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/MoveList.h
@@ -35,6 +41,7 @@ CMakeFiles/chessWasm.dir/src/MoveList.cpp.o
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/Bitboards.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/ChessBoard.h
+ /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/GameHistory.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/Move.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/MoveInputData.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/MoveList.h
@@ -44,6 +51,7 @@ CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o
 CMakeFiles/chessWasm.dir/src/main.cpp.o
  ../include/Bitboards.h
  ../include/ChessBoard.h
+ ../include/GameHistory.h
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/MoveList.h

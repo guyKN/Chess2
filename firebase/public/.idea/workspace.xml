@@ -14,8 +14,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/flags.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/Move.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/Move.cpp.o" afterDir="false" />
@@ -24,7 +22,6 @@
       <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/jsInterface.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/jsInterface.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/types.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/types.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/build.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build-ascii/chessAscii" beforeDir="false" afterPath="$PROJECT_DIR$/../../build-ascii/chessAscii" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/CXX.includecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o" afterDir="false" />
@@ -33,34 +30,16 @@
       <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/types.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/types.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeCache.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeCCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeCCompiler.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeCXXCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeCXXCompiler.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeRCCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CMakeRCCompiler.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdC/CMakeCCompilerId.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdC/CMakeCCompilerId.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdC/CMakeCCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdC/CMakeCCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdCXX/CMakeCXXCompilerId.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdCXX/CMakeCXXCompilerId.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdCXX/CMakeCXXCompilerId.obj" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/3.17.3/CompilerIdCXX/CMakeCXXCompilerId.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/embed.manifest" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/flags.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/intermediate.manifest" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/manifest.rc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/manifest.res" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/src/Move.cpp.obj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.obj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/src/MoveList.cpp.obj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/src/types.cpp.obj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/vc140.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/vc140.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/clion-environment.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/clion-environment.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/Progress/1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/Progress/count.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/depend.internal" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/chessAscii.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/../../cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../include/Bitboards.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../include/Bitboards.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../include/ChessBoard.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../include/ChessBoard.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/jsInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../include/jsInterface.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../include/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../include/types.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../src/Bitboards.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../src/Bitboards.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../src/ChessBoard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../src/ChessBoard.cpp" afterDir="false" />
@@ -199,6 +178,8 @@
       <workItem from="1608129260749" duration="396000" />
       <workItem from="1608384473299" duration="2296000" />
       <workItem from="1608461144780" duration="157000" />
+      <workItem from="1608538366400" duration="720000" />
+      <workItem from="1608550758500" duration="10000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <created>1606146393380</created>

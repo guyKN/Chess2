@@ -95,6 +95,7 @@ class ChessBoardHTMLElement extends HTMLTableElement {
                 this.updateBoard();
                 this.removeAllHighlight();
                 this.lastClickPos = null;
+                this.showThreats();
                 return;
             }else{
                 this.removeAllHighlight();
@@ -110,6 +111,7 @@ class ChessBoardHTMLElement extends HTMLTableElement {
             const allMoves = this.boardPosition.allMovesFrom(position);
             this.highlightDst(allMoves);
         }
+        this.showThreats();
     }
 
     checkWinner() {
@@ -128,6 +130,14 @@ class ChessBoardHTMLElement extends HTMLTableElement {
             default:
                 return false;
         }
+    }
+
+    showThreats(){
+        PiecePosition.forEveryPosition((position)=>{
+            if(this.boardPosition.isThreatTo(position)){
+                this.getSquare(position).addHighlightDst();
+            }
+        });
     }
 
     doAiMove(){

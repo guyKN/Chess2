@@ -7,9 +7,9 @@
 #IncludeRegexTransform: 
 
 ../include/Bitboards.h
-ChessBoard.h
-../include/ChessBoard.h
 random
+-
+types.h
 -
 
 ../include/ChessBoard.h
@@ -21,12 +21,24 @@ MoveInputData.h
 ../include/MoveInputData.h
 MoveList.h
 ../include/MoveList.h
+GameHistory.h
+../include/GameHistory.h
+
+../include/GameHistory.h
+vector
+-
+ostream
+-
+Move.h
+../include/Move.h
 
 ../include/Move.h
 types.h
 ../include/types.h
 MoveInputData.h
 ../include/MoveInputData.h
+Bitboards.h
+../include/Bitboards.h
 
 ../include/MoveInputData.h
 types.h
@@ -54,7 +66,13 @@ algorithm
 vector
 -
 
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
+iostream
+-
 Bitboards.h
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
+ChessBoard.h
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
+climits
+-
 

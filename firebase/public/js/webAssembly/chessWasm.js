@@ -4256,6 +4256,16 @@ var ASM_CONSTS = {
   }
   }
 
+  function _getentropy(buffer, size) {
+      if (!_getentropy.randomDevice) {
+        _getentropy.randomDevice = getRandomDevice();
+      }
+      for (var i = 0; i < size; i++) {
+        HEAP8[(((buffer)+(i))>>0)]=_getentropy.randomDevice()
+      }
+      return 0;
+    }
+
   function _setTempRet0($i) {
       setTempRet0(($i) | 0);
     }
@@ -4712,6 +4722,7 @@ var asmLibraryArg = {
   "fd_read": _fd_read,
   "fd_seek": _fd_seek,
   "fd_write": _fd_write,
+  "getentropy": _getentropy,
   "setTempRet0": _setTempRet0,
   "strftime_l": _strftime_l
 };
@@ -4748,6 +4759,12 @@ var _currentPlayer = Module["_currentPlayer"] = createExportWrapper("currentPlay
 
 /** @type {function(...*):?} */
 var _resetBoard = Module["_resetBoard"] = createExportWrapper("resetBoard");
+
+/** @type {function(...*):?} */
+var _isThreatTo = Module["_isThreatTo"] = createExportWrapper("isThreatTo");
+
+/** @type {function(...*):?} */
+var _printBitboards = Module["_printBitboards"] = createExportWrapper("printBitboards");
 
 /** @type {function(...*):?} */
 var _main = Module["_main"] = createExportWrapper("main");

@@ -15,17 +15,19 @@ using namespace Chess;
 using std::cout;
 
 extern "C" {
-void initData();
-int pieceOn(int square);
-void calculateMoves();
-bool isLegalMoveStart(int square);
-void calculateMovesFrom(int square);
-bool isLegalMoveTo(int dstSquare);
-bool doMoveIfLegal(int srcSquare, int dstSquare);
-bool currentPlayer();
-void printMoves();
-void resetBoard();
-bool is64bit();
+    void initData();
+    int pieceOn(int square);
+    void calculateMoves();
+    bool isLegalMoveStart(int square);
+    void calculateMovesFrom(int square);
+    bool isLegalMoveTo(int dstSquare);
+    bool doMoveIfLegal(int srcSquare, int dstSquare);
+    bool currentPlayer();
+    void printMoves();
+    bool isThreatTo(Square square);
+    void resetBoard();
+    bool is64bit();
+    void printBitboards();
 };
 
 ChessBoard chessBoard = ChessBoard();
@@ -67,7 +69,8 @@ bool doMoveIfLegal(int srcSquare, int dstSquare) {
     if(!move.isOk()){
         return false;
     } else{
-        chessBoard.doMove(move);
+        chessBoard.doGameMove(move);
+        chessBoard.assertOk();
         return true;
     }
 }
@@ -82,6 +85,15 @@ bool currentPlayer(){
 
 void resetBoard(){
     chessBoard = ChessBoard();
+}
+
+bool isThreatTo(Square square){
+    return chessBoard.getPinned() & maskOf(square);
+}
+
+void printBitboards(){
+    chessBoard.printBitboards();
+    cout << *chessBoard.getGameHistory();
 }
 
 #endif //CHESS_JSINTERFACE_H

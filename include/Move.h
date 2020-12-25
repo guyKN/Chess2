@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include "MoveInputData.h"
+#include "Bitboards.h"
 
 using std::string;
 namespace Chess {
@@ -16,13 +17,23 @@ namespace Chess {
         const Square dstSquare;
         const Piece srcPiece;
         const Piece dstPiece;
+        const CastlingType castlingType;
 
-        friend std::ostream &operator<<(std::ostream &os, Move& move);
+        friend std::ostream &operator<<(std::ostream &os, Move &move);
 
         // returns true if the move's destination and source are both real squares. does not talk about move legality.
-        inline bool isOk() const;
+        bool isOk() const;
 
-        Move(const Square src, const Square dst, const Piece srcPiece, const Piece dstPiece);
+        Move(const Square srcSquare,
+             const Square dstSquare,
+             const Piece srcPiece,
+             const Piece dstPiece) :
+                srcSquare(srcSquare),
+                dstSquare(dstSquare),
+                srcPiece(srcPiece),
+                dstPiece(dstPiece),
+                castlingType(CASTLE_NONE) {}
+
 
         bool operator==(Move move) const;
 
@@ -30,7 +41,13 @@ namespace Chess {
 
         static Move invalidMove;
 
+        static inline Move fromCastlingType(CastlingType castlingType){
+            return castleMoves[castlingType];
+        }
 
+    private:
+        Move(CastlingData castlingData);
+        static const Move castleMoves[NUM_CASTLE_TYPES];
     };
 }
 

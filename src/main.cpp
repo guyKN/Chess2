@@ -13,10 +13,9 @@ using std::cout;
             chessBoard.printBitboards();
             MoveList moveList;
             chessBoard.generateMoves(moveList);
-            cout << "\n" << moveList << "\n" << chessBoard << "Enter a move: ";
+            cout << "\n" << chessBoard << "Enter a move: ";
             MoveInputData moveInput = MoveInputData::readMove();
             Move move = moveList.getMoveFromInputData(moveInput);
-
             if (move.isOk()) {
                 chessBoard.doMove(move);
             } else {
@@ -29,10 +28,10 @@ using std::cout;
 
 int main() {
     initBitboards();
-    return 0;
 #ifdef TO_COMMAND_LINE
+#ifndef GENERATE_SEEDS
     playGame();
+#endif //GENERATE_SEEDS
 #endif //TO_COMMAND_LINE
     return 0;
 }
-

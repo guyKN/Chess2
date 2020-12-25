@@ -10,6 +10,7 @@
 #include "Move.h"
 #include "MoveInputData.h"
 #include "MoveList.h"
+#include "GameHistory.h"
 
 using std::cout;
 namespace Chess {
@@ -20,19 +21,38 @@ namespace Chess {
     class ChessBoard {
         Bitboard pieceBitboards[NUM_PIECES] = {};
         Bitboard byPlayerBitboards[NUM_PLAYERS] = {};
-        Piece piecesBySquare[NUM_SQUARES] = {};
 
+        //todo: have threats just for pieces of the inactive player, to save memory
+        // (but remember that this may harm the value of pieces for static move evaluation)
+        Bitboard threatsByPiece[NUM_NON_EMPTY_PIECES] = {};
+        Bitboard threatsBypLayer[NUM_PLAYERS] = {};
+
+        Bitboard checkEvasionSquares = BITBOARD_FULL;
+        Bitboard pinned = BITBOARD_EMPTY;
+
+        Piece piecesBySquare[NUM_SQUARES] = {};
         Player currentPlayer = WHITE;
+
+        bool isCheck = false;
+        bool isDoubleCheck = false;
+
+        bool whiteMayCastleKingSide = true;
+        bool whiteMayCastleQueenSide = true;
+        bool blackMayCastleKingSide = true;
+        bool blackMayCastleQueenSide = true;
+
+
+        GameHistory *gameHistory;
 
         inline Bitboard &bitboardOf(Piece piece) {
             return pieceBitboards[piece];
         }
 
-        inline Bitboard &bitboardOf(Player player){
+        inline Bitboard &bitboardOf(Player player) {
             return byPlayerBitboards[player];
         }
 
-        inline Piece &pieceOn(Square square){
+        inline Piece &pieceOn(Square square) {
             return piecesBySquare[square];
         }
 
@@ -40,21 +60,49 @@ namespace Chess {
             return pieceBitboards[piece];
         }
 
-        void swapPlayer() {
+        inline Bitboard &threatsOf(Player player) {
+            return threatsBypLayer[player];
+        }
+
+        inline Bitboard &threatsOf(Piece piece) {
+            assert(piece != PIECE_NONE);
+            return threatsByPiece[piece];
+        }
+
+        inline void swapPlayer() {
             currentPlayer = ~currentPlayer;
         }
 
         template<Player player>
-        void generatePawnQuietMoves(MoveList &moveList);
-
-        template<Player, int>
-        void generatePawnCaptures(MoveList &moveList);
+        bool mayCastleKingSide() {
+            if constexpr (player == WHITE) {
+                return whiteMayCastleKingSide;
+            } else {
+                return blackMayCastleKingSide;
+            }
+        }
 
         template<Player player>
-        void generateKnightMoves(MoveList &moveList);
+        bool mayCastleQueenSide() {
+            if constexpr (player == WHITE) {
+                return whiteMayCastleQueenSide;
+            } else {
+                return whiteMayCastleQueenSide;
+            }
+        }
+
 
         template<Player player>
-        void generateBishopMoves(MoveList &moveList);
+        void generateAllPieces(MoveList &moveList, Bitboard source, Bitboard target);
+
+        template<Player player>
+        void generatePawnMoves(MoveList &moveList, Bitboard source, Bitboard target);
+
+        template<Player player>
+        void generateKnightMoves(MoveList &moveList, Bitboard source, Bitboard target);
+
+        template<Player player, PieceType pieceType>
+        void generateSlidingPieceMoves(MoveList &moveList, Bitboard source, Bitboard target);
 
         template<Player player>
         void generateKingMoves(MoveList &moveList);
@@ -62,33 +110,77 @@ namespace Chess {
         template<Player player>
         void generateMovesForPlayer(MoveList &moveList);
 
+        void calculateInactivePlayerThreats();
+
+        template<Player player>
+        void calculateThreats();
+
+        template<Player player>
+        void calculatePawnThreats();
+
+        template<Player player>
+        void calculateKnightThreats();
+
+        template<Player player, PieceType pieceType>
+        void calculateSlidingPieceThreats();
+
+        template<Player player>
+        void calculateQueenThreats();
+
+        template<Player player>
+        void calculateKingThreats();
+
         bool noPieceOverlap();
 
         bool noColorOverlap();
 
     public:
 
-        inline Player getCurrentPlayer(){
+        explicit ChessBoard(const Piece piecesBySquare[NUM_SQUARES], Player currentPlayerColor);
+
+        inline ChessBoard() : ChessBoard(startingBoard, STARTING_PLAYER) {}
+
+        ~ChessBoard();
+
+        inline Player getCurrentPlayer() {
             return currentPlayer;
+        }
+
+        inline bool getIsCheck() {
+            return isCheck;
+        }
+
+        inline Bitboard getBitboardOf(Piece piece) {
+            return bitboardOf(piece);
+        }
+
+        inline Bitboard getPinned() {
+            return pinned;
         }
 
         const static Piece startingBoard[NUM_SQUARES];
 
         void printBitboards();
 
-        inline bool isLegalMoveStart(Square square){
+        inline bool isLegalMoveStart(Square square) {
             Piece piece = getPieceOn(square);
             return (piece != PIECE_NONE) && (playerOf(piece) == currentPlayer);
         }
 
-        explicit ChessBoard(const Piece piecesBySquare[NUM_SQUARES], Player currentPlayerColor);
-
-        inline ChessBoard() : ChessBoard(startingBoard, STARTING_PLAYER) {}
-
         void doMove(Move move);
 
-        inline Piece getPieceOn(Square square) const{
+        void doGameMove(Move move);
+
+        inline Piece getPieceOn(Square square) const {
             return piecesBySquare[square];
+        }
+
+        inline Bitboard getThreats() {
+            return threatsOf(~currentPlayer);
+        }
+
+        inline Bitboard getCheckEvasions() {
+            return checkEvasionSquares;
         }
 
         friend std::ostream &operator<<(std::ostream &os, const ChessBoard &chessBoard);
@@ -99,6 +191,12 @@ namespace Chess {
         bool isOk();
 
         void generateMoves(MoveList &moveList);
+
+        inline GameHistory *getGameHistory() const {
+            return gameHistory;
+        }
+
+        void updateCastling(Move &move);
     };
 }
 

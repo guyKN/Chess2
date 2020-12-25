@@ -5,8 +5,17 @@ set(CMAKE_CXX_STANDARD 17)
 
 option(WASM "Compile to WASM, rather than the command line" OFF)
 option(GENERATE_SEEDS "generate seeds for bishop rook and queen movement, rather than using the pre-existing ones" ON)
+option(FOR_RELEASE "optimize code for release" OFF)
 
-if(GENERATE_SEEDS)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+if(FOR_RELEASE)
+    set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_CXX_FLAGS "-O3")
+else()
+    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_CXX_FLAGS "-g")
+endif()
+    if(GENERATE_SEEDS)
     add_compile_definitions(GENERATE_SEEDS)
 else(GENERATE_SEEDS)
     add_compile_definitions(USE_SEEDS)
@@ -30,8 +39,10 @@ if(WASM)
                 _doMoveIfLegal,                                                                     \
                 _currentPlayer,                                                                     \
                 _printMoves,                                                                        \
+                _isThreatTo,                                                                        \
                 _initData,                                                                          \
-                _resetBoard                                                                         \
+                _resetBoard,                                                                        \
+                _printBitboards                                                                     \
                 ]'")
 else(WASM)
     add_compile_options(-m64)
