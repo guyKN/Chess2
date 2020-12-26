@@ -54,53 +54,31 @@ namespace Chess {
         return static_cast<Square>(static_cast<int>(square1) + static_cast<int>(square2));
     }
 
+    constexpr inline Square operator+(Square square1, int direction) {
+        return static_cast<Square>(static_cast<int>(square1) + direction);
+    }
+
+    constexpr inline Square operator+(int direction, Square square) {
+        return static_cast<Square>(static_cast<int>(square) + direction);
+    }
+
+    constexpr inline Square operator-(Square square1, int shift) {
+        return static_cast<Square>(static_cast<int>(square1) - shift);
+    }
+
+
+
+
     constexpr bool square_ok(Square square) {
         return square >= SQ_FIRST && square <= SQ_LAST;
     }
 
     ENABLE_INCR_OPERATORS_ON(Square)
 
-    enum Direction : int {
-        NORTH = 8,
-        SOUTH = -NORTH,
-        EAST = 1,
-        WEST = -EAST,
-
-        NORTH_EAST = NORTH + EAST,
-        NORTH_WEST = NORTH + WEST,
-        SOUTH_EAST = SOUTH + EAST,
-        SOUTH_WEST = SOUTH + WEST,
-
-        NORTH_2 = 2 * NORTH,
-        SOUTH_2 = 2 * SOUTH,
-        EAST_2 = 2 * EAST,
-        WEST_2 = 2 * WEST,
-
-        KNIGHT_MOVE_1 = NORTH_2 + EAST,
-        KNIGHT_MOVE_2 = NORTH_2 + WEST,
-        KNIGHT_MOVE_3 = SOUTH_2 + EAST,
-        KNIGHT_MOVE_4 = SOUTH_2 + WEST,
-        KNIGHT_MOVE_5 = NORTH + EAST_2,
-        KNIGHT_MOVE_6 = NORTH + WEST_2,
-        KNIGHT_MOVE_7 = SOUTH + EAST_2,
-        KNIGHT_MOVE_8 = SOUTH + WEST_2
-    };
-
-    constexpr inline Square operator+(Square square, Direction direction) {
-        return static_cast<Square>(static_cast<int>(square) + static_cast<int>(direction));
-    }
-
-    constexpr inline Square operator-(Square square, Direction direction) {
-        return static_cast<Square>(static_cast<int>(square) - static_cast<int>(direction));
-    }
-
-    constexpr inline Direction operator*(Direction direction, int scalar) {
-        return static_cast<Direction>(static_cast<int>(direction) * scalar);
-    }
 
 
     enum SquareMask : Bitboard {
-        // Represents a Bitboard that contains all 0 except for exactly one 1 representing a square
+        // Represents a Bitboard that contains all 0 except for exactly one 1 representing a pawnForward2Square
         SQUARE_MASK_NONE = 0u,
         SQUARE_MASK_FIRST = 1u,
         SQUARE_MASK_LAST = SQUARE_MASK_FIRST >> SQ_LAST
@@ -173,7 +151,6 @@ namespace Chess {
     Rank parseRank(char rankChar);
 
     ENABLE_INCR_OPERATORS_ON(Rank)
-
 
     constexpr int NUM_RANKS = 8;
 
@@ -251,6 +228,18 @@ namespace Chess {
         PIECE_TYPE_NONE
     };
 
+    constexpr bool isValidPromotion(PieceType pieceType){
+        switch (pieceType) {
+            case PIECE_TYPE_KNIGHT:
+            case PIECE_TYPE_BISHOP:
+            case PIECE_TYPE_ROOK:
+            case PIECE_TYPE_QUEEN:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     enum Piece : int {
         PIECE_WHITE_PAWN,
         PIECE_WHITE_KNIGHT,
@@ -326,6 +315,5 @@ namespace Chess {
             return static_cast<PieceType>(piece - PIECE_FIRST_BLACK);
         }
     }
-
 }
 #endif //CHESS_TYPES_H

@@ -68,7 +68,6 @@ namespace Chess {
     int bishopSizeScore = 0;
     int rookSizeScore = 0;
 
-
     const Bitboard fileShiftMasks[5] = {~maskOf(FILE_A) & ~maskOf(FILE_B),
                                         ~maskOf(FILE_A),
                                         BITBOARD_FULL,
@@ -84,7 +83,6 @@ namespace Chess {
 
     Bitboard *currentBishopRookLookupPointer = &rookBishopMoveTable[0];
     int lookupTableLength = 0;
-
 
     const CastlingData CastlingData::castlingData[NUM_CASTLE_TYPES]{
             { // white King side
@@ -463,8 +461,8 @@ namespace Chess {
             knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
             kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
 #ifdef USE_SEEDS
-            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, true);
-            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, true);
+            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(pawnForward2Square, true);
+            initSlidingPieceLookup<PIECE_TYPE_ROOK>(pawnForward2Square, true);
 #elif defined(GENERATE_SEEDS)
             initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, false);
             initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, false);
@@ -490,7 +488,5 @@ namespace Chess {
             lookUpTablesReady = true;
         }
     }
-
-
 }
 

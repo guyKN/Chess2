@@ -139,18 +139,19 @@ namespace Chess {
     void ChessBoard::doMove(Move move) {
         //todo: see if execution time changes between making masks once as variable or as temp objects
         assert(move.isOk());
-        bitboardOf(PIECE_NONE) |= maskOf(move.srcSquare);
         assert(move.dstPiece == pieceOn(move.dstSquare));
-        (bitboardOf(move.srcPiece) &= notSquareMask(move.srcSquare)) |= maskOf(move.dstSquare);
+        enPassantSquare = move.pawnForward2Square;
+        bitboardOf(PIECE_NONE) |= maskOf(move.srcSquare);
+        (bitboardOf(move.srcPiece) &= notSquareMask(move.srcSquare));
         (bitboardOf(move.dstPiece)) &= notSquareMask(move.dstSquare);
-
+        bitboardOf(move.promotionPiece) |= maskOf(move.dstSquare);
         ((bitboardOf(currentPlayer)) &= notSquareMask(move.srcSquare)) |= maskOf(move.dstSquare);
         bitboardOf(~currentPlayer) &= notSquareMask(move.dstSquare);
 
         pieceOn(move.srcSquare) = PIECE_NONE;
-        pieceOn(move.dstSquare) = move.srcPiece;
+        pieceOn(move.dstSquare) = move.promotionPiece;
 
-        if(move.castlingType != CASTLE_NONE){
+        if (move.castlingType != CASTLE_NONE) {
             Piece rook = makePiece(PIECE_TYPE_ROOK, currentPlayer);
             CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
 
@@ -169,20 +170,28 @@ namespace Chess {
         swapPlayer();
         calculateInactivePlayerThreats();
     }
-
+    //todo: should this be inline?
     void ChessBoard::updateCastling(Move &move) {
         Bitboard moveSquares = maskOf(move.srcSquare) | maskOf(move.dstSquare);
         whiteMayCastleKingSide = whiteMayCastleKingSide &&
-                                 !CastlingData::fromCastlingType(CASTLE_WHITE_KING_SIDE).moveDisablesCastling(moveSquares);
+                                 !CastlingData::fromCastlingType(CASTLE_WHITE_KING_SIDE)
+                                         .moveDisablesCastling(moveSquares);
 
         whiteMayCastleQueenSide = whiteMayCastleQueenSide &&
-                                  !CastlingData::fromCastlingType(CASTLE_WHITE_QUEEN_SIDE).moveDisablesCastling(moveSquares);
+                                  !CastlingData::fromCastlingType(CASTLE_WHITE_QUEEN_SIDE)
+                                          .moveDisablesCastling(moveSquares);
 
         blackMayCastleKingSide = blackMayCastleKingSide &&
-                                 !CastlingData::fromCastlingType(CASTLE_BLACK_KING_SIDE).moveDisablesCastling(moveSquares);
+                                 !CastlingData::fromCastlingType(CASTLE_BLACK_KING_SIDE)
+                                         .moveDisablesCastling(moveSquares);
 
+        bool disableCastlingQueenSide = CastlingData::fromCastlingType(CASTLE_BLACK_QUEEN_SIDE)
+                .moveDisablesCastling(moveSquares);
+        if(disableCastlingQueenSide){
+            cout << "disabled castling queen side\n";
+        }
         blackMayCastleQueenSide = blackMayCastleQueenSide &&
-                                  !CastlingData::fromCastlingType(CASTLE_BLACK_QUEEN_SIDE).moveDisablesCastling(moveSquares);
+                                  !disableCastlingQueenSide;
     }
 
     void ChessBoard::doGameMove(Move move) {
@@ -190,9 +199,16 @@ namespace Chess {
         gameHistory->addMove(move);
     }
 
-
+    //todo: only call this when assertions are enabled
     bool ChessBoard::isOk() {
-        return noPieceOverlap() & noColorOverlap();
+        bool noPieceOverlap1 = noPieceOverlap();
+        bool noColorOverlap1 = noColorOverlap();
+        if (!noPieceOverlap1)
+            cout << "Piece overlap \n";
+        if (!noColorOverlap1)
+            cout << "Color overlap \n";
+
+        return noPieceOverlap1 && noColorOverlap1;
     }
 
     bool ChessBoard::noPieceOverlap() {
@@ -229,28 +245,88 @@ namespace Chess {
 
     template<Player player>
     void ChessBoard::generatePawnMoves(MoveList &moveList, Bitboard source, Bitboard target) {
+        // note: promotionPiece is the piece that the pawns promote to, but it may also be PIECE_PAWN, which means that the pawns don't promote
+        // only make promotionPiece into queen when it is know the pawns will promote this move
         constexpr int direction = directionOf(player);
         constexpr int forward1shift = direction * 8;
         constexpr int forward2shift = 2 * forward1shift;
+
+        constexpr int captureLeftShift = forward1shift-1;
+        constexpr int captureRightShift = forward1shift+1;
+        constexpr Bitboard shiftLeftMask = ~maskOf(FILE_A);
+        constexpr Bitboard shiftRightMask = ~maskOf(FILE_H);
+
         constexpr Piece pawnPiece = makePiece(PIECE_TYPE_PAWN, player);
-        constexpr Rank fourthRank = flipIfBlack(player, RANK_4);
-        constexpr Bitboard fourthRankMask = maskOf(fourthRank);
-        constexpr Player opponent = ~player;
+        constexpr Piece queen = makePiece(PIECE_TYPE_QUEEN, player);
+
+        constexpr Rank rank2 = flipIfBlack(player, RANK_2);
+        constexpr Bitboard rank2mask = maskOf(rank2);
+        constexpr Rank rank7 = flipIfBlack(player, RANK_7);
+        constexpr Bitboard rank7mask = maskOf(rank7);
+
         Bitboard pawns = bitboardOf(pawnPiece) & source;
         Bitboard emptySquares = bitboardOf(PIECE_NONE) & target;
-        Bitboard enemyPieces = bitboardOf(opponent) & target;
-        Bitboard mayMoveForward2mask = signedShift<forward1shift>(emptySquares) & emptySquares & fourthRankMask;
-        while (pawns) {
-            Square srcSquare = popLsb(&pawns);
-            SquareMask srcSquareMask = maskOf(srcSquare);
-            Bitboard legalMoves = (signedShift<forward1shift>(srcSquareMask) & emptySquares) |
-                                  (signedShift<forward2shift>(srcSquareMask) & mayMoveForward2mask) |
-                                  (shiftWithMask<direction, 1>(srcSquareMask) & enemyPieces) |
-                                  (shiftWithMask<direction, -1>(srcSquareMask) & enemyPieces);
-            while (legalMoves) {
-                Square dstSquare = popLsb(&legalMoves);
-                moveList.addMove(Move(srcSquare, dstSquare, pawnPiece, pieceOn(dstSquare)));
-            }
+        Bitboard enemyPieces = bitboardOf(~player) & target;
+
+
+        // move forward 1
+        Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptySquares;
+        while (forward1Move){
+            Square dst = popLsb(&forward1Move);
+            moveList.addMove(Move(dst-forward1shift, dst, pawnPiece, pieceOn(dst)));
+        }
+
+        //move forward 2
+        Bitboard forward2Move = signedShift<forward2shift>(pawns & rank2mask) & emptySquares;
+        while (forward2Move){
+            Square dst = popLsb(&forward2Move);
+            moveList.addMove(
+                    Move::pawnForward2(dst-forward2shift, dst, pawnPiece, pieceOn(dst))
+            );
+        }
+
+        //capture left
+        Bitboard captureLeft = signedShift<captureLeftShift>(pawns & ~rank7mask & shiftLeftMask) & enemyPieces;
+        while (captureLeft){
+            Square dst = popLsb(&captureLeft);
+            moveList.addMove(Move(dst-captureLeftShift, dst, pawnPiece, pieceOn(dst)));
+        }
+
+        //capture right
+        Bitboard captureRight = signedShift<captureRightShift>(pawns & ~rank7mask & shiftRightMask) & enemyPieces;
+        while (captureRight){
+            Square dst = popLsb(&captureRight);
+            moveList.addMove(Move(dst-captureRightShift, dst, pawnPiece, pieceOn(dst)));
+        }
+
+        // en passent capture left
+
+
+        // promotion forward
+        Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptySquares;
+        while (promotionForward){
+            Square dst = popLsb(&promotionForward);
+            moveList.addMove(
+                    Move::promotion(dst - forward1shift, dst, pawnPiece, pieceOn(dst), queen)
+            );
+        }
+
+        //promotion left
+        Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
+        while (promotionLeft){
+            Square dst = popLsb(&promotionLeft);
+            moveList.addMove(
+                    Move::promotion(dst-captureLeftShift, dst, pawnPiece, pieceOn(dst), queen)
+            );
+        }
+
+        //promotion right
+        Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
+        while (promotionRight){
+            Square dst = popLsb(&promotionRight);
+            moveList.addMove(
+                    Move::promotion(dst-captureRightShift, dst, pawnPiece, pieceOn(dst), queen)
+            );
         }
     }
 
@@ -322,21 +398,18 @@ namespace Chess {
                 Bitboard pieces = bitboardOf(player) | bitboardOf(~player); //todo: speed up
                 Bitboard threats = threatsOf(~player);
 
-                //cout << (mayCastleKingSide<player>() ? "Potentially may castle kingside\n" : "Can't at all castle Kingside\n");
-                //cout << (mayCastleQueenSide<player>() ? "Potentially may castle queenside\n" : "Can't at all castle queenside\n");
-
                 if (mayCastleKingSide<player>() &&
-                        CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
+                    CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
                     cout << player << " Allowed Kingside\n";
                     moveList.addMove(Move::fromCastlingType(kingSideCastleOf<player>()));
                 } else if (mayCastleKingSide<player>()) {
-                    cout << player << " future Queenside\n";
+                    cout << player << " future Kingside\n";
                 } else {
                     cout << player << " disabled Kingside\n";
                 }
 
                 if (mayCastleQueenSide<player>() &&
-                        CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
+                    CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
                     cout << player << " allowed Queenside\n";
                     moveList.addMove(Move::fromCastlingType(queenSideCastleOf<player>()));
                 } else if (mayCastleQueenSide<player>()) {
@@ -361,7 +434,7 @@ namespace Chess {
 
                     //todo: optimize for speed. Check whether ifs are helping or slowing down
                     /// also think about not checking redundant pins, like a pinned knight which can't move at all
-                    /// and a rook pinned on a diagonal or a bishop pinned on a rank
+                    /// like a rook pinned on a diagonal or a bishop pinned on a rank
 
                     if (pinned & kingRank) {
                         generateAllPieces<player>(moveList, pinned & kingRank, kingRank);
@@ -391,7 +464,6 @@ namespace Chess {
         }
     }
 
-//fixme: this doesn't calculate threats correctly for some diagonals
     template<Player player>
     void ChessBoard::calculatePawnThreats() {
         constexpr int rankShift = directionOf(player);
@@ -573,6 +645,7 @@ namespace Chess {
 
     void ChessBoard::calculateInactivePlayerThreats() {
         isCheck = false;
+        isDoubleCheck = false;
         checkEvasionSquares = BITBOARD_FULL; //todo: remove
         pinned = BITBOARD_EMPTY;
         if (currentPlayer == WHITE) {
@@ -581,5 +654,4 @@ namespace Chess {
             calculateThreats<WHITE>();
         }
     }
-
 }

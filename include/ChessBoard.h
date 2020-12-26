@@ -33,6 +33,8 @@ namespace Chess {
         Piece piecesBySquare[NUM_SQUARES] = {};
         Player currentPlayer = WHITE;
 
+        Square enPassantSquare = SQ_INVALID;
+
         bool isCheck = false;
         bool isDoubleCheck = false;
 
@@ -87,7 +89,7 @@ namespace Chess {
             if constexpr (player == WHITE) {
                 return whiteMayCastleQueenSide;
             } else {
-                return whiteMayCastleQueenSide;
+                return blackMayCastleQueenSide;
             }
         }
 

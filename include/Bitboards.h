@@ -10,6 +10,8 @@
 
 namespace Chess {
 
+    void initBitboards();
+
     constexpr Bitboard MASK_FILE_A = 0x0101010101010101;
     constexpr Bitboard MASK_RANK_1 = 0x00000000000000FF;
 
@@ -21,9 +23,18 @@ namespace Chess {
         CASTLE_NONE
     };
 
-    inline Player playerOf(CastlingType castlingData) {
-        assert(castlingData != CASTLE_NONE);
-        return ((castlingData == CASTLE_WHITE_KING_SIDE) || (castlingData == CASTLE_WHITE_QUEEN_SIDE)) ? WHITE : BLACK;
+    inline Player playerOf(CastlingType castlingType) {
+        assert(castlingType != CASTLE_NONE);
+        return ((castlingType == CASTLE_WHITE_KING_SIDE) || (castlingType == CASTLE_WHITE_QUEEN_SIDE)) ? WHITE : BLACK;
+    }
+
+    inline bool isKingSide(CastlingType castlingType){
+        assert(castlingType != CASTLE_NONE);
+        return (castlingType == CASTLE_WHITE_KING_SIDE) || (castlingType == CASTLE_BLACK_KING_SIDE);
+    }
+
+    inline bool isQueenSde(CastlingType castlingType){
+        return !isKingSide(castlingType);
     }
 
     template<Player player>
@@ -91,8 +102,6 @@ namespace Chess {
         static const CastlingData castlingData[NUM_CASTLE_TYPES];
     };
 
-    void initBitboards();
-
     struct MagicHasData {
         int shift;
         Bitboard mask;
@@ -145,10 +154,7 @@ namespace Chess {
         inline Bitboard rankFileDiagonal2() {
             return direction3 | direction4;
         }
-
-
     };
-
 
     struct SlidingPieceData {
         MagicHasData magicHashData;
@@ -179,7 +185,7 @@ namespace Chess {
         return kingMovesLookup[square];
     }
 
-    inline Bitboard maskOf(File file) {
+    constexpr inline Bitboard maskOf(File file) {
         assert(file_ok(file));
         return MASK_FILE_A << file;
     }
@@ -361,7 +367,7 @@ namespace Chess {
     }
 
 
-/// frontmost_sq() returns the most advanced square for the given color,
+/// frontmost_sq() returns the most advanced pawnForward2Square for the given color,
 /// requires a non-zero bitboard.
     inline Square frontmost_sq(Player c, Bitboard b) {
         assert(b);
