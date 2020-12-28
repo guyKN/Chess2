@@ -181,6 +181,33 @@ src\ChessBoard.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\ChessBoard.cpp.s
 .PHONY : src\ChessBoard.cpp.s
 
+src\EvalData.obj: src\EvalData.cpp.obj
+
+.PHONY : src\EvalData.obj
+
+# target to build an object file
+src\EvalData.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\EvalData.cpp.obj
+.PHONY : src\EvalData.cpp.obj
+
+src\EvalData.i: src\EvalData.cpp.i
+
+.PHONY : src\EvalData.i
+
+# target to preprocess a source file
+src\EvalData.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\EvalData.cpp.i
+.PHONY : src\EvalData.cpp.i
+
+src\EvalData.s: src\EvalData.cpp.s
+
+.PHONY : src\EvalData.s
+
+# target to generate assembly for a file
+src\EvalData.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\EvalData.cpp.s
+.PHONY : src\EvalData.cpp.s
+
 src\GameHistory.obj: src\GameHistory.cpp.obj
 
 .PHONY : src\GameHistory.obj
@@ -385,6 +412,9 @@ help:
 	@echo ... src/ChessBoard.obj
 	@echo ... src/ChessBoard.i
 	@echo ... src/ChessBoard.s
+	@echo ... src/EvalData.obj
+	@echo ... src/EvalData.i
+	@echo ... src/EvalData.s
 	@echo ... src/GameHistory.obj
 	@echo ... src/GameHistory.i
 	@echo ... src/GameHistory.s

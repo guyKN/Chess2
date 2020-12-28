@@ -22,14 +22,6 @@ namespace Chess {
         return os;
     }
 
-    Rank rankOf(Square square) {
-        return static_cast<Rank>(square / 8);
-    }
-
-    inline constexpr File fileOf(Square square) {
-        return static_cast<File>(square % 8);
-    }
-
 
     char toChar(Rank rank) {
         if (rank >= RANK_FIRST && rank <= RANK_LAST) {
@@ -145,5 +137,4 @@ namespace Chess {
     std::ostream &operator<<(ostream &outputStream, Player player) {
         return outputStream << (player == WHITE ? "White" : "Black");
     }
-
 }

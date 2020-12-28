@@ -7,7 +7,7 @@ container.appendChild(chessBoard);
 
 
 function restartGame(){
-    chessBoard.startGame();
+    chessBoard.restartGame();
 }
 
 function testSpeed(iterations){

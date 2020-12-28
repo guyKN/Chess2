@@ -4,29 +4,27 @@
 
 #include "MoveList.h"
 
-Chess::Move Chess::MoveList::getMoveFromInputData(MoveInputData moveInput) {
-    for(auto &move:moves){
-        if(move.matchesMoveInput(moveInput)){
-            return move;
+Chess::Move Chess::MoveList::getMoveFromInputData(MoveInputData moveInput) const {
+    for (const Move* move = firstMove(); move < lastMove(); move++) {
+        if (move->matchesMoveInput(moveInput)){
+            return *move;
         }
     }
     return Move::invalidMove;
 }
 
 ostream &Chess::operator<<(ostream &outStream, const Chess::MoveList &moveList) {
-    for(int i=0;i<moveList.size();i++){
-        Move move = moveList[i];
-        outStream << move << "\n";
+    for (const Move* pMove = moveList.firstMove(); pMove < moveList.lastMove(); pMove++) {
+        Move move = *pMove;
+        cout << move << "\n";
     }
     return outStream;
 }
 
-void Chess::MoveList::movesFrom(Chess::Square square, MoveList &moveList) {
-    for(int i=0;i< size();i++){
-        Move move = moves[i];
-        if(move.srcSquare==square){
-            moveList.addMove(move);
+void Chess::MoveList::movesFrom(Chess::Square square, MoveList &moveList) const {
+    for (const Move* move = firstMove(); move < lastMove(); move++) {
+        if(move->srcSquare == square){
+            moveList.addMove(*move);
         }
     }
-
 }

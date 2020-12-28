@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "../firebase/public/js/webAssembly/chessWasm.pdb"
   "CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o"
   "CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o"
+  "CMakeFiles/chessWasm.dir/src/EvalData.cpp.o"
   "CMakeFiles/chessWasm.dir/src/GameHistory.cpp.o"
   "CMakeFiles/chessWasm.dir/src/Move.cpp.o"
   "CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o"

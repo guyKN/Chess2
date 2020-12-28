@@ -15,6 +15,9 @@ namespace Chess {
         vector<Move> moves;
     public:
         void addMove(Move move);
+        inline void clear(){
+            moves.clear();
+        }
         friend ostream &operator<<(ostream &os, const GameHistory &history);
     };
 }

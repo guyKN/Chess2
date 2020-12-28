@@ -37,6 +37,7 @@ if(WASM)
                 _calculateMovesFrom,                                                                \
                 _isLegalMoveTo,                                                                     \
                 _doMoveIfLegal,                                                                     \
+                _checkWinner,                                                                       \
                 _currentPlayer,                                                                     \
                 _printMoves,                                                                        \
                 _isThreatTo,                                                                        \

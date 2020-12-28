@@ -28,7 +28,16 @@ namespace Chess {
 
     std::ostream &printBitboard(Bitboard bitboard, std::ostream &os = std::cout);
 
-    std::ostream &printArray(Bitboard *array, int length, ostream &outputStream = std::cout);
+    template<typename T>
+    std::ostream &printArray(T *array, int length, ostream &outputStream = std::cout) {
+        outputStream << '{';
+        for(int i=0;i<length;i++){
+            //todo: add back 0x
+            outputStream << "" << array[i] << ", ";
+        }
+        outputStream << '}' << std::dec;
+        return outputStream;
+    }
 
     enum Square : int {
         SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
@@ -67,14 +76,11 @@ namespace Chess {
     }
 
 
-
-
     constexpr bool square_ok(Square square) {
         return square >= SQ_FIRST && square <= SQ_LAST;
     }
 
     ENABLE_INCR_OPERATORS_ON(Square)
-
 
 
     enum SquareMask : Bitboard {
@@ -158,7 +164,13 @@ namespace Chess {
         return rank >= RANK_FIRST && rank <= RANK_LAST;
     }
 
-    inline Rank rankOf(Square square);
+    constexpr inline Rank flip(Rank rank) {
+        return static_cast<Rank>(RANK_LAST - rank);
+    }
+
+    constexpr inline Rank rankOf(Square square) {
+        return static_cast<Rank>(square / 8);
+    }
 
     enum File : int {
         FILE_A,
@@ -188,7 +200,14 @@ namespace Chess {
         return file >= FILE_FIRST && file <= FILE_LAST;
     }
 
-    inline constexpr File fileOf(Square square);
+    inline constexpr File fileOf(Square square) {
+        return static_cast<File>(square % 8);
+    }
+
+    constexpr inline File flip(File file) {
+        return static_cast<File>(FILE_LAST - file);
+    }
+
 
     inline constexpr Square makeSquare(Rank rank, File file) {
         return static_cast<Square>(rank * 8 + file);
@@ -212,7 +231,12 @@ namespace Chess {
     }
 
     constexpr inline Rank flipIfBlack(Player player, Rank rank) {
-        return player == WHITE ? rank : static_cast<Rank>((RANK_LAST - rank));
+        return player == WHITE ? rank : flip(rank);
+    }
+
+    constexpr inline Square flip(Square square) {
+        //note: not optimized. do not call except during setup
+        return makeSquare(flip(rankOf(square)), fileOf(square));
     }
 
 
@@ -228,7 +252,9 @@ namespace Chess {
         PIECE_TYPE_NONE
     };
 
-    constexpr bool isValidPromotion(PieceType pieceType){
+    constexpr int NUM_PIECE_TYPE = 6;
+
+    constexpr bool isValidPromotion(PieceType pieceType) {
         switch (pieceType) {
             case PIECE_TYPE_KNIGHT:
             case PIECE_TYPE_BISHOP:
@@ -254,6 +280,7 @@ namespace Chess {
         PIECE_BLACK_ROOK,
         PIECE_BLACK_QUEEN,
         PIECE_BLACK_KING,
+
         PIECE_NONE,
 
         PIECE_FIRST = PIECE_WHITE_PAWN,
@@ -274,8 +301,8 @@ namespace Chess {
 
     Piece parsePiece(char pieceChar);
 
-
     constexpr int NUM_PIECES = PIECE_LAST - PIECE_FIRST + 1;
+
     constexpr int NUM_NON_EMPTY_PIECES = NUM_PIECES - 1;
 
     constexpr inline Player playerOf(Piece piece) {
@@ -300,11 +327,11 @@ namespace Chess {
         return player == WHITE ? PIECE_LAST_WHITE : PIECE_LAST_BLACK;
     }
 
-
     constexpr inline Piece makePiece(PieceType pieceType, Player player) {
         assert(pieceType != PIECE_TYPE_NONE);
         return static_cast<Piece>(firstPieceOf(player) + pieceType);
     }
+
 
     constexpr inline PieceType pieceTypeOf(Piece piece) {
         if (piece == PIECE_NONE) {
@@ -315,5 +342,72 @@ namespace Chess {
             return static_cast<PieceType>(piece - PIECE_FIRST_BLACK);
         }
     }
+
+    constexpr inline Piece flip(Piece piece) {
+        Player player = playerOf(piece);
+        return (player == WHITE) ?
+               static_cast<Piece>(piece + NUM_PIECE_TYPE):
+               static_cast<Piece>(piece - NUM_PIECE_TYPE);
+    }
+
+    enum WinState : int {
+        BLACK_WINS,
+        WHITE_WINS,
+        NO_WINNER,
+        WIN_STATE_DRAW
+    };
+
+    inline WinState winStateFromPlayer(Player player) {
+        return static_cast<WinState>(player);
+    }
+
+
+    enum Score : int {
+        SCORE_DRAW = 0,
+        SCORE_ZERO =0,
+        SCORE_MATE = 1'000'000,
+        SCORE_MATED = -SCORE_MATE
+    };
+
+    inline constexpr Score operator+(Score score1, Score score2){
+        return static_cast<Score>(static_cast<int>(score1) + static_cast<int>(score2));
+    }
+
+    inline constexpr Score operator-(Score score1, Score score2){
+        return static_cast<Score>(static_cast<int>(score1) - static_cast<int>(score2));
+    }
+
+    inline constexpr Score operator+(Score score, int increase){
+        return static_cast<Score>(static_cast<int>(score) + increase);
+    }
+
+    inline constexpr Score operator-(Score score, int decrease){
+        return static_cast<Score>(static_cast<int>(score) - decrease);
+    }
+
+    inline constexpr Score &operator+=(Score &score, int increase){
+        score = score + increase;
+        return score;
+    }
+
+    inline constexpr Score &operator-=(Score &score, int decrease){
+        score = score - decrease;
+        return score;
+    }
+
+    inline constexpr Score &operator++(Score& score){
+        return score+=1;
+    }
+
+    inline constexpr Score &operator--(Score& score){
+        return score-=1;
+    }
+
+
+
+
+
+
+    constexpr int MAX_MOVES = 256;
 }
 #endif //CHESS_TYPES_H

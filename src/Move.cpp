@@ -64,7 +64,9 @@ namespace Chess {
             srcPiece(makePiece(PIECE_TYPE_KING, playerOf(castlingData.castlingType))),
             dstPiece(PIECE_NONE),
             promotionPiece(srcPiece),
-            castlingType(castlingData.castlingType) {}
+            pawnForward2Square(SQ_INVALID),
+            castlingType(castlingData.castlingType),
+            isEnPassant(false){}
 
     const Move Move::castleMoves[NUM_CASTLE_TYPES] = {
             Move(CastlingData::fromCastlingType(CASTLE_WHITE_KING_SIDE)),

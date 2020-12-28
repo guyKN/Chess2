@@ -7,25 +7,22 @@ using namespace Chess;
 using std::cout;
 
 [[noreturn]] void playGame(){
-    ChessBoard chessBoard = ChessBoard();
         while (true) {
+            ChessBoard chessBoard;
             chessBoard.assertOk();
-            chessBoard.printBitboards();
             MoveList moveList;
             chessBoard.generateMoves(moveList);
-            cout << "\n" << chessBoard << "Enter a move: ";
+            cout << chessBoard << "\n" << "Enter a move: ";
             MoveInputData moveInput = MoveInputData::readMove();
             Move move = moveList.getMoveFromInputData(moveInput);
             if (move.isOk()) {
                 chessBoard.doMove(move);
+                cout << "eval: " << chessBoard.evaluate() << "\n";
             } else {
                 cout << "Invalid move. Please enter a move again.";
             }
         }
 }
-
-
-
 int main() {
     initBitboards();
 #ifdef TO_COMMAND_LINE

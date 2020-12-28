@@ -4752,6 +4752,9 @@ var _isLegalMoveTo = Module["_isLegalMoveTo"] = createExportWrapper("isLegalMove
 var _doMoveIfLegal = Module["_doMoveIfLegal"] = createExportWrapper("doMoveIfLegal");
 
 /** @type {function(...*):?} */
+var _checkWinner = Module["_checkWinner"] = createExportWrapper("checkWinner");
+
+/** @type {function(...*):?} */
 var _printMoves = Module["_printMoves"] = createExportWrapper("printMoves");
 
 /** @type {function(...*):?} */

@@ -15,21 +15,45 @@ using std::ostream;
 using std::cout;
 namespace Chess {
     class MoveList {
-        vector<Move> moves = vector<Move>();
+        Move moves[MAX_MOVES];
+        Move *currentMove = moves;
     public:
-        inline void addMove(Move move){
-            moves.push_back(move);
+        MoveList() = default;
+        MoveList(MoveList const &) = delete;
+
+        inline const Move *firstMove() const {
+            return moves;
         }
-        inline int size () const{
-            return moves.size();
+
+        inline const Move *lastMove() const {
+            return currentMove;
         }
-        Move getMoveFromInputData(MoveInputData moveInput);
+
+        inline void addMove(Move move) {
+            *(currentMove) = move;
+            currentMove++;
+            assert(size() < MAX_MOVES);
+        }
+
+        inline int size() const {
+            return currentMove - &moves[0];
+        }
+
+        inline bool isEmpty() const {
+            return currentMove == moves;
+        }
+
+        inline void clear(){
+            currentMove = moves;
+        }
+
+        Move getMoveFromInputData(MoveInputData moveInput) const;
 
         inline Move operator[](int index) const {
             return moves[index];
         }
 
-        void movesFrom(Chess::Square square, MoveList &moveList);
+        void movesFrom(Chess::Square square, MoveList &moveList) const;
 
         friend ostream &operator<<(ostream &os, const MoveList &list);
     };

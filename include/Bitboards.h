@@ -12,6 +12,7 @@ namespace Chess {
 
     void initBitboards();
 
+
     constexpr Bitboard MASK_FILE_A = 0x0101010101010101;
     constexpr Bitboard MASK_RANK_1 = 0x00000000000000FF;
 

@@ -3,10 +3,10 @@ class Board {
     static NO_PAWN_MOVE_FORWARD_TWO_FLAG = 10;
 
     static WinState = {
-        NO_WINNER: 0,
+        BLACK_WINS: 0,
         WHITE_WINS: 1,
-        BLACK_WINS: -1,
-        DRAW: 2
+        NO_WINNER: 2,
+        DRAW: 3
     }
 
     boardArray;

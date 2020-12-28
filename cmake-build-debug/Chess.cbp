@@ -98,6 +98,9 @@
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp">
 			<Option target="chessAscii"/>
 		</Unit>
+		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/EvalData.cpp">
+			<Option target="chessAscii"/>
+		</Unit>
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/GameHistory.cpp">
 			<Option target="chessAscii"/>
 		</Unit>

@@ -69,8 +69,16 @@ class NativeChessBoard{
         }
     }
 
+    checkWinner(){
+        return Module._checkWinner();
+    }
+
     isThreatTo(position){
         return false;
+    }
+
+    resetBoard(){
+        Module._resetBoard();
     }
 
 }

@@ -48,8 +48,16 @@ class ChessBoardHTMLElement extends HTMLTableElement {
         this.restartButton.style.visibility = "hidden";
     }
 
+    restartGame(){
+        this.boardPosition.resetBoard();
+        this.boardPosition.calculateAllLegalMoves();
+        this.updateBoard();
+        this.isGameActive = true;
+        this.winnerDisplay.innerText = "";
+        this.restartButton.style.visibility = "hidden";
+    }
+
     setPiece(pos, piece) {
-        ////console.log("piece changed");
         this.getSquare(pos).setPiece(piece);
     }
 
@@ -96,6 +104,7 @@ class ChessBoardHTMLElement extends HTMLTableElement {
                 this.removeAllHighlight();
                 this.lastClickPos = null;
                 this.showThreats();
+                this.checkWinner();
                 return;
             }else{
                 this.removeAllHighlight();

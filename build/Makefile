@@ -177,6 +177,33 @@ src/ChessBoard.cpp.s:
 	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.s
 .PHONY : src/ChessBoard.cpp.s
 
+src/EvalData.o: src/EvalData.cpp.o
+
+.PHONY : src/EvalData.o
+
+# target to build an object file
+src/EvalData.cpp.o:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/EvalData.cpp.o
+.PHONY : src/EvalData.cpp.o
+
+src/EvalData.i: src/EvalData.cpp.i
+
+.PHONY : src/EvalData.i
+
+# target to preprocess a source file
+src/EvalData.cpp.i:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/EvalData.cpp.i
+.PHONY : src/EvalData.cpp.i
+
+src/EvalData.s: src/EvalData.cpp.s
+
+.PHONY : src/EvalData.s
+
+# target to generate assembly for a file
+src/EvalData.cpp.s:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/EvalData.cpp.s
+.PHONY : src/EvalData.cpp.s
+
 src/GameHistory.o: src/GameHistory.cpp.o
 
 .PHONY : src/GameHistory.o
@@ -381,6 +408,9 @@ help:
 	@echo "... src/ChessBoard.o"
 	@echo "... src/ChessBoard.i"
 	@echo "... src/ChessBoard.s"
+	@echo "... src/EvalData.o"
+	@echo "... src/EvalData.i"
+	@echo "... src/EvalData.s"
 	@echo "... src/GameHistory.o"
 	@echo "... src/GameHistory.i"
 	@echo "... src/GameHistory.s"

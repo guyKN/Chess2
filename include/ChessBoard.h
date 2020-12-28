@@ -11,9 +11,11 @@
 #include "MoveInputData.h"
 #include "MoveList.h"
 #include "GameHistory.h"
+#include "EvalData.h"
 
 using std::cout;
 namespace Chess {
+
 
     //todo: expirement with additional representations in addition to bitboards
     // specificly: pieceLists as vectors, and an array of all pieces by squarew
@@ -35,16 +37,17 @@ namespace Chess {
 
         Square enPassantSquare = SQ_INVALID;
 
-        bool isCheck = false;
-        bool isDoubleCheck = false;
+        bool isCheck;
+        bool isDoubleCheck;
 
-        bool whiteMayCastleKingSide = true;
-        bool whiteMayCastleQueenSide = true;
-        bool blackMayCastleKingSide = true;
-        bool blackMayCastleQueenSide = true;
-
+        bool whiteMayCastleKingSide;
+        bool whiteMayCastleQueenSide;
+        bool blackMayCastleKingSide;
+        bool blackMayCastleQueenSide;
 
         GameHistory *gameHistory;
+
+        EvalData evalData;
 
         inline Bitboard &bitboardOf(Piece piece) {
             return pieceBitboards[piece];
@@ -74,6 +77,7 @@ namespace Chess {
         inline void swapPlayer() {
             currentPlayer = ~currentPlayer;
         }
+
 
         template<Player player>
         bool mayCastleKingSide() {
@@ -136,13 +140,33 @@ namespace Chess {
 
         bool noColorOverlap();
 
+        void updateCastling(Move &move);
+
     public:
 
-        explicit ChessBoard(const Piece piecesBySquare[NUM_SQUARES], Player currentPlayerColor);
+        inline ChessBoard(const Piece piecesBySquare[NUM_SQUARES], Player currentPlayerColor) :
+                currentPlayer(currentPlayerColor) {
+            gameHistory = new GameHistory;
+            evalData = EvalData();
+            setPosition(piecesBySquare, currentPlayerColor);
+        }
 
-        inline ChessBoard() : ChessBoard(startingBoard, STARTING_PLAYER) {}
+        ChessBoard(ChessBoard const &) = delete;
 
-        ~ChessBoard();
+        inline ~ChessBoard() {
+            delete gameHistory;
+        }
+
+        inline ChessBoard() {
+            gameHistory = new GameHistory;
+            resetPosition();
+        }
+
+        inline void resetPosition() {
+            setPosition(startingBoard, STARTING_PLAYER);
+        }
+
+        void setPosition(const Piece piecesArray[NUM_SQUARES], Player currentPlayer);
 
         inline Player getCurrentPlayer() {
             return currentPlayer;
@@ -198,7 +222,9 @@ namespace Chess {
             return gameHistory;
         }
 
-        void updateCastling(Move &move);
+        WinState checkWinner(MoveList &moveList);
+
+        Score evaluate();
     };
 }
 

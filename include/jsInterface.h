@@ -25,6 +25,7 @@ extern "C" {
     bool currentPlayer();
     void printMoves();
     bool isThreatTo(Square square);
+    int checkWinner();
     void resetBoard();
     bool is64bit();
     void printBitboards();
@@ -45,7 +46,7 @@ int pieceOn(int square) {
 }
 
 void calculateMoves() {
-    moveList = MoveList();
+    moveList.clear();
     chessBoard.generateMoves(moveList);
 }
 
@@ -54,7 +55,7 @@ bool isLegalMoveStart(int square) {
 }
 
 void calculateMovesFrom(int square) {
-    movesFromSquare = MoveList();
+    movesFromSquare.clear();
     selectedSquare = static_cast<Square>(square);
     moveList.movesFrom(selectedSquare, movesFromSquare);
 }
@@ -71,8 +72,13 @@ bool doMoveIfLegal(int srcSquare, int dstSquare) {
     } else{
         chessBoard.doGameMove(move);
         chessBoard.assertOk();
+        cout << "eval: " << chessBoard.evaluate() << "\n";
         return true;
     }
+}
+
+int checkWinner(){
+    return chessBoard.checkWinner(moveList);
 }
 
 void printMoves(){
@@ -84,7 +90,7 @@ bool currentPlayer(){
 }
 
 void resetBoard(){
-    chessBoard = ChessBoard();
+    chessBoard.resetPosition();
 }
 
 bool isThreatTo(Square square){

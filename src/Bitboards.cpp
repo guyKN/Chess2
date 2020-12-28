@@ -3,10 +3,10 @@
 //
 
 #include "Bitboards.h"
+#include "EvalData.h"
 
 using std::cout;
 namespace Chess {
-
     //todo: is using templates for this actualy a good idea?
     template<int rankShift, int fileShift, bool includeEdge>
     Bitboard expandToEdge(Bitboard squareMask);
@@ -331,6 +331,7 @@ namespace Chess {
         }
     }
 
+
     void magicHashAll(Bitboard hashFactor, Bitboard *inputArray, Bitboard *outputArray, unsigned int arrayLength) {
         for (int i = 0; i < arrayLength; i++, inputArray++, outputArray++) {
             *outputArray = *inputArray * hashFactor;
@@ -351,8 +352,7 @@ namespace Chess {
             for (int j = 0; j < arrayLength; j++) {
                 if (movesArray[i] != movesArray[j]) {
                     int maxShift = maxShiftThatKeepsDifference(hashedArray[i], hashedArray[j]);
-                    assert((hashedArray[i] >> maxShift) != (hashedArray[j] >> maxShift) ||
-                           (maxShift == 0));
+                    assert((hashedArray[i] >> maxShift) != (hashedArray[j] >> maxShift) || (maxShift == 0));
                     if (maxShift < currentMaxShift) {
                         currentMaxShift = maxShift;
                         if (currentMaxShift <= previousBest) {
@@ -364,6 +364,7 @@ namespace Chess {
         }
         return currentMaxShift;
     }
+
 
     Bitboard bruteForceSearchMagicHashFactor(unsigned int numPermutations,
                                              Bitboard *blockers,
@@ -444,6 +445,7 @@ namespace Chess {
 
     void printSeeds() {
         cout << "Bishop Seeds: \n";
+        cout << std::hex;
         printArray(bishopSeeds, NUM_SQUARES) << "\n\n";
         cout << "Rook Seeds: \n";
         printArray(rookSeeds, NUM_SQUARES) << "\n\n";
@@ -461,8 +463,8 @@ namespace Chess {
             knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
             kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
 #ifdef USE_SEEDS
-            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(pawnForward2Square, true);
-            initSlidingPieceLookup<PIECE_TYPE_ROOK>(pawnForward2Square, true);
+            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, true);
+            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, true);
 #elif defined(GENERATE_SEEDS)
             initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, false);
             initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, false);
@@ -486,6 +488,7 @@ namespace Chess {
         if (!lookUpTablesReady) {
             initLookupTables();
             lookUpTablesReady = true;
+            cout << "Done with init lookupTables\n";
         }
     }
 }
