@@ -113,6 +113,9 @@
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveList.cpp">
 			<Option target="chessAscii"/>
 		</Unit>
+		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp">
+			<Option target="chessAscii"/>
+		</Unit>
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp">
 			<Option target="chessAscii"/>
 		</Unit>

@@ -14,6 +14,7 @@ CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/MoveList.h
+ ../include/jsInterface.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp
 CMakeFiles/chessWasm.dir/src/EvalData.cpp.o
@@ -45,16 +46,27 @@ CMakeFiles/chessWasm.dir/src/MoveList.cpp.o
  ../include/MoveList.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveList.cpp
+CMakeFiles/chessWasm.dir/src/Search.cpp.o
+ ../include/Bitboards.h
+ ../include/ChessBoard.h
+ ../include/EvalData.h
+ ../include/GameHistory.h
+ ../include/Move.h
+ ../include/MoveInputData.h
+ ../include/MoveList.h
+ ../include/Search.h
+ ../include/types.h
+ /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/Bitboards.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/ChessBoard.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/EvalData.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/GameHistory.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/Move.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/MoveInputData.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/MoveList.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/jsInterface.h
- /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/include/types.h
+ ../include/Bitboards.h
+ ../include/ChessBoard.h
+ ../include/EvalData.h
+ ../include/GameHistory.h
+ ../include/Move.h
+ ../include/MoveInputData.h
+ ../include/MoveList.h
+ ../include/jsInterface.h
+ ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp
 CMakeFiles/chessWasm.dir/src/main.cpp.o
  ../include/Bitboards.h

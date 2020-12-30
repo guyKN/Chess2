@@ -4731,43 +4731,46 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
-var _initData = Module["_initData"] = createExportWrapper("initData");
+var _WASM_initData = Module["_WASM_initData"] = createExportWrapper("WASM_initData");
 
 /** @type {function(...*):?} */
-var _pieceOn = Module["_pieceOn"] = createExportWrapper("pieceOn");
+var _WASM_pieceOn = Module["_WASM_pieceOn"] = createExportWrapper("WASM_pieceOn");
 
 /** @type {function(...*):?} */
-var _calculateMoves = Module["_calculateMoves"] = createExportWrapper("calculateMoves");
+var _WASM_calculateMoves = Module["_WASM_calculateMoves"] = createExportWrapper("WASM_calculateMoves");
 
 /** @type {function(...*):?} */
-var _isLegalMoveStart = Module["_isLegalMoveStart"] = createExportWrapper("isLegalMoveStart");
+var _WASM_isLegalMoveStart = Module["_WASM_isLegalMoveStart"] = createExportWrapper("WASM_isLegalMoveStart");
 
 /** @type {function(...*):?} */
-var _calculateMovesFrom = Module["_calculateMovesFrom"] = createExportWrapper("calculateMovesFrom");
+var _WASM_calculateMovesFrom = Module["_WASM_calculateMovesFrom"] = createExportWrapper("WASM_calculateMovesFrom");
 
 /** @type {function(...*):?} */
-var _isLegalMoveTo = Module["_isLegalMoveTo"] = createExportWrapper("isLegalMoveTo");
+var _WASM_isLegalMoveTo = Module["_WASM_isLegalMoveTo"] = createExportWrapper("WASM_isLegalMoveTo");
 
 /** @type {function(...*):?} */
-var _doMoveIfLegal = Module["_doMoveIfLegal"] = createExportWrapper("doMoveIfLegal");
+var _WASM_doMoveIfLegal = Module["_WASM_doMoveIfLegal"] = createExportWrapper("WASM_doMoveIfLegal");
 
 /** @type {function(...*):?} */
-var _checkWinner = Module["_checkWinner"] = createExportWrapper("checkWinner");
+var _WASM_undoMove = Module["_WASM_undoMove"] = createExportWrapper("WASM_undoMove");
 
 /** @type {function(...*):?} */
-var _printMoves = Module["_printMoves"] = createExportWrapper("printMoves");
+var _WASM_checkWinner = Module["_WASM_checkWinner"] = createExportWrapper("WASM_checkWinner");
 
 /** @type {function(...*):?} */
-var _currentPlayer = Module["_currentPlayer"] = createExportWrapper("currentPlayer");
+var _WASM_printMoves = Module["_WASM_printMoves"] = createExportWrapper("WASM_printMoves");
 
 /** @type {function(...*):?} */
-var _resetBoard = Module["_resetBoard"] = createExportWrapper("resetBoard");
+var _WASM_currentPlayer = Module["_WASM_currentPlayer"] = createExportWrapper("WASM_currentPlayer");
 
 /** @type {function(...*):?} */
-var _isThreatTo = Module["_isThreatTo"] = createExportWrapper("isThreatTo");
+var _WASM_resetBoard = Module["_WASM_resetBoard"] = createExportWrapper("WASM_resetBoard");
 
 /** @type {function(...*):?} */
-var _printBitboards = Module["_printBitboards"] = createExportWrapper("printBitboards");
+var _WASM_isThreatTo = Module["_WASM_isThreatTo"] = createExportWrapper("WASM_isThreatTo");
+
+/** @type {function(...*):?} */
+var _WASM_printBitboards = Module["_WASM_printBitboards"] = createExportWrapper("WASM_printBitboards");
 
 /** @type {function(...*):?} */
 var _main = Module["_main"] = createExportWrapper("main");

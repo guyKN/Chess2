@@ -14,92 +14,41 @@
 using namespace Chess;
 using std::cout;
 
-extern "C" {
-    void initData();
-    int pieceOn(int square);
-    void calculateMoves();
-    bool isLegalMoveStart(int square);
-    void calculateMovesFrom(int square);
-    bool isLegalMoveTo(int dstSquare);
-    bool doMoveIfLegal(int srcSquare, int dstSquare);
-    bool currentPlayer();
-    void printMoves();
-    bool isThreatTo(Square square);
-    int checkWinner();
-    void resetBoard();
-    bool is64bit();
-    void printBitboards();
-};
+namespace WASM {
 
-ChessBoard chessBoard = ChessBoard();
-MoveList moveList;
+    extern "C" {
+    void WASM_initData();
 
-Square selectedSquare;
-MoveList movesFromSquare;
+    int WASM_pieceOn(int square);
 
-void initData(){
-    initBitboards();
+    void WASM_calculateMoves();
+
+    bool WASM_isLegalMoveStart(int square);
+
+    void WASM_calculateMovesFrom(int square);
+
+    bool WASM_isLegalMoveTo(int dstSquare);
+
+    bool WASM_doMoveIfLegal(int srcSquare, int dstSquare);
+
+    void WASM_undoMove();
+
+    int WASM_checkWinner();
+
+    void WASM_printMoves();
+
+    bool WASM_currentPlayer();
+
+    void WASM_resetBoard();
+
+    bool WASM_isThreatTo(Square square);
+
+    void WASM_printBitboards();
+
+    bool WASM_is64bit();
+
+    };
 }
 
-int pieceOn(int square) {
-    return chessBoard.getPieceOn(static_cast<Square>(square));
-}
-
-void calculateMoves() {
-    moveList.clear();
-    chessBoard.generateMoves(moveList);
-}
-
-bool isLegalMoveStart(int square) {
-    return chessBoard.isLegalMoveStart(static_cast<Square>(square));
-}
-
-void calculateMovesFrom(int square) {
-    movesFromSquare.clear();
-    selectedSquare = static_cast<Square>(square);
-    moveList.movesFrom(selectedSquare, movesFromSquare);
-}
-
-bool isLegalMoveTo(int dstSquare) {
-    return movesFromSquare.getMoveFromInputData(MoveInputData(selectedSquare, static_cast<Square>(dstSquare))).isOk();
-}
-
-bool doMoveIfLegal(int srcSquare, int dstSquare) {
-    Move move = movesFromSquare.getMoveFromInputData(
-            MoveInputData(static_cast<Square>(srcSquare), static_cast<Square>(dstSquare)));
-    if(!move.isOk()){
-        return false;
-    } else{
-        chessBoard.doGameMove(move);
-        chessBoard.assertOk();
-        cout << "eval: " << chessBoard.evaluate() << "\n";
-        return true;
-    }
-}
-
-int checkWinner(){
-    return chessBoard.checkWinner(moveList);
-}
-
-void printMoves(){
-    cout << moveList;
-}
-
-bool currentPlayer(){
-    return chessBoard.getCurrentPlayer();
-}
-
-void resetBoard(){
-    chessBoard.resetPosition();
-}
-
-bool isThreatTo(Square square){
-    return chessBoard.getPinned() & maskOf(square);
-}
-
-void printBitboards(){
-    chessBoard.printBitboards();
-    cout << *chessBoard.getGameHistory();
-}
 
 #endif //CHESS_JSINTERFACE_H

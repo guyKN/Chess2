@@ -74,12 +74,12 @@ clean: CMakeFiles/chessWasm.dir/clean
 CMakeFiles/chessWasm.dir/all:
 	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/depend
 	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target chessWasm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12 "Built target chessWasm"
 .PHONY : CMakeFiles/chessWasm.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/chessWasm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles 11
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles 12
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/chessWasm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles 0
 .PHONY : CMakeFiles/chessWasm.dir/rule

@@ -316,6 +316,33 @@ src\MoveList.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\MoveList.cpp.s
 .PHONY : src\MoveList.cpp.s
 
+src\Search.obj: src\Search.cpp.obj
+
+.PHONY : src\Search.obj
+
+# target to build an object file
+src\Search.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\Search.cpp.obj
+.PHONY : src\Search.cpp.obj
+
+src\Search.i: src\Search.cpp.i
+
+.PHONY : src\Search.i
+
+# target to preprocess a source file
+src\Search.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\Search.cpp.i
+.PHONY : src\Search.cpp.i
+
+src\Search.s: src\Search.cpp.s
+
+.PHONY : src\Search.s
+
+# target to generate assembly for a file
+src\Search.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\Search.cpp.s
+.PHONY : src\Search.cpp.s
+
 src\jsInterface.obj: src\jsInterface.cpp.obj
 
 .PHONY : src\jsInterface.obj
@@ -427,6 +454,9 @@ help:
 	@echo ... src/MoveList.obj
 	@echo ... src/MoveList.i
 	@echo ... src/MoveList.s
+	@echo ... src/Search.obj
+	@echo ... src/Search.i
+	@echo ... src/Search.s
 	@echo ... src/jsInterface.obj
 	@echo ... src/jsInterface.i
 	@echo ... src/jsInterface.s

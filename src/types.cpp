@@ -107,7 +107,7 @@ namespace Chess {
 
     char toChar(Piece piece) {
         char pieceToChar[] = "PNBRQKpnbrqk ";
-        assert(piece_ok(piece));
+        assert(pieceOk(piece));
         return pieceToChar[piece];
     }
 

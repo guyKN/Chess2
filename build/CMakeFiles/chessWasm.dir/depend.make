@@ -13,6 +13,7 @@ CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../include/GameHistory.h
 CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../include/Move.h
 CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../include/MoveInputData.h
 CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../include/MoveList.h
+CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../include/jsInterface.h
 CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../include/types.h
 CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o: ../src/ChessBoard.cpp
 
@@ -44,6 +45,17 @@ CMakeFiles/chessWasm.dir/src/MoveList.cpp.o: ../include/MoveInputData.h
 CMakeFiles/chessWasm.dir/src/MoveList.cpp.o: ../include/MoveList.h
 CMakeFiles/chessWasm.dir/src/MoveList.cpp.o: ../include/types.h
 CMakeFiles/chessWasm.dir/src/MoveList.cpp.o: ../src/MoveList.cpp
+
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/Bitboards.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/ChessBoard.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/EvalData.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/GameHistory.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/Move.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/MoveInputData.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/MoveList.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/Search.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../include/types.h
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../src/Search.cpp
 
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/Bitboards.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/ChessBoard.h

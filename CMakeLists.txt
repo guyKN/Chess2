@@ -29,21 +29,22 @@ if(WASM)
     file(GLOB SOURCES src/*.cpp)
     add_executable(chessWasm ${SOURCES} src/jsInterface.cpp include/jsInterface.h)
 
-    set_target_properties(chessWasm PROPERTIES LINK_FLAGS "-s WASM=1 -s EXPORTED_FUNCTIONS='[       \
+    set_target_properties(chessWasm PROPERTIES LINK_FLAGS "-s WASM=1 -s EXPORTED_FUNCTIONS='[            \
                 _main,                                                                              \
-                _pieceOn,                                                                           \
-                _calculateMoves,                                                                    \
-                _isLegalMoveStart,                                                                  \
-                _calculateMovesFrom,                                                                \
-                _isLegalMoveTo,                                                                     \
-                _doMoveIfLegal,                                                                     \
-                _checkWinner,                                                                       \
-                _currentPlayer,                                                                     \
-                _printMoves,                                                                        \
-                _isThreatTo,                                                                        \
-                _initData,                                                                          \
-                _resetBoard,                                                                        \
-                _printBitboards                                                                     \
+                _WASM_pieceOn,                                                                           \
+                _WASM_calculateMoves,                                                                    \
+                _WASM_isLegalMoveStart,                                                                  \
+                _WASM_calculateMovesFrom,                                                                \
+                _WASM_isLegalMoveTo,                                                                     \
+                _WASM_doMoveIfLegal,                                                                     \
+                _WASM_checkWinner,                                                                       \
+                _WASM_currentPlayer,                                                                     \
+                _WASM_printMoves,                                                                        \
+                _WASM_isThreatTo,                                                                        \
+                _WASM_initData,                                                                          \
+                _WASM_resetBoard,                                                                        \
+                _WASM_printBitboards,                                                                    \
+                _WASM_undoMove                                                                           \
                 ]'")
 else(WASM)
     add_compile_options(-m64)
@@ -53,3 +54,6 @@ else(WASM)
     add_compile_definitions(TO_COMMAND_LINE)
     add_executable(chessAscii ${SOURCES})
 endif(WASM)
+
+#if(WASM)
+#endif(WASM)

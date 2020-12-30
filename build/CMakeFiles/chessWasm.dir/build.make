@@ -155,10 +155,24 @@ CMakeFiles/chessWasm.dir/src/MoveList.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chessWasm.dir/src/MoveList.cpp.s"
 	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/MoveList.cpp -o CMakeFiles/chessWasm.dir/src/MoveList.cpp.s
 
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: CMakeFiles/chessWasm.dir/flags.make
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: CMakeFiles/chessWasm.dir/includes_CXX.rsp
+CMakeFiles/chessWasm.dir/src/Search.cpp.o: ../src/Search.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/chessWasm.dir/src/Search.cpp.o"
+	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chessWasm.dir/src/Search.cpp.o -c /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp
+
+CMakeFiles/chessWasm.dir/src/Search.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/chessWasm.dir/src/Search.cpp.i"
+	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp > CMakeFiles/chessWasm.dir/src/Search.cpp.i
+
+CMakeFiles/chessWasm.dir/src/Search.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/chessWasm.dir/src/Search.cpp.s"
+	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp -o CMakeFiles/chessWasm.dir/src/Search.cpp.s
+
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: CMakeFiles/chessWasm.dir/flags.make
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: CMakeFiles/chessWasm.dir/includes_CXX.rsp
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../src/jsInterface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o"
 	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o -c /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp
 
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.i: cmake_force
@@ -172,7 +186,7 @@ CMakeFiles/chessWasm.dir/src/jsInterface.cpp.s: cmake_force
 CMakeFiles/chessWasm.dir/src/main.cpp.o: CMakeFiles/chessWasm.dir/flags.make
 CMakeFiles/chessWasm.dir/src/main.cpp.o: CMakeFiles/chessWasm.dir/includes_CXX.rsp
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/chessWasm.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/chessWasm.dir/src/main.cpp.o"
 	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chessWasm.dir/src/main.cpp.o -c /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
 
 CMakeFiles/chessWasm.dir/src/main.cpp.i: cmake_force
@@ -186,7 +200,7 @@ CMakeFiles/chessWasm.dir/src/main.cpp.s: cmake_force
 CMakeFiles/chessWasm.dir/src/types.cpp.o: CMakeFiles/chessWasm.dir/flags.make
 CMakeFiles/chessWasm.dir/src/types.cpp.o: CMakeFiles/chessWasm.dir/includes_CXX.rsp
 CMakeFiles/chessWasm.dir/src/types.cpp.o: ../src/types.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/chessWasm.dir/src/types.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/chessWasm.dir/src/types.cpp.o"
 	/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/chessWasm.dir/src/types.cpp.o -c /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.cpp
 
 CMakeFiles/chessWasm.dir/src/types.cpp.i: cmake_force
@@ -206,6 +220,7 @@ chessWasm_OBJECTS = \
 "CMakeFiles/chessWasm.dir/src/Move.cpp.o" \
 "CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o" \
 "CMakeFiles/chessWasm.dir/src/MoveList.cpp.o" \
+"CMakeFiles/chessWasm.dir/src/Search.cpp.o" \
 "CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o" \
 "CMakeFiles/chessWasm.dir/src/main.cpp.o" \
 "CMakeFiles/chessWasm.dir/src/types.cpp.o"
@@ -220,13 +235,14 @@ chessWasm_EXTERNAL_OBJECTS =
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/Move.cpp.o
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/MoveList.cpp.o
+../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/Search.cpp.o
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/main.cpp.o
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/src/types.cpp.o
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/build.make
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/objects1.rsp
 ../firebase/public/js/webAssembly/chessWasm.js: CMakeFiles/chessWasm.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable ../firebase/public/js/webAssembly/chessWasm.js"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable ../firebase/public/js/webAssembly/chessWasm.js"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/chessWasm.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

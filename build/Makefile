@@ -312,6 +312,33 @@ src/MoveList.cpp.s:
 	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/MoveList.cpp.s
 .PHONY : src/MoveList.cpp.s
 
+src/Search.o: src/Search.cpp.o
+
+.PHONY : src/Search.o
+
+# target to build an object file
+src/Search.cpp.o:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Search.cpp.o
+.PHONY : src/Search.cpp.o
+
+src/Search.i: src/Search.cpp.i
+
+.PHONY : src/Search.i
+
+# target to preprocess a source file
+src/Search.cpp.i:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Search.cpp.i
+.PHONY : src/Search.cpp.i
+
+src/Search.s: src/Search.cpp.s
+
+.PHONY : src/Search.s
+
+# target to generate assembly for a file
+src/Search.cpp.s:
+	$(MAKE) -f CMakeFiles/chessWasm.dir/build.make CMakeFiles/chessWasm.dir/src/Search.cpp.s
+.PHONY : src/Search.cpp.s
+
 src/jsInterface.o: src/jsInterface.cpp.o
 
 .PHONY : src/jsInterface.o
@@ -423,6 +450,9 @@ help:
 	@echo "... src/MoveList.o"
 	@echo "... src/MoveList.i"
 	@echo "... src/MoveList.s"
+	@echo "... src/Search.o"
+	@echo "... src/Search.i"
+	@echo "... src/Search.s"
 	@echo "... src/jsInterface.o"
 	@echo "... src/jsInterface.i"
 	@echo "... src/jsInterface.s"

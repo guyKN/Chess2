@@ -47,7 +47,7 @@ namespace Chess {
     public:
 
         inline const Scalar &pieceScalar(Piece piece) {
-            assert(piece != PIECE_NONE && piece_ok(piece));
+            assert(piece != PIECE_NONE && pieceOk(piece));
             return pieceSquareValues[piece];
         }
     };

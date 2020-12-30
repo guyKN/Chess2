@@ -79,6 +79,14 @@ class ChessBoardHTMLElement extends HTMLTableElement {
         });
     }
 
+    undoMove(){
+        this.removeAllHighlight();
+        this.boardPosition.undoMove();
+        this.boardPosition.calculateAllLegalMoves();
+        this.updateBoard();
+
+    }
+
     removeAllHighlight(){
         PiecePosition.forEveryPosition((position)=>{
             this.getSquare(position).removeHighlights();

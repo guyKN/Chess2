@@ -3,6 +3,7 @@
 //
 
 #include <string>
+#include <jsInterface.h>
 #include "ChessBoard.h"
 #include "iostream"
 #include "Bitboards.h"
@@ -94,6 +95,18 @@ namespace Chess {
     void ChessBoard::printBitboards() {
         cout << "\nCurrent player: " << currentPlayer;
 
+        cout << "\n" << (isCheck ? "Check" : "Not Check");
+
+        cout << "\n" << (isDoubleCheck ? "Double Check" : "Not Double Check");
+
+        cout << "\nPinned: ";
+
+        printBitboard(pinned);
+
+        cout << "\nCheckEvasionsSquares: ";
+
+        printBitboard(checkEvasionSquares);
+
         cout << "\nWhite Pawns:";
         printBitboard(bitboardOf(PIECE_WHITE_PAWN));
 
@@ -148,10 +161,13 @@ namespace Chess {
         }
     }
 
-    void ChessBoard::doMove(Move move) {
+    void ChessBoard::doMoveOld(Move &move) {
+        /// returns the WinState after the move
+
         //todo: see if execution time changes between making masks once as variable or as temp objects
         assert(move.isOk());
         assert(move.dstPiece == pieceOn(move.dstSquare));
+
         bitboardOf(PIECE_NONE) |= maskOf(move.srcSquare);
         (bitboardOf(move.srcPiece) &= notSquareMask(move.srcSquare));
         (bitboardOf(move.dstPiece)) &= notSquareMask(move.dstSquare);
@@ -185,9 +201,45 @@ namespace Chess {
 
         // update castling legality
         updateCastling(move);
-
         swapPlayer();
-        calculateInactivePlayerThreats();
+    }
+
+    MoveRevertData ChessBoard::doMove(Move &move) {
+        removePieceFrom(move.srcSquare, move.srcPiece, currentPlayer);
+        setPieceOn(move.dstSquare, move.dstPiece, move.srcPiece, currentPlayer);
+
+        if (move.castlingType != CASTLE_NONE) {
+            Piece rook = makePiece(PIECE_TYPE_ROOK, currentPlayer);
+            CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
+            removePieceFrom(castlingData.rookSrc, rook, currentPlayer);
+            placePieceOn(castlingData.rookDst, rook, currentPlayer);
+        } else if (move.isEnPassant) {
+            Piece enemyPawn = makePiece(PIECE_TYPE_PAWN, ~currentPlayer);
+            removePieceFrom(enPassantSquare, enemyPawn, ~currentPlayer);
+        }
+        enPassantSquare = move.pawnForward2Square;
+        MoveRevertData moveRevertData = getMoveRevertData();
+        updateCastling(move);
+        swapPlayer();
+        return moveRevertData;
+    }
+
+    void ChessBoard::undoMove(Move &move, MoveRevertData moveRevertData) {
+        revertTo(moveRevertData);
+        Player opponent = ~currentPlayer;
+        placePieceOn(move.srcSquare, move.srcPiece, opponent);
+        setPieceOn2(move.dstSquare, move.srcPiece, opponent, move.dstPiece);
+        if (move.isEnPassant) {
+            Piece pawn = makePiece(PIECE_TYPE_PAWN, currentPlayer);
+            Square prevEnPassantSquare = move.dstSquare + 8 * directionOf(currentPlayer);
+            placePieceOn(prevEnPassantSquare, pawn, currentPlayer);
+        }
+        swapPlayer();
+    }
+
+    void ChessBoard::doGameMove(Move &move) {
+        gameHistory->addMove(move);
+        doMove(move);
     }
 
     //todo: should this be inline?
@@ -205,19 +257,9 @@ namespace Chess {
                                  !CastlingData::fromCastlingType(CASTLE_BLACK_KING_SIDE)
                                          .moveDisablesCastling(moveSquares);
 
-        bool disableCastlingQueenSide = CastlingData::fromCastlingType(CASTLE_BLACK_QUEEN_SIDE)
-                .moveDisablesCastling(moveSquares);
-        if (disableCastlingQueenSide) {
-            cout << "disabled castling queen side\n";
-        }
         blackMayCastleQueenSide = blackMayCastleQueenSide &&
-                                  !disableCastlingQueenSide;
-    }
-
-    void ChessBoard::doGameMove(Move move) {
-        doMove(move);
-        cout << toString(enPassantSquare) << "\n";
-        gameHistory->addMove(move);
+                                  !CastlingData::fromCastlingType(CASTLE_BLACK_QUEEN_SIDE)
+                                          .moveDisablesCastling(moveSquares);
     }
 
     //todo: only call this when assertions are enabled
@@ -232,6 +274,7 @@ namespace Chess {
         return noPieceOverlap1 && noColorOverlap1;
     }
 
+
     bool ChessBoard::noPieceOverlap() {
         /// ensures that each Square is occupied by either exactly one piece, or by PIECE_NONE
         Bitboard pieces = BITBOARD_EMPTY;
@@ -243,7 +286,6 @@ namespace Chess {
         }
         return pieces == BITBOARD_FULL;
     }
-
 
     bool ChessBoard::noColorOverlap() {
         /// ensures that each Square is occupied by either exactly one player, or by PIECE_NONE
@@ -297,7 +339,7 @@ namespace Chess {
         }
 
         //move forward 2
-        Bitboard forward2Move = signedShift<forward2shift>(pawns & rank2mask) & emptySquares;
+        Bitboard forward2Move = signedShift<forward2shift>(pawns & rank2mask ) & emptySquares & signedShift<forward1shift>(emptySquares);
         while (forward2Move) {
             Square dst = popLsb(&forward2Move);
             moveList.addMove(
@@ -366,6 +408,7 @@ namespace Chess {
         }
     }
 
+
     template<Player player>
     void ChessBoard::generateKnightMoves(MoveList &moveList, Bitboard source, Bitboard target) {
         constexpr Piece knightPiece = makePiece(PIECE_TYPE_KNIGHT, player);
@@ -380,7 +423,6 @@ namespace Chess {
             }
         }
     }
-
 
     template<Player player, PieceType pieceType>
     void ChessBoard::generateSlidingPieceMoves(MoveList &moveList, Bitboard source, Bitboard target) {
@@ -425,7 +467,8 @@ namespace Chess {
     }
 
     template<Player player>
-    void ChessBoard::generateMovesForPlayer(MoveList &moveList) {
+    WinState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
+        calculateThreats<~player>();
         generateKingMoves<player>(moveList);
         if (!isDoubleCheck) {
             Bitboard notPinned = ~pinned;
@@ -482,23 +525,21 @@ namespace Chess {
                 }
             }
         }
-    }
 
-    WinState ChessBoard::checkWinner(MoveList &moveList) {
         if (!moveList.isEmpty()) {
             return NO_WINNER;
         } else if (isCheck) {
-            return winStateFromPlayer(~currentPlayer);
+            return winStateFromPlayer(~player);
         } else {
             return WIN_STATE_DRAW;
         }
     }
 
-    void ChessBoard::generateMoves(MoveList &moveList) {
+    WinState ChessBoard::generateMoves(MoveList &moveList) {
         if (currentPlayer == WHITE) {
-            generateMovesForPlayer<WHITE>(moveList);
+            return generateMovesForPlayer<WHITE>(moveList);
         } else {
-            generateMovesForPlayer<BLACK>(moveList);
+            return generateMovesForPlayer<BLACK>(moveList);
         }
     }
 
@@ -525,6 +566,7 @@ namespace Chess {
         }
     }
 
+
 //todo: check if lookup or shift is better
     template<Player player>
     void ChessBoard::calculateKnightThreats() {
@@ -547,7 +589,6 @@ namespace Chess {
             }
         }
     }
-
 
 //todo: check if queen should be combined with bishop and rook
 // (but remember that this may harm the value of pieces for static move evaluation)
@@ -660,6 +701,10 @@ namespace Chess {
 
     template<Player player>
     inline void ChessBoard::calculateThreats() {
+        isCheck = false;
+        isDoubleCheck = false;
+        checkEvasionSquares = BITBOARD_FULL;
+
         calculatePawnThreats<player>();
         calculateKnightThreats<player>();
         calculateSlidingPieceThreats<player, PIECE_TYPE_BISHOP>();
@@ -681,28 +726,16 @@ namespace Chess {
                             threatsOf(rookPiece) | threatsOf(queenPiece) | threatsOf(kingPiece);
     }
 
-    void ChessBoard::calculateInactivePlayerThreats() {
-        isCheck = false;
-        isDoubleCheck = false;
-        checkEvasionSquares = BITBOARD_FULL; //todo: remove
-        pinned = BITBOARD_EMPTY;
-        if (currentPlayer == WHITE) {
-            calculateThreats<BLACK>();
-        } else {
-            calculateThreats<WHITE>();
-        }
-    }
-
     Score ChessBoard::evaluate() {
         Score scoreWhite = SCORE_ZERO;
-        for (Piece piece = PIECE_FIRST_WHITE;piece<=PIECE_LAST_WHITE;++piece){
-            scoreWhite+= evalData.pieceScalar(piece) * bitboardOf(piece);
+        for (Piece piece = PIECE_FIRST_WHITE; piece <= PIECE_LAST_WHITE; ++piece) {
+            scoreWhite += evalData.pieceScalar(piece) * bitboardOf(piece);
         }
 
         Score scoreBlack = SCORE_ZERO;
-        for (Piece piece = PIECE_FIRST_BLACK;piece<=PIECE_LAST_BLACK;++piece){
-            scoreBlack+= evalData.pieceScalar(piece) * bitboardOf(piece);
+        for (Piece piece = PIECE_FIRST_BLACK; piece <= PIECE_LAST_BLACK; ++piece) {
+            scoreBlack += evalData.pieceScalar(piece) * bitboardOf(piece);
         }
-        return scoreWhite-scoreBlack;
+        return scoreWhite - scoreBlack;
     }
 }

@@ -8,6 +8,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/chessWasm.dir/src/Move.cpp.o"
   "CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o"
   "CMakeFiles/chessWasm.dir/src/MoveList.cpp.o"
+  "CMakeFiles/chessWasm.dir/src/Search.cpp.o"
   "CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o"
   "CMakeFiles/chessWasm.dir/src/main.cpp.o"
   "CMakeFiles/chessWasm.dir/src/types.cpp.o"

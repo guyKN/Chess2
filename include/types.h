@@ -315,7 +315,7 @@ namespace Chess {
         return WHITE;
     }
 
-    constexpr inline bool piece_ok(Piece piece) {
+    constexpr inline bool pieceOk(Piece piece) {
         return piece >= PIECE_FIRST && piece <= PIECE_LAST;
     }
 

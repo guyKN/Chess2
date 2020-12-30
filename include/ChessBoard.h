@@ -16,6 +16,12 @@
 using std::cout;
 namespace Chess {
 
+    struct MoveRevertData{
+        bool whiteMayCastleKingSide;
+        bool whiteMayCastleQueenSide;
+        bool blackMayCastleKingSide;
+        bool blackMayCastleQueenSide;
+    };
 
     //todo: expirement with additional representations in addition to bitboards
     // specificly: pieceLists as vectors, and an array of all pieces by squarew
@@ -61,6 +67,78 @@ namespace Chess {
             return piecesBySquare[square];
         }
 
+
+        /// used when there wasn't previously a piece on a square, and now there needs to be one
+        inline void placePieceOn(Square square,
+                                 Piece newPiece, Player newPlayer){
+            SquareMask squareMask = maskOf(square);
+            pieceOn(square) = newPiece;
+            bitboardOf(newPiece) |= squareMask;
+            bitboardOf(newPlayer) |= squareMask;
+
+            bitboardOf(PIECE_NONE) &= ~squareMask;
+        }
+
+        /// used when there was a piece on a square, and now the opposite piece is there
+        inline void changePieceOn(Square square,
+                                  Piece prevPiece,
+                                  Piece newPiece, Player newPlayer){
+            SquareMask squareMask = maskOf(square);
+            assert(pieceOk(newPiece) && newPiece !=PIECE_NONE);
+            pieceOn(square) = newPiece;
+
+            bitboardOf(newPiece) |= squareMask;
+            bitboardOf(newPlayer) |= squareMask;
+
+            bitboardOf(prevPiece) &= ~squareMask;
+            bitboardOf(~newPlayer) &= ~squareMask;
+        }
+
+        /// used when there previously a peice on a square, and now there isn't
+        inline void removePieceFrom(Square square,
+                                    Piece prevPiece, Player prevPlayer){
+            SquareMask squareMask = maskOf(square);
+            pieceOn(square) = PIECE_NONE;
+
+            bitboardOf(PIECE_NONE) |= squareMask;
+
+            bitboardOf(prevPiece) &= ~squareMask;
+            bitboardOf(prevPlayer) &= ~squareMask;
+        }
+
+        /// used the same as changePieceOn, but only when prevPiece may or may not be PIECE_NONE
+        /// this assumes that the player of the piece being removed is the opposite player of the piece being placed
+        inline void setPieceOn(Square square,
+                               Piece prevPiece,
+                               Piece newPiece, Player newPlayer) {
+            SquareMask squareMask = maskOf(square);
+            pieceOn(square) = newPiece;
+
+            bitboardOf(newPiece) |=squareMask;
+            bitboardOf(newPlayer) |=squareMask;
+
+            bitboardOf(prevPiece) &=~squareMask;
+            if(prevPiece != PIECE_NONE) {
+                bitboardOf(~newPlayer) &=~squareMask;
+            }
+        }
+
+        /// same as setPieceOn, except that prevPiece must not be pieceNone, but newPiece may or may not be
+        inline void setPieceOn2(Square square,
+                                Piece prevPiece, Player prevPlayer,
+                                Piece newPiece){
+            SquareMask squareMask = maskOf(square);
+            pieceOn(square) = newPiece;
+
+            bitboardOf(newPiece) |= squareMask;
+            if(newPiece != PIECE_NONE){
+                bitboardOf(~prevPlayer) |= squareMask;
+            }
+
+            bitboardOf(prevPiece) &= ~squareMask;
+            bitboardOf(prevPlayer) &= ~squareMask;
+        }
+
         inline Bitboard getBitboardOf(Piece piece) const {
             return pieceBitboards[piece];
         }
@@ -97,6 +175,18 @@ namespace Chess {
             }
         }
 
+        inline MoveRevertData getMoveRevertData(){
+            return MoveRevertData{whiteMayCastleKingSide, whiteMayCastleQueenSide,
+                                  blackMayCastleKingSide, blackMayCastleQueenSide};
+        }
+
+        inline MoveRevertData revertTo(MoveRevertData& moveRevertData){
+            whiteMayCastleKingSide = moveRevertData.whiteMayCastleKingSide;
+            whiteMayCastleQueenSide = moveRevertData.whiteMayCastleQueenSide;
+
+            blackMayCastleKingSide = moveRevertData.blackMayCastleKingSide;
+            blackMayCastleQueenSide = moveRevertData.blackMayCastleQueenSide;
+        }
 
         template<Player player>
         void generateAllPieces(MoveList &moveList, Bitboard source, Bitboard target);
@@ -114,9 +204,7 @@ namespace Chess {
         void generateKingMoves(MoveList &moveList);
 
         template<Player player>
-        void generateMovesForPlayer(MoveList &moveList);
-
-        void calculateInactivePlayerThreats();
+        WinState generateMovesForPlayer(MoveList &moveList);
 
         template<Player player>
         void calculateThreats();
@@ -193,9 +281,11 @@ namespace Chess {
             return (piece != PIECE_NONE) && (playerOf(piece) == currentPlayer);
         }
 
-        void doMove(Move move);
+        MoveRevertData doMove(Move &move);
 
-        void doGameMove(Move move);
+        void undoMove(Move &move, MoveRevertData moveRevertData);
+
+        void doGameMove(Move &move);
 
         inline Piece getPieceOn(Square square) const {
             return piecesBySquare[square];
@@ -216,15 +306,17 @@ namespace Chess {
         //returns true if the board has no overlap of pieces
         bool isOk();
 
-        void generateMoves(MoveList &moveList);
+        WinState generateMoves(MoveList &moveList);
 
         inline GameHistory *getGameHistory() const {
             return gameHistory;
         }
 
-        WinState checkWinner(MoveList &moveList);
-
         Score evaluate();
+
+        void doMoveNew(Move &move);
+
+        void doMoveOld(Move &move);
     };
 }
 

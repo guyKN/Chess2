@@ -36,10 +36,10 @@ namespace Chess {
         return square_ok(srcSquare) &&
                square_ok(dstSquare) &&
                srcSquare != dstSquare &&
-               srcPiece != PIECE_NONE && piece_ok(srcPiece) &&
-               piece_ok(dstPiece) &&
+               srcPiece != PIECE_NONE && pieceOk(srcPiece) &&
+               pieceOk(dstPiece) &&
                (dstPiece == PIECE_NONE || ~playerOf(dstPiece) == playerOf(srcPiece)) &&
-               (piece_ok(promotionPiece)) &&
+               (pieceOk(promotionPiece)) &&
                playerOf(promotionPiece) == playerOf(srcPiece) &&
                (promotionPiece == srcPiece || isValidPromotion(pieceTypeOf(promotionPiece)));
     }
