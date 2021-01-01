@@ -88,4 +88,8 @@ class NativeChessBoard{
     undoMove(){
         Module._WASM_undoMove();
     }
+
+    doAiMove(){
+        Module._WASM_doAiMove();
+    }
 }

@@ -15,6 +15,9 @@ namespace Chess {
         vector<Move> moves;
     public:
         void addMove(Move move);
+        inline void pop(){
+            moves.pop_back();
+        }
         inline void clear(){
             moves.clear();
         }

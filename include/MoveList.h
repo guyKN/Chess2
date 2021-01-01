@@ -15,7 +15,7 @@ using std::ostream;
 using std::cout;
 namespace Chess {
     class MoveList {
-        Move moves[MAX_MOVES];
+        Move moves[MAX_MOVES] = {};
         Move *currentMove = moves;
     public:
         MoveList() = default;
@@ -30,6 +30,7 @@ namespace Chess {
         }
 
         inline void addMove(Move move) {
+            assert(move.isOk());//inside of moveList.h
             *(currentMove) = move;
             currentMove++;
             assert(size() < MAX_MOVES);

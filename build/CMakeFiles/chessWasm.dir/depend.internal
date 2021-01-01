@@ -65,6 +65,7 @@ CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/MoveList.h
+ ../include/Search.h
  ../include/jsInterface.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp
@@ -76,6 +77,7 @@ CMakeFiles/chessWasm.dir/src/main.cpp.o
  ../include/Move.h
  ../include/MoveInputData.h
  ../include/MoveList.h
+ ../include/Search.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
 CMakeFiles/chessWasm.dir/src/types.cpp.o

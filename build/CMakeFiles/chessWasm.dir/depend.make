@@ -64,6 +64,7 @@ CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/GameHistory.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/Move.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/MoveInputData.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/MoveList.h
+CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/Search.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/jsInterface.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../include/types.h
 CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o: ../src/jsInterface.cpp
@@ -75,6 +76,7 @@ CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/GameHistory.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/Move.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/MoveInputData.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/MoveList.h
+CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/Search.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/types.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../src/main.cpp
 

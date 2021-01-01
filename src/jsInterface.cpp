@@ -2,12 +2,15 @@
 // Created by guykn on 12/14/2020.
 //
 
+#include <Search.h>
 #include "Bitboards.h"
 #include "iostream"
 #include "ChessBoard.h"
 #include "types.h"
 #include "jsInterface.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 namespace WASM {
     ChessBoard chessBoard = ChessBoard();
     MoveList moveList;
@@ -20,6 +23,10 @@ namespace WASM {
 
     WinState winState;
 
+    GameHistory gameHistory;
+
+    Search search;
+
     void WASM_initData() {
         initBitboards();
     }
@@ -30,7 +37,7 @@ namespace WASM {
 
     void WASM_calculateMoves() {
         moveList.clear();
-        winState = chessBoard.generateMoves(moveList);
+        winState = winStateOf(chessBoard.generateMoves(moveList), chessBoard.getCurrentPlayer());
     }
 
     bool WASM_isLegalMoveStart(int square) {
@@ -54,16 +61,17 @@ namespace WASM {
         if (!move.isOk()) {
             return false;
         } else {
-            chessBoard.doGameMove(move);
+            moveRevertData = chessBoard.doMove(move);
+            gameHistory.addMove(move);
             prevMove = move;
             chessBoard.assertOk();
-            cout << "eval: " << chessBoard.evaluate() << "\n";
+            cout << "eval: " << chessBoard.evaluateWhite() << "\n";
             return true;
         }
     }
 
     void WASM_undoMove(){
-        chessBoard.undoMove(prevMove, MoveRevertData());
+        chessBoard.undoMove(prevMove, moveRevertData);
         chessBoard.assertOk();
     }
 
@@ -89,6 +97,23 @@ namespace WASM {
 
     void WASM_printBitboards() {
         chessBoard.printBitboards();
-        cout << *chessBoard.getGameHistory();
+        cout << gameHistory;
+    }
+
+    void WASM_doAiMove(){
+        search.setPos(chessBoard);
+        Move move = search.bestMove(4);
+        chessBoard.doMove(move);
+        gameHistory.addMove(move);
+    }
+
+    void doThing(const int& a){
+        cout << a << "\n";
+    }
+
+    void WASM_runTest(){
+        int a = 10;
+        doThing(a);
     }
 }
+#pragma clang diagnostic pop

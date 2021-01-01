@@ -23,6 +23,14 @@ MoveList.h
 ../include/MoveList.h
 GameHistory.h
 ../include/GameHistory.h
+EvalData.h
+../include/EvalData.h
+
+../include/EvalData.h
+random
+-
+types.h
+-
 
 ../include/GameHistory.h
 vector
@@ -52,6 +60,22 @@ ostream
 Move.h
 ../include/Move.h
 
+../include/Search.h
+ChessBoard.h
+../include/ChessBoard.h
+
+../include/jsInterface.h
+climits
+-
+types.h
+../include/types.h
+ChessBoard.h
+../include/ChessBoard.h
+iostream
+../include/iostream
+Bitboards.h
+../include/Bitboards.h
+
 ../include/types.h
 cstdint
 -
@@ -66,13 +90,29 @@ algorithm
 vector
 -
 
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp
+string
+-
+jsInterface.h
+-
+ChessBoard.h
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
 iostream
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/iostream
+Bitboards.h
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
+
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp
+Search.h
 -
 Bitboards.h
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
+iostream
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/iostream
 ChessBoard.h
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
-climits
--
+types.h
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.h
+jsInterface.h
+/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.h
 

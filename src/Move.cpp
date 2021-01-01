@@ -13,7 +13,7 @@ namespace Chess {
 
     std::ostream &operator<<(std::ostream &outputStream, Move &move) {
         if (!move.isOk()) {
-            outputStream << "ILEGAL";
+            outputStream << "ILLEGAL";
         } else {
             if (move.castlingType != CASTLE_NONE) {
                 outputStream << (isKingSide(move.castlingType) ? "o-o  " : "o-o-o");

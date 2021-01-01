@@ -60,10 +60,6 @@ ostream
 Move.h
 ../include/Move.h
 
-../include/Search.h
-ChessBoard.h
-../include/ChessBoard.h
-
 ../include/jsInterface.h
 climits
 -
@@ -101,30 +97,4 @@ iostream
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/iostream
 Bitboards.h
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
-
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp
-Search.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.h
-
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp
-Bitboards.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
-iostream
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/iostream
-ChessBoard.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
-types.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.h
-jsInterface.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.h
-
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
-iostream
--
-Bitboards.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
-ChessBoard.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
-climits
--
 

@@ -31,7 +31,7 @@ namespace Chess {
     template<typename T>
     std::ostream &printArray(T *array, int length, ostream &outputStream = std::cout) {
         outputStream << '{';
-        for(int i=0;i<length;i++){
+        for (int i = 0; i < length; i++) {
             //todo: add back 0x
             outputStream << "" << array[i] << ", ";
         }
@@ -218,6 +218,10 @@ namespace Chess {
         BLACK = false
     };
 
+    inline constexpr int multiplierOf(Player player) {
+        return player == WHITE ? 1 : -1;
+    }
+
     std::ostream &operator<<(std::ostream &outputStream, Player player);
 
     constexpr int NUM_PLAYERS = 2;
@@ -346,7 +350,7 @@ namespace Chess {
     constexpr inline Piece flip(Piece piece) {
         Player player = playerOf(piece);
         return (player == WHITE) ?
-               static_cast<Piece>(piece + NUM_PIECE_TYPE):
+               static_cast<Piece>(piece + NUM_PIECE_TYPE) :
                static_cast<Piece>(piece - NUM_PIECE_TYPE);
     }
 
@@ -364,50 +368,92 @@ namespace Chess {
 
     enum Score : int {
         SCORE_DRAW = 0,
-        SCORE_ZERO =0,
+        SCORE_ZERO = 0,
         SCORE_MATE = 1'000'000,
-        SCORE_MATED = -SCORE_MATE
+        SCORE_MATED = -SCORE_MATE,
+        SCORE_INFINITY = SCORE_MATE + 1,
     };
 
-    inline constexpr Score operator+(Score score1, Score score2){
+    enum GameEndState {
+        NO_GAME_END,
+        DRAW,
+        MATED
+    };
+
+    inline constexpr WinState winStateOf(GameEndState gameEndState, Player currentPlayer) {
+        switch (gameEndState) {
+            case DRAW:
+                return WIN_STATE_DRAW;
+            case NO_GAME_END:
+                return NO_WINNER;
+            case MATED:
+                return (currentPlayer == WHITE) ? BLACK_WINS : BLACK_WINS;
+        }
+    }
+
+    inline constexpr Score scoreOf(GameEndState gameEndState) {
+        switch (gameEndState) {
+            case DRAW:
+                return SCORE_DRAW;
+            case MATED:
+                return SCORE_MATED;
+            default:
+                assert(false);//only draw or mated can be converted to score be draw or mated
+        }
+    }
+
+
+    inline constexpr Score operator+(Score score1, Score score2) {
         return static_cast<Score>(static_cast<int>(score1) + static_cast<int>(score2));
     }
 
-    inline constexpr Score operator-(Score score1, Score score2){
+    inline constexpr Score operator-(Score score1, Score score2) {
         return static_cast<Score>(static_cast<int>(score1) - static_cast<int>(score2));
     }
 
-    inline constexpr Score operator+(Score score, int increase){
+    inline constexpr Score operator+(Score score, int increase) {
         return static_cast<Score>(static_cast<int>(score) + increase);
     }
 
-    inline constexpr Score operator-(Score score, int decrease){
+    inline constexpr Score operator-(Score score, int decrease) {
         return static_cast<Score>(static_cast<int>(score) - decrease);
     }
 
-    inline constexpr Score &operator+=(Score &score, int increase){
+    inline constexpr Score operator-(Score score) {
+        return static_cast<Score>(-static_cast<int>(score));
+    }
+
+    inline constexpr Score &operator+=(Score &score, int increase) {
         score = score + increase;
         return score;
     }
 
-    inline constexpr Score &operator-=(Score &score, int decrease){
+    inline constexpr Score &operator-=(Score &score, int decrease) {
         score = score - decrease;
         return score;
     }
 
-    inline constexpr Score &operator++(Score& score){
-        return score+=1;
+    inline constexpr Score &operator++(Score &score) {
+        return score += 1;
     }
 
-    inline constexpr Score &operator--(Score& score){
-        return score-=1;
+    inline constexpr Score &operator--(Score &score) {
+        return score -= 1;
     }
 
-
-
-
+    inline constexpr Score operator *(Score score, Player player){
+        return static_cast<Score>(score*multiplierOf(player));
+    }
 
 
     constexpr int MAX_MOVES = 256;
+
+    struct Indent{
+        Indent(int indent);
+
+        int indent;
+
+        friend ostream &operator<<(ostream &os, const Chess::Indent &indent);
+    };
 }
 #endif //CHESS_TYPES_H

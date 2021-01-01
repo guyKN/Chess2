@@ -112,7 +112,9 @@ class ChessBoardHTMLElement extends HTMLTableElement {
                 this.removeAllHighlight();
                 this.lastClickPos = null;
                 this.showThreats();
-                this.checkWinner();
+                if(!this.checkWinner()){
+                    setTimeout( ()=>{this.doAiMove()});
+                }
                 return;
             }else{
                 this.removeAllHighlight();
@@ -158,15 +160,13 @@ class ChessBoardHTMLElement extends HTMLTableElement {
     }
 
     doAiMove(){
-        this.boardPosition.doBestMove();
+        this.boardPosition.doAiMove();
         this.boardPosition.calculateAllLegalMoves();
-        this.boardPosition.verifyLegalMoves();
         this.updateBoard();
         this.pieceMovementAudio.play();
-        if(this.checkWinner()){
-            return;
+        if(!this.checkWinner()){
+            this.isGameActive = true;
         }
-        this.isGameActive = true;
     }
 
     whiteWins(){

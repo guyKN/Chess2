@@ -38,13 +38,15 @@ if(WASM)
                 _WASM_isLegalMoveTo,                                                                     \
                 _WASM_doMoveIfLegal,                                                                     \
                 _WASM_checkWinner,                                                                       \
+                _WASM_doAiMove,                                                                          \
                 _WASM_currentPlayer,                                                                     \
                 _WASM_printMoves,                                                                        \
                 _WASM_isThreatTo,                                                                        \
                 _WASM_initData,                                                                          \
                 _WASM_resetBoard,                                                                        \
                 _WASM_printBitboards,                                                                    \
-                _WASM_undoMove                                                                           \
+                _WASM_undoMove,                                                                           \
+                _WASM_runTest                                                                            \
                 ]'")
 else(WASM)
     add_compile_options(-m64)

@@ -2,6 +2,8 @@
 // Created by guykn on 12/14/2020.
 //
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #ifndef CHESS_JSINTERFACE_H
 #define CHESS_JSINTERFACE_H
 
@@ -47,8 +49,13 @@ namespace WASM {
 
     bool WASM_is64bit();
 
+    void WASM_doAiMove();
+
+    void WASM_runTest();
+
     };
 }
 
 
 #endif //CHESS_JSINTERFACE_H
+#pragma clang diagnostic pop

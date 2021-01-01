@@ -137,4 +137,14 @@ namespace Chess {
     std::ostream &operator<<(ostream &outputStream, Player player) {
         return outputStream << (player == WHITE ? "White" : "Black");
     }
+
+
+    ostream &operator<<(ostream &os, const Indent &indent) {
+        for(int i=0;i<indent.indent;i++) {
+            os << "    ";
+        }
+        return os;
+    }
+
+    Indent::Indent(int indent) : indent(indent) {}
 }

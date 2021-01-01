@@ -35,13 +35,6 @@ namespace Chess {
             for (Piece piece = PIECE_FIRST_BLACK; piece <= PIECE_LAST_BLACK; ++piece) {
                 pieceSquareValues[piece].copyFlipped(pieceSquareValues[flip(piece)]);
             }
-
-
-            std::cout << "White pawns: ";
-            printArray((pieceScalar(PIECE_WHITE_PAWN).values), NUM_SQUARES);
-            std::cout << "\n";
-            std::cout << "Black Pawns: ";
-            printArray((pieceScalar(PIECE_BLACK_PAWN).values), NUM_SQUARES) << "\n";
         }
 
     public:

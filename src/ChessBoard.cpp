@@ -35,8 +35,6 @@ namespace Chess {
 
     void ChessBoard::setPosition(const Piece *piecesArray, Player currentPlayer) {
 
-        gameHistory->clear();
-
         this->currentPlayer = currentPlayer;
         enPassantSquare = SQ_INVALID;
         isCheck = false;
@@ -92,7 +90,7 @@ namespace Chess {
 
     //todo: optimize templates, see if there's a way to make more stuff inline.
 
-    void ChessBoard::printBitboards() {
+    void ChessBoard::printBitboards() const {
         cout << "\nCurrent player: " << currentPlayer;
 
         cout << "\n" << (isCheck ? "Check" : "Not Check");
@@ -108,53 +106,55 @@ namespace Chess {
         printBitboard(checkEvasionSquares);
 
         cout << "\nWhite Pawns:";
-        printBitboard(bitboardOf(PIECE_WHITE_PAWN));
+        printBitboard(getBitboardOf(PIECE_WHITE_PAWN));
 
         cout << "\nWhite Knights";
-        printBitboard(bitboardOf(PIECE_WHITE_KNIGHT));
+        printBitboard(getBitboardOf(PIECE_WHITE_KNIGHT));
 
         cout << "\nWhite Bishops";
-        printBitboard(bitboardOf(PIECE_WHITE_BISHOP));
+        printBitboard(getBitboardOf(PIECE_WHITE_BISHOP));
 
         cout << "\nWhite Rook";
-        printBitboard(bitboardOf(PIECE_WHITE_ROOK));
+        printBitboard(getBitboardOf(PIECE_WHITE_ROOK));
 
         cout << "\nWhite Queen";
-        printBitboard(bitboardOf(PIECE_WHITE_QUEEN));
+        printBitboard(getBitboardOf(PIECE_WHITE_QUEEN));
 
         cout << "\nWhite King";
-        printBitboard(bitboardOf(PIECE_WHITE_KING));
+        printBitboard(getBitboardOf(PIECE_WHITE_KING));
 
         cout << "\nBlack Pawns:";
-        printBitboard(bitboardOf(PIECE_BLACK_PAWN));
+        printBitboard(getBitboardOf(PIECE_BLACK_PAWN));
 
         cout << "\nBlack Knights";
-        printBitboard(bitboardOf(PIECE_BLACK_KNIGHT));
+        printBitboard(getBitboardOf(PIECE_BLACK_KNIGHT));
 
         cout << "\nBlack Bishops";
-        printBitboard(bitboardOf(PIECE_BLACK_BISHOP));
+        printBitboard(getBitboardOf(PIECE_BLACK_BISHOP));
 
         cout << "\nBlack Rook";
-        printBitboard(bitboardOf(PIECE_BLACK_ROOK));
+        printBitboard(getBitboardOf(PIECE_BLACK_ROOK));
 
         cout << "\nBlack Queen";
-        printBitboard(bitboardOf(PIECE_BLACK_QUEEN));
+        printBitboard(getBitboardOf(PIECE_BLACK_QUEEN));
 
         cout << "\nBlack King";
-        printBitboard(bitboardOf(PIECE_BLACK_KING));
+        printBitboard(getBitboardOf(PIECE_BLACK_KING));
 
         cout << "\nEmpty squares:";
-        printBitboard(bitboardOf(PIECE_NONE));
+        printBitboard(getBitboardOf(PIECE_NONE));
 
         cout << "\nWhite Pieces:";
-        printBitboard(bitboardOf(WHITE));
+        printBitboard(getBitboardOf(WHITE));
 
         cout << "\nBlack Pieces:";
-        printBitboard(bitboardOf(BLACK));
+        printBitboard(getBitboardOf(BLACK));
+
+        cout << *this;
     }
 
     //todo: make this not run in release mode
-    void ChessBoard::assertOk() {
+    void ChessBoard::assertOk() const {
         if (!isOk()) {
             printBitboards();
             assert(false);
@@ -205,6 +205,8 @@ namespace Chess {
     }
 
     MoveRevertData ChessBoard::doMove(Move &move) {
+        assert(move.isOk()); //inside of Chessboard.cpp
+        assert(move.dstPiece == pieceOn(move.dstSquare));
         removePieceFrom(move.srcSquare, move.srcPiece, currentPlayer);
         setPieceOn(move.dstSquare, move.dstPiece, move.srcPiece, currentPlayer);
 
@@ -224,8 +226,9 @@ namespace Chess {
         return moveRevertData;
     }
 
-    void ChessBoard::undoMove(Move &move, MoveRevertData moveRevertData) {
+    void ChessBoard::undoMove(Move &move, MoveRevertData &moveRevertData) {
         revertTo(moveRevertData);
+        //todo: incorperate promotions
         Player opponent = ~currentPlayer;
         placePieceOn(move.srcSquare, move.srcPiece, opponent);
         setPieceOn2(move.dstSquare, move.srcPiece, opponent, move.dstPiece);
@@ -233,13 +236,20 @@ namespace Chess {
             Piece pawn = makePiece(PIECE_TYPE_PAWN, currentPlayer);
             Square prevEnPassantSquare = move.dstSquare + 8 * directionOf(currentPlayer);
             placePieceOn(prevEnPassantSquare, pawn, currentPlayer);
+        } else if (move.castlingType != CASTLE_NONE){
+            Piece rook = makePiece(PIECE_TYPE_ROOK, opponent);
+            CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
+            removePieceFrom(castlingData.rookDst, rook, opponent);
+            placePieceOn(castlingData.rookSrc, rook, opponent);
         }
         swapPlayer();
     }
 
-    void ChessBoard::doGameMove(Move &move) {
-        gameHistory->addMove(move);
-        doMove(move);
+    void ChessBoard::revertTo(const MoveRevertData &moveRevertData) {
+        whiteMayCastleKingSide = moveRevertData.whiteMayCastleKingSide;
+        whiteMayCastleQueenSide = moveRevertData.whiteMayCastleQueenSide;
+        blackMayCastleKingSide = moveRevertData.blackMayCastleKingSide;
+        blackMayCastleQueenSide = moveRevertData.blackMayCastleQueenSide;
     }
 
     //todo: should this be inline?
@@ -263,44 +273,73 @@ namespace Chess {
     }
 
     //todo: only call this when assertions are enabled
-    bool ChessBoard::isOk() {
+    bool ChessBoard::isOk() const {
         bool noPieceOverlap1 = noPieceOverlap();
         bool noColorOverlap1 = noColorOverlap();
+        bool piecesMatchArray1 = piecesMatchArray();
+        bool playerColorsMatch1 = playerColorsMatch();
         if (!noPieceOverlap1)
             cout << "Piece overlap \n";
         if (!noColorOverlap1)
             cout << "Color overlap \n";
-
-        return noPieceOverlap1 && noColorOverlap1;
+        if(!piecesMatchArray1)
+            cout << "Pieces don't match array\n";
+        if(!playerColorsMatch1){
+            cout << "Player colors don't match\n";
+        }
+        return noPieceOverlap1 && noColorOverlap1 && piecesMatchArray1 && playerColorsMatch1;
     }
 
-
-    bool ChessBoard::noPieceOverlap() {
+    bool ChessBoard::noPieceOverlap() const {
         /// ensures that each Square is occupied by either exactly one piece, or by PIECE_NONE
         Bitboard pieces = BITBOARD_EMPTY;
         for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST; ++piece) {
-            if (pieces & bitboardOf(piece)) {
+            if (pieces & getBitboardOf(piece)) {
                 return false;
             }
-            pieces |= bitboardOf(piece);
+            pieces |= getBitboardOf(piece);
         }
         return pieces == BITBOARD_FULL;
     }
 
-    bool ChessBoard::noColorOverlap() {
+    bool ChessBoard::noColorOverlap() const {
         /// ensures that each Square is occupied by either exactly one player, or by PIECE_NONE
-        Bitboard pieces = bitboardOf(PIECE_NONE);
-        if (pieces & bitboardOf(WHITE)) {
+        Bitboard pieces = getBitboardOf(PIECE_NONE);
+        if (pieces & getBitboardOf(WHITE)) {
             return false;
         }
-        pieces |= bitboardOf(WHITE);
+        pieces |= getBitboardOf(WHITE);
 
-        if (pieces & bitboardOf(BLACK)) {
+        if (pieces & getBitboardOf(BLACK)) {
             return false;
         }
-        pieces |= bitboardOf(BLACK);
+        pieces |= getBitboardOf(BLACK);
 
         return pieces == BITBOARD_FULL;
+    }
+
+    bool ChessBoard::playerColorsMatch() const{
+        Bitboard white = BITBOARD_EMPTY;
+        Bitboard black = BITBOARD_EMPTY;
+        for (Piece piece = PIECE_FIRST_WHITE; piece<=PIECE_LAST_WHITE;++piece){
+            white|=getBitboardOf(piece);
+        }
+
+        for (Piece piece = PIECE_FIRST_BLACK; piece<=PIECE_LAST_BLACK;++piece){
+            black|=getBitboardOf(piece);
+        }
+
+        return (white == getBitboardOf(WHITE)) && (black == getBitboardOf(BLACK));
+    }
+
+    bool ChessBoard::piecesMatchArray() const{
+        for (Square square = SQ_FIRST; square<SQ_LAST; ++square){
+            Piece actualPiece = getPieceOn(square);
+            if(!(getBitboardOf(actualPiece) & maskOf(square))){
+                return false;
+            }
+        }
+        return true;
     }
 
     /// maybe also get rid of template<Player player>, since it just makes functions bigger, and harder to all keep in the cache
@@ -361,50 +400,52 @@ namespace Chess {
             moveList.addMove(Move(dst - captureRightShift, dst, pawnPiece, pieceOn(dst)));
         }
 
-        if (enPassantSquare != SQ_INVALID) {
-            // en passent capture left
-            Bitboard enPassantLeft = signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & target;
-            if (enPassantLeft) {
-                Square dst = enPassantSquare + forward1shift;
-                moveList.addMove(Move::enPassant(enPassantSquare + 1, dst, pawnPiece, pieceOn(dst)));
+        if constexpr (!DISABLE_SPECIAL_MOVES) {
+            if (enPassantSquare != SQ_INVALID) {
+                // en passent capture left
+                Bitboard enPassantLeft = signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & target;
+                if (enPassantLeft) {
+                    Square dst = enPassantSquare + forward1shift;
+                    moveList.addMove(Move::enPassant(enPassantSquare + 1, dst, pawnPiece, pieceOn(dst)));
+                }
+
+                // en passent capture right
+                Bitboard enPassantRight = signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & target;
+                if (enPassantRight) {
+                    Square dst = enPassantSquare + forward1shift;
+                    moveList.addMove(Move::enPassant(enPassantSquare - 1, dst, pawnPiece, pieceOn(dst)));
+                }
+            }
+        }
+
+
+        if constexpr (!DISABLE_SPECIAL_MOVES) {
+            // promotion forward
+            Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptySquares;
+            while (promotionForward) {
+                Square dst = popLsb(&promotionForward);
+                moveList.addMove(
+                        Move::promotion(dst - forward1shift, dst, pawnPiece, pieceOn(dst), queen)
+                );
             }
 
-            // en passent capture right
-            Bitboard enPassantRight = signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & target;
-            if (enPassantRight) {
-                Square dst = enPassantSquare + forward1shift;
-                moveList.addMove(Move::enPassant(enPassantSquare - 1, dst, pawnPiece, pieceOn(dst)));
+            //promotion left
+            Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
+            while (promotionLeft) {
+                Square dst = popLsb(&promotionLeft);
+                moveList.addMove(
+                        Move::promotion(dst - captureLeftShift, dst, pawnPiece, pieceOn(dst), queen)
+                );
             }
 
-        }
-
-
-
-        // promotion forward
-        Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptySquares;
-        while (promotionForward) {
-            Square dst = popLsb(&promotionForward);
-            moveList.addMove(
-                    Move::promotion(dst - forward1shift, dst, pawnPiece, pieceOn(dst), queen)
-            );
-        }
-
-        //promotion left
-        Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
-        while (promotionLeft) {
-            Square dst = popLsb(&promotionLeft);
-            moveList.addMove(
-                    Move::promotion(dst - captureLeftShift, dst, pawnPiece, pieceOn(dst), queen)
-            );
-        }
-
-        //promotion right
-        Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
-        while (promotionRight) {
-            Square dst = popLsb(&promotionRight);
-            moveList.addMove(
-                    Move::promotion(dst - captureRightShift, dst, pawnPiece, pieceOn(dst), queen)
-            );
+            //promotion right
+            Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
+            while (promotionRight) {
+                Square dst = popLsb(&promotionRight);
+                moveList.addMove(
+                        Move::promotion(dst - captureRightShift, dst, pawnPiece, pieceOn(dst), queen)
+                );
+            }
         }
     }
 
@@ -467,75 +508,77 @@ namespace Chess {
     }
 
     template<Player player>
-    WinState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
+    GameEndState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
         calculateThreats<~player>();
         generateKingMoves<player>(moveList);
         if (!isDoubleCheck) {
             Bitboard notPinned = ~pinned;
             generateAllPieces<player>(moveList, notPinned, checkEvasionSquares);
             if (!isCheck) {
-                Bitboard pieces = bitboardOf(player) | bitboardOf(~player); //todo: speed up
-                Bitboard threats = threatsOf(~player);
+                if constexpr (!DISABLE_SPECIAL_MOVES) {
+                    Bitboard pieces = bitboardOf(player) | bitboardOf(~player); //todo: speed up
+                    Bitboard threats = threatsOf(~player);
 
-                if (mayCastleKingSide<player>() &&
-                    CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
-                    cout << player << " Allowed Kingside\n";
-                    moveList.addMove(Move::fromCastlingType(kingSideCastleOf<player>()));
-                }
+                    if (mayCastleKingSide<player>() &&
+                        CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
+                        moveList.addMove(Move::fromCastlingType(kingSideCastleOf<player>()));
+                    }
 
-                if (mayCastleQueenSide<player>() &&
-                    CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
-                    cout << player << " allowed Queenside\n";
-                    moveList.addMove(Move::fromCastlingType(queenSideCastleOf<player>()));
+                    if (mayCastleQueenSide<player>() &&
+                        CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
+                        moveList.addMove(Move::fromCastlingType(queenSideCastleOf<player>()));
+                    }
                 }
 
 
                 if (pinned) {
-                    //calculate pins
-                    Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
-                    Square kingSquare = lsb(bitboardOf(kingPiece));
+                    if constexpr (!DISABLE_SPECIAL_MOVES || true) {
+                        //calculate pins
+                        Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
+                        Square kingSquare = lsb(bitboardOf(kingPiece));
 
-                    XrayData rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
-                    XrayData bishopXray = slidingPieceDataOf<PIECE_TYPE_BISHOP>(kingSquare).xrayData;
+                        XrayData rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
+                        XrayData bishopXray = slidingPieceDataOf<PIECE_TYPE_BISHOP>(kingSquare).xrayData;
 
-                    Bitboard kingRank = rookXray.rankFileDiagonal1();
-                    Bitboard kingFile = rookXray.rankFileDiagonal2();
-                    Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
-                    Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
+                        Bitboard kingRank = rookXray.rankFileDiagonal1();
+                        Bitboard kingFile = rookXray.rankFileDiagonal2();
+                        Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
+                        Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
 
-                    //todo: optimize for speed. Check whether ifs are helping or slowing down
-                    /// also think about not checking redundant pins, like a pinned knight which can't move at all
-                    /// like a rook pinned on a diagonal or a bishop pinned on a rank
+                        //todo: optimize for speed. Check whether ifs are helping or slowing down
+                        /// also think about not checking redundant pins, like a pinned knight which can't move at all
+                        /// like a rook pinned on a diagonal or a bishop pinned on a rank
 
-                    if (pinned & kingRank) {
-                        generateAllPieces<player>(moveList, pinned & kingRank, kingRank);
-                    }
+                        if (pinned & kingRank) {
+                            generateAllPieces<player>(moveList, pinned & kingRank, kingRank);
+                        }
 
-                    if (pinned & kingFile) {
-                        generateAllPieces<player>(moveList, pinned & kingFile, kingFile);
-                    }
+                        if (pinned & kingFile) {
+                            generateAllPieces<player>(moveList, pinned & kingFile, kingFile);
+                        }
 
-                    if (pinned & kingDiagonal1) {
-                        generateAllPieces<player>(moveList, pinned & kingDiagonal1, kingDiagonal1);
-                    }
+                        if (pinned & kingDiagonal1) {
+                            generateAllPieces<player>(moveList, pinned & kingDiagonal1, kingDiagonal1);
+                        }
 
-                    if (pinned & kingDiagonal2) {
-                        generateAllPieces<player>(moveList, pinned & kingDiagonal2, kingDiagonal2);
+                        if (pinned & kingDiagonal2) {
+                            generateAllPieces<player>(moveList, pinned & kingDiagonal2, kingDiagonal2);
+                        }
                     }
                 }
             }
         }
 
         if (!moveList.isEmpty()) {
-            return NO_WINNER;
+            return NO_GAME_END;
         } else if (isCheck) {
-            return winStateFromPlayer(~player);
+            return MATED;
         } else {
-            return WIN_STATE_DRAW;
+            return DRAW;
         }
     }
 
-    WinState ChessBoard::generateMoves(MoveList &moveList) {
+    GameEndState ChessBoard::generateMoves(MoveList &moveList) {
         if (currentPlayer == WHITE) {
             return generateMovesForPlayer<WHITE>(moveList);
         } else {
@@ -704,6 +747,7 @@ namespace Chess {
         isCheck = false;
         isDoubleCheck = false;
         checkEvasionSquares = BITBOARD_FULL;
+        pinned = BITBOARD_EMPTY;
 
         calculatePawnThreats<player>();
         calculateKnightThreats<player>();
@@ -726,7 +770,7 @@ namespace Chess {
                             threatsOf(rookPiece) | threatsOf(queenPiece) | threatsOf(kingPiece);
     }
 
-    Score ChessBoard::evaluate() {
+    Score ChessBoard::evaluateWhite() {
         Score scoreWhite = SCORE_ZERO;
         for (Piece piece = PIECE_FIRST_WHITE; piece <= PIECE_LAST_WHITE; ++piece) {
             scoreWhite += evalData.pieceScalar(piece) * bitboardOf(piece);
@@ -737,5 +781,95 @@ namespace Chess {
             scoreBlack += evalData.pieceScalar(piece) * bitboardOf(piece);
         }
         return scoreWhite - scoreBlack;
+    }
+
+    ChessBoard &ChessBoard::operator=(const ChessBoard &other) {
+        assert(&other != this);
+        isCheck = other.isCheck;
+        isDoubleCheck = other.isDoubleCheck;
+
+        whiteMayCastleKingSide = other.whiteMayCastleKingSide;
+        whiteMayCastleQueenSide = other.whiteMayCastleQueenSide;
+        blackMayCastleKingSide = other.blackMayCastleKingSide;
+        blackMayCastleQueenSide = other.blackMayCastleQueenSide;
+
+        evalData = other.evalData;
+        enPassantSquare = other.enPassantSquare;
+        currentPlayer = other.currentPlayer;
+        checkEvasionSquares = other.checkEvasionSquares;
+        pinned = other.pinned;
+
+        for (Piece piece = PIECE_FIRST;piece<=PIECE_LAST_NOT_EMPTY;++piece){
+            pieceBitboards[piece] = other.pieceBitboards[piece];
+            threatsByPiece[piece] = other.threatsByPiece[piece];
+        }
+
+        pieceBitboards[PIECE_NONE] = other.pieceBitboards[PIECE_NONE];
+
+        byPlayerBitboards[WHITE] = other.byPlayerBitboards[WHITE];
+        byPlayerBitboards[BLACK] = other.byPlayerBitboards[BLACK];
+
+        threatsBypLayer[WHITE] = other.threatsBypLayer[WHITE];
+        threatsBypLayer[BLACK] = other.threatsBypLayer[BLACK];
+
+        for(Square square = SQ_FIRST;square<=SQ_LAST;++square){
+            pieceBitboards[square] = other.pieceBitboards[square];
+        }
+
+        return *this;
+    }
+
+#define PRINT_IF_FALSE(VAR, VAR_NAME) \
+    if(!(VAR)){                             \
+        cout << "Falied " << (VAR_NAME) << " \n";            \
+    }
+
+    bool ChessBoard::samePositionAs(const ChessBoard &other) {
+        const bool whiteMayCastleKingSideEqual = whiteMayCastleKingSide == other.whiteMayCastleKingSide;
+        const bool whiteMayCastleQueenSideEqual = whiteMayCastleQueenSide == other.whiteMayCastleQueenSide;
+        const bool blackMayCastleKingSideEqual = blackMayCastleKingSide == other.blackMayCastleKingSide;
+        const bool blackMayCastleQueenSideEqual = blackMayCastleQueenSide == other.blackMayCastleQueenSide;
+        const bool currentPlayerEquals = currentPlayer == other.currentPlayer;
+        const bool pieceBitboardsNoneEquals = pieceBitboards[PIECE_NONE] == other.pieceBitboards[PIECE_NONE];
+        const bool bypLayerBitboardWhiteEquals = byPlayerBitboards[WHITE] == other.byPlayerBitboards[WHITE];
+        const bool byPlayerBitboardsBlackEquals = byPlayerBitboards[BLACK] == other.byPlayerBitboards[BLACK];
+
+        PRINT_IF_FALSE(whiteMayCastleKingSideEqual, "whiteMayCastleKingSideEqual");
+        PRINT_IF_FALSE(whiteMayCastleQueenSideEqual, "whiteMayCastleQueenSideEqual");
+        PRINT_IF_FALSE(blackMayCastleKingSideEqual, "blackMayCastleKingSideEqual");
+        PRINT_IF_FALSE(blackMayCastleQueenSideEqual, "blackMayCastleQueenSideEqual");
+        PRINT_IF_FALSE(currentPlayerEquals, "currentPlayerEquals");
+        PRINT_IF_FALSE(pieceBitboardsNoneEquals, "pieceBitboardsNoneEquals");
+        PRINT_IF_FALSE(bypLayerBitboardWhiteEquals, "bypLayerBitboardWhiteEquals");
+        PRINT_IF_FALSE(byPlayerBitboardsBlackEquals,"byPlayerBitboardsBlackEquals");
+
+
+        if      (!(whiteMayCastleKingSideEqual &&
+                   whiteMayCastleQueenSideEqual &&
+                   blackMayCastleKingSideEqual &&
+                   blackMayCastleQueenSideEqual &&
+                   currentPlayerEquals &&
+                   pieceBitboardsNoneEquals &&
+                   bypLayerBitboardWhiteEquals &&
+                   byPlayerBitboardsBlackEquals)) {
+            cout << "Failed v2\n";
+            return false;
+        }
+
+        for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
+            if (pieceBitboards[piece] != other.pieceBitboards[piece]) {
+                cout << "Piece Bitboard unequal: " << toChar(piece) << "\n";
+                return false;
+            }
+        }
+
+        for(Square square = SQ_FIRST;square<=SQ_LAST;++square){
+            if(piecesBySquare[square] != other.piecesBySquare[square]){
+                cout << "Piece on Square unequal: " << toString(square) << "\n";
+                return false;
+            }
+        }
+
+        return true;
     }
 }

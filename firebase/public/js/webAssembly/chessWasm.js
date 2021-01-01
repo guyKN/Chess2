@@ -4773,6 +4773,12 @@ var _WASM_isThreatTo = Module["_WASM_isThreatTo"] = createExportWrapper("WASM_is
 var _WASM_printBitboards = Module["_WASM_printBitboards"] = createExportWrapper("WASM_printBitboards");
 
 /** @type {function(...*):?} */
+var _WASM_doAiMove = Module["_WASM_doAiMove"] = createExportWrapper("WASM_doAiMove");
+
+/** @type {function(...*):?} */
+var _WASM_runTest = Module["_WASM_runTest"] = createExportWrapper("WASM_runTest");
+
+/** @type {function(...*):?} */
 var _main = Module["_main"] = createExportWrapper("main");
 
 /** @type {function(...*):?} */

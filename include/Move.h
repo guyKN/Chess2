@@ -13,6 +13,7 @@
 using std::string;
 namespace Chess {
     struct Move {
+
         Square srcSquare;
         Square dstSquare;
         Piece srcPiece;
