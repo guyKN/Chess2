@@ -416,6 +416,7 @@ namespace Chess {
                         return false;
                 }
             }
+
             endOfLoop:
 
             bool atLeastOneCastling;
