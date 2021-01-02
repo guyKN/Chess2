@@ -10,6 +10,8 @@ class ChessBoardHTMLElement extends HTMLTableElement {
     static instance;
     static AI_MOVE_DELAY = 1;
 
+    static playAgainstAi = true;
+
     constructor() {
         super();
         this.classList.add(ChessBoardHTMLElement.flagName);
@@ -112,7 +114,7 @@ class ChessBoardHTMLElement extends HTMLTableElement {
                 this.removeAllHighlight();
                 this.lastClickPos = null;
                 this.showThreats();
-                if(!this.checkWinner()){
+                if(!this.checkWinner() && ChessBoardHTMLElement.playAgainstAi){
                     setTimeout( ()=>{this.doAiMove()});
                 }
                 return;

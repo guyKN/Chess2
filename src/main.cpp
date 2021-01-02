@@ -32,6 +32,11 @@ using std::cout;
 
 int main() {
     initBitboards();
+    ChessBoard chessBoard{};
+    std::string fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3";
+    cout << (chessBoard.parseFen(fen) ? "success":"fail") << "\n";
+    cout << chessBoard;
+    return 0;
 #ifdef TO_COMMAND_LINE
 #ifndef GENERATE_SEEDS
     playGame();

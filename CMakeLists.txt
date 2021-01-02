@@ -29,8 +29,9 @@ if(WASM)
     file(GLOB SOURCES src/*.cpp)
     add_executable(chessWasm ${SOURCES} src/jsInterface.cpp include/jsInterface.h)
 
-    set_target_properties(chessWasm PROPERTIES LINK_FLAGS "-s WASM=1 -s EXPORTED_FUNCTIONS='[            \
-                _main,                                                                              \
+    set_target_properties(chessWasm PROPERTIES LINK_FLAGS "-s WASM=1                                     \
+                -s EXPORTED_FUNCTIONS='[                                                                 \
+                _main,                                                                                   \
                 _WASM_pieceOn,                                                                           \
                 _WASM_calculateMoves,                                                                    \
                 _WASM_isLegalMoveStart,                                                                  \
@@ -45,7 +46,7 @@ if(WASM)
                 _WASM_initData,                                                                          \
                 _WASM_resetBoard,                                                                        \
                 _WASM_printBitboards,                                                                    \
-                _WASM_undoMove,                                                                           \
+                _WASM_undoMove,                                                                          \
                 _WASM_runTest                                                                            \
                 ]'")
 else(WASM)

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <jsInterface.h>
+#include <stdexcept>
 #include "ChessBoard.h"
 #include "iostream"
 #include "Bitboards.h"
@@ -204,7 +205,7 @@ namespace Chess {
         swapPlayer();
     }
 
-    MoveRevertData ChessBoard::doMove(Move &move) {
+    MoveRevertData ChessBoard::doMove(const Move &move) {
         assert(move.isOk()); //inside of Chessboard.cpp
         assert(move.dstPiece == pieceOn(move.dstSquare));
         removePieceFrom(move.srcSquare, move.srcPiece, currentPlayer);
@@ -236,7 +237,7 @@ namespace Chess {
             Piece pawn = makePiece(PIECE_TYPE_PAWN, currentPlayer);
             Square prevEnPassantSquare = move.dstSquare + 8 * directionOf(currentPlayer);
             placePieceOn(prevEnPassantSquare, pawn, currentPlayer);
-        } else if (move.castlingType != CASTLE_NONE){
+        } else if (move.castlingType != CASTLE_NONE) {
             Piece rook = makePiece(PIECE_TYPE_ROOK, opponent);
             CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
             removePieceFrom(castlingData.rookDst, rook, opponent);
@@ -253,7 +254,7 @@ namespace Chess {
     }
 
     //todo: should this be inline?
-    void ChessBoard::updateCastling(Move &move) {
+    void ChessBoard::updateCastling(const Move &move) {
         Bitboard moveSquares = maskOf(move.srcSquare) | maskOf(move.dstSquare);
         whiteMayCastleKingSide = whiteMayCastleKingSide &&
                                  !CastlingData::fromCastlingType(CASTLE_WHITE_KING_SIDE)
@@ -282,9 +283,9 @@ namespace Chess {
             cout << "Piece overlap \n";
         if (!noColorOverlap1)
             cout << "Color overlap \n";
-        if(!piecesMatchArray1)
+        if (!piecesMatchArray1)
             cout << "Pieces don't match array\n";
-        if(!playerColorsMatch1){
+        if (!playerColorsMatch1) {
             cout << "Player colors don't match\n";
         }
         return noPieceOverlap1 && noColorOverlap1 && piecesMatchArray1 && playerColorsMatch1;
@@ -318,24 +319,24 @@ namespace Chess {
         return pieces == BITBOARD_FULL;
     }
 
-    bool ChessBoard::playerColorsMatch() const{
+    bool ChessBoard::playerColorsMatch() const {
         Bitboard white = BITBOARD_EMPTY;
         Bitboard black = BITBOARD_EMPTY;
-        for (Piece piece = PIECE_FIRST_WHITE; piece<=PIECE_LAST_WHITE;++piece){
-            white|=getBitboardOf(piece);
+        for (Piece piece = PIECE_FIRST_WHITE; piece <= PIECE_LAST_WHITE; ++piece) {
+            white |= getBitboardOf(piece);
         }
 
-        for (Piece piece = PIECE_FIRST_BLACK; piece<=PIECE_LAST_BLACK;++piece){
-            black|=getBitboardOf(piece);
+        for (Piece piece = PIECE_FIRST_BLACK; piece <= PIECE_LAST_BLACK; ++piece) {
+            black |= getBitboardOf(piece);
         }
 
         return (white == getBitboardOf(WHITE)) && (black == getBitboardOf(BLACK));
     }
 
-    bool ChessBoard::piecesMatchArray() const{
-        for (Square square = SQ_FIRST; square<SQ_LAST; ++square){
+    bool ChessBoard::piecesMatchArray() const {
+        for (Square square = SQ_FIRST; square < SQ_LAST; ++square) {
             Piece actualPiece = getPieceOn(square);
-            if(!(getBitboardOf(actualPiece) & maskOf(square))){
+            if (!(getBitboardOf(actualPiece) & maskOf(square))) {
                 return false;
             }
         }
@@ -378,7 +379,8 @@ namespace Chess {
         }
 
         //move forward 2
-        Bitboard forward2Move = signedShift<forward2shift>(pawns & rank2mask ) & emptySquares & signedShift<forward1shift>(emptySquares);
+        Bitboard forward2Move =
+                signedShift<forward2shift>(pawns & rank2mask) & emptySquares & signedShift<forward1shift>(emptySquares);
         while (forward2Move) {
             Square dst = popLsb(&forward2Move);
             moveList.addMove(
@@ -654,6 +656,12 @@ namespace Chess {
                 } else {
                     isCheck = true;
                     Bitboard checkDirection = slidingPieceData.xrayData.directionTo(bitboardOf(enemyKing));
+                    if (checkDirection == BITBOARD_FULL) {
+                        printBitboards();
+                        cout << "Square" << toString(square) << " threats: \n";
+                        printBitboard(threats);
+                        assert(false);
+                    }
                     checkEvasionSquares = (checkDirection & threats) | maskOf(square);
                 }
                 threatsOf(piece) |= slidingPieceData.xrayData.allDirections;
@@ -667,7 +675,16 @@ namespace Chess {
                     Bitboard kingBlockersMask = slidingPieceData.magicHashData.calculateSlidingMoves
                             (bitboardOf(enemyKing)) & ~bitboardOf(enemyKing);
                     Bitboard kingBlockers = directionMask & kingBlockersMask & otherPieces;
-                    assert(kingBlockers);
+                    if (!kingBlockers) {
+                        printBitboards();
+                        cout << "directionMask: \n";
+                        printBitboard(directionMask);
+                        cout << "kingBlockersMask: \n";
+                        printBitboard(kingBlockersMask);
+                        cout << "otherPieces: \n";
+                        printBitboard(otherPieces);
+                        assert(false);
+                    }
                     Square firstBlockerSquare = popLsb(&kingBlockers);
                     if (!kingBlockers) {
                         // there is exactly one piece blocking the king, so it is a pin.
@@ -722,7 +739,16 @@ namespace Chess {
                     Bitboard kingBlockersMask = slidingPieceData.magicHashData.calculateSlidingMoves
                             (bitboardOf(enemyKing)) & ~bitboardOf(enemyKing);
                     Bitboard kingBlockers = directionMask & kingBlockersMask & otherPieces;
-                    assert(kingBlockers);
+                    if (!kingBlockers) {
+                        printBitboards();
+                        cout << "directionMask: \n";
+                        printBitboard(directionMask);
+                        cout << "kingBlockersMask: \n";
+                        printBitboard(kingBlockersMask);
+                        cout << "otherPieces: \n";
+                        printBitboard(otherPieces);
+                        assert(false);
+                    }
                     Square firstBlockerSquare = popLsb(&kingBlockers);
                     if (!kingBlockers) {
                         // there is exactly one piece blocking the king, so it is a pin.
@@ -799,7 +825,7 @@ namespace Chess {
         checkEvasionSquares = other.checkEvasionSquares;
         pinned = other.pinned;
 
-        for (Piece piece = PIECE_FIRST;piece<=PIECE_LAST_NOT_EMPTY;++piece){
+        for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
             pieceBitboards[piece] = other.pieceBitboards[piece];
             threatsByPiece[piece] = other.threatsByPiece[piece];
         }
@@ -812,7 +838,7 @@ namespace Chess {
         threatsBypLayer[WHITE] = other.threatsBypLayer[WHITE];
         threatsBypLayer[BLACK] = other.threatsBypLayer[BLACK];
 
-        for(Square square = SQ_FIRST;square<=SQ_LAST;++square){
+        for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
             pieceBitboards[square] = other.pieceBitboards[square];
         }
 
@@ -841,17 +867,17 @@ namespace Chess {
         PRINT_IF_FALSE(currentPlayerEquals, "currentPlayerEquals");
         PRINT_IF_FALSE(pieceBitboardsNoneEquals, "pieceBitboardsNoneEquals");
         PRINT_IF_FALSE(bypLayerBitboardWhiteEquals, "bypLayerBitboardWhiteEquals");
-        PRINT_IF_FALSE(byPlayerBitboardsBlackEquals,"byPlayerBitboardsBlackEquals");
+        PRINT_IF_FALSE(byPlayerBitboardsBlackEquals, "byPlayerBitboardsBlackEquals");
 
 
-        if      (!(whiteMayCastleKingSideEqual &&
-                   whiteMayCastleQueenSideEqual &&
-                   blackMayCastleKingSideEqual &&
-                   blackMayCastleQueenSideEqual &&
-                   currentPlayerEquals &&
-                   pieceBitboardsNoneEquals &&
-                   bypLayerBitboardWhiteEquals &&
-                   byPlayerBitboardsBlackEquals)) {
+        if (!(whiteMayCastleKingSideEqual &&
+              whiteMayCastleQueenSideEqual &&
+              blackMayCastleKingSideEqual &&
+              blackMayCastleQueenSideEqual &&
+              currentPlayerEquals &&
+              pieceBitboardsNoneEquals &&
+              bypLayerBitboardWhiteEquals &&
+              byPlayerBitboardsBlackEquals)) {
             cout << "Failed v2\n";
             return false;
         }
@@ -863,8 +889,8 @@ namespace Chess {
             }
         }
 
-        for(Square square = SQ_FIRST;square<=SQ_LAST;++square){
-            if(piecesBySquare[square] != other.piecesBySquare[square]){
+        for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
+            if (piecesBySquare[square] != other.piecesBySquare[square]) {
                 cout << "Piece on Square unequal: " << toString(square) << "\n";
                 return false;
             }

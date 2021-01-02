@@ -6,7 +6,8 @@
 
 namespace Chess {
 
-    Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
+    Score Search::alphaBeta(Score alpha, Score beta, int depthLeft, ChessBoard chessBoard, const Move &move) {
+        chessBoard.doMove(move);
         Indent indent{4 - depthLeft};
         if(PRINT_DEBUG) if constexpr(PRINT_DEBUG) cout << indent
              << "Calling alphaBeta() with depthLeft = " << depthLeft << " alpha = " << alpha << " beta = " << beta
@@ -33,14 +34,16 @@ namespace Chess {
                 break;
         }
         if constexpr(PRINT_DEBUG) cout << indent <<  "Iterating through moves. \n";
-        ChessBoard prevChessboard = chessBoard;
+        //ChessBoard prevChessboard = chessBoard;
         for (const Move *pMove = moveList.firstMove(); pMove < moveList.lastMove(); pMove++) {
             Move move = *pMove;
             if constexpr(PRINT_DEBUG) cout << indent << "Found move: " << move << "\n";
             gameHistory_.addMove(move);
-            MoveRevertData moveRevertData = chessBoard.doMove(move);
-            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
-            chessBoard.undoMove(move, moveRevertData);
+            //MoveRevertData moveRevertData = chessBoard.doMove(move);
+            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1, chessBoard, move);
+
+            //chessBoard.undoMove(move, moveRevertData);
+/*
             if(!chessBoard.samePositionAs(prevChessboard)){
                 cout << "Current Chess board: \n\n";
                 chessBoard.printBitboards();
@@ -49,6 +52,7 @@ namespace Chess {
                 cout << "\n" << gameHistory;
                 assert(false);
             }
+*/
             gameHistory_.pop();
             if constexpr(PRINT_DEBUG) cout << indent
                  << "Returning to previous call with depthLeft = " << depthLeft << " alpha = " << alpha << " beta = " << beta
@@ -84,10 +88,12 @@ namespace Chess {
 
         for (const Move *pMove = moveList.firstMove(); pMove < moveList.lastMove(); pMove++) {
             Move move = *pMove;
+            gameHistory_.addMove(move);
             if constexpr(PRINT_DEBUG) cout << "Trying move: " << move << "\n";
-            MoveRevertData moveRevertData = chessBoard.doMove(move);
-            Score score = -alphaBeta(-beta, -alpha, depth - 1);
-            chessBoard.undoMove(move, moveRevertData);
+            //MoveRevertData moveRevertData = chessBoard.doMove(move);
+            Score score = -alphaBeta(-beta, -alpha, depth - 1, chessBoard, move);
+            gameHistory_.pop();
+            //chessBoard.undoMove(move, moveRevertData);
             if constexpr(PRINT_DEBUG) cout << "Score for move: " << score << "\n";
             if (score > alpha) {
                 if constexpr(PRINT_DEBUG) cout << "Score is greater than alpha increasing alpha\n";

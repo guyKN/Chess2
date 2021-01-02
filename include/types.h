@@ -455,5 +455,9 @@ namespace Chess {
 
         friend ostream &operator<<(ostream &os, const Chess::Indent &indent);
     };
+
+    inline int parseInt(char c){
+        return c - '0';
+    }
 }
 #endif //CHESS_TYPES_H

@@ -7,6 +7,7 @@
 
 #include <random>
 #include <types.h>
+#include <stdexcept>
 
 namespace Chess {
 
@@ -143,8 +144,8 @@ namespace Chess {
                 //todo: assume it can be direction four without checking, for faster performance
                 return direction4;
             } else {
-                assert(false);
-                return BITBOARD_EMPTY;
+                // assert(false); // todo: bring back AFTER debugging
+                return BITBOARD_FULL;
             }
         }
 

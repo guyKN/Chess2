@@ -98,6 +98,7 @@ namespace WASM {
     void WASM_printBitboards() {
         chessBoard.printBitboards();
         cout << gameHistory;
+        cout << search.gameHistory;
     }
 
     void WASM_doAiMove(){

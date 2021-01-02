@@ -35,7 +35,7 @@ namespace Chess {
 
     private:
 
-        Score alphaBeta(Score alpha, Score beta, int depthLeft);
+        Score alphaBeta(Score alpha, Score beta, int depthLeft, ChessBoard chessBoard, const Move &move);
 
         Move alphaBetaRoot(int depth);
     };
