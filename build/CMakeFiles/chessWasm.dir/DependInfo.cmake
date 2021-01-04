@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Benchmarks.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/Benchmarks.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/EvalData.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/EvalData.cpp.o"
@@ -21,8 +22,9 @@ set(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
+  "FOR_RELEASE=0"
+  "GENERATE_SEEDS=0"
   "TO_WASM"
-  "USE_SEEDS"
   )
 
 # The include file search paths:

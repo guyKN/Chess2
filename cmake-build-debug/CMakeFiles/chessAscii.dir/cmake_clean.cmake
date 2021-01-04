@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/chessAscii.dir/src/Benchmarks.cpp.obj"
   "CMakeFiles/chessAscii.dir/src/Bitboards.cpp.obj"
   "CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.obj"
   "CMakeFiles/chessAscii.dir/src/EvalData.cpp.obj"

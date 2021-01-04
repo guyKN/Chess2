@@ -24,7 +24,8 @@
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
-					<Add option="-DGENERATE_SEEDS"/>
+					<Add option="-DFOR_RELEASE=0"/>
+					<Add option="-DGENERATE_SEEDS=1"/>
 					<Add option="-DCOMMAND_LINE"/>
 					<Add option="-DTO_COMMAND_LINE"/>
 					<Add directory="C:/Users/guykn/Documents/FirebaseProjects/CppChess/include"/>
@@ -51,7 +52,8 @@
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
-					<Add option="-DGENERATE_SEEDS"/>
+					<Add option="-DFOR_RELEASE=0"/>
+					<Add option="-DGENERATE_SEEDS=1"/>
 					<Add option="-DCOMMAND_LINE"/>
 					<Add option="-DTO_COMMAND_LINE"/>
 					<Add directory="C:/Users/guykn/Documents/FirebaseProjects/CppChess/include"/>
@@ -92,6 +94,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Benchmarks.cpp">
+			<Option target="chessAscii"/>
+		</Unit>
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp">
 			<Option target="chessAscii"/>
 		</Unit>

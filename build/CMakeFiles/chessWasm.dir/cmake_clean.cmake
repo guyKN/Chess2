@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "../firebase/public/js/webAssembly/chessWasm.js"
   "../firebase/public/js/webAssembly/chessWasm.pdb"
+  "CMakeFiles/chessWasm.dir/src/Benchmarks.cpp.o"
   "CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o"
   "CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o"
   "CMakeFiles/chessWasm.dir/src/EvalData.cpp.o"

@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Benchmarks.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/Benchmarks.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/EvalData.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/EvalData.cpp.obj"
@@ -22,7 +23,8 @@ set(CMAKE_CXX_COMPILER_ID "MSVC")
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
   "COMMAND_LINE"
-  "GENERATE_SEEDS"
+  "FOR_RELEASE=0"
+  "GENERATE_SEEDS=1"
   "TO_COMMAND_LINE"
   )
 

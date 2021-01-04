@@ -4,6 +4,7 @@
 #include <climits>
 #include <Search.h>
 #include <test.h>
+#include "Benchmarks.h"
 
 using namespace Chess;
 using std::cout;
@@ -22,7 +23,7 @@ using std::cout;
             chessBoard.doMove(move);
             cout << "eval: " << chessBoard.evaluateWhite() << "\n";
             search.setPos(chessBoard);
-            Move aiMove = search.bestMove(4);
+            Move aiMove = search.bestMove(5);
             cout << aiMove << "\n";
             chessBoard.doMove(aiMove);
         } else {
@@ -31,14 +32,17 @@ using std::cout;
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     initBitboards();
-    runTest();
-    return 0;
+    cout << "done with lookup tables\n";
+    if(argc == 1) {
 #ifdef TO_COMMAND_LINE
-#ifndef GENERATE_SEEDS
-    playGame();
+#if GENERATE_SEEDS==0
+        playGame();
 #endif //GENERATE_SEEDS
 #endif //TO_COMMAND_LINE
+    } else if(std::string(argv[1]) == "--benchmark"){
+        doBenchmarks();
+    }
     return 0;
 }

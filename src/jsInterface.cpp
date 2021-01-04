@@ -103,7 +103,7 @@ namespace WASM {
 
     void WASM_doAiMove(){
         search.setPos(chessBoard);
-        Move move = search.bestMove(4);
+        Move move = search.bestMove(5);
         chessBoard.doMove(move);
         gameHistory.addMove(move);
     }

@@ -123,6 +123,33 @@ chessAscii/fast:
 	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/build
 .PHONY : chessAscii/fast
 
+src/Benchmarks.o: src/Benchmarks.cpp.o
+
+.PHONY : src/Benchmarks.o
+
+# target to build an object file
+src/Benchmarks.cpp.o:
+	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Benchmarks.cpp.o
+.PHONY : src/Benchmarks.cpp.o
+
+src/Benchmarks.i: src/Benchmarks.cpp.i
+
+.PHONY : src/Benchmarks.i
+
+# target to preprocess a source file
+src/Benchmarks.cpp.i:
+	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Benchmarks.cpp.i
+.PHONY : src/Benchmarks.cpp.i
+
+src/Benchmarks.s: src/Benchmarks.cpp.s
+
+.PHONY : src/Benchmarks.s
+
+# target to generate assembly for a file
+src/Benchmarks.cpp.s:
+	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/Benchmarks.cpp.s
+.PHONY : src/Benchmarks.cpp.s
+
 src/Bitboards.o: src/Bitboards.cpp.o
 
 .PHONY : src/Bitboards.o
@@ -456,6 +483,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... chessAscii"
+	@echo "... src/Benchmarks.o"
+	@echo "... src/Benchmarks.i"
+	@echo "... src/Benchmarks.s"
 	@echo "... src/Bitboards.o"
 	@echo "... src/Bitboards.i"
 	@echo "... src/Bitboards.s"

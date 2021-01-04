@@ -12,6 +12,7 @@
 namespace Chess {
 
     void initBitboards();
+    void initLookupTables();
 
 
     constexpr Bitboard MASK_FILE_A = 0x0101010101010101;

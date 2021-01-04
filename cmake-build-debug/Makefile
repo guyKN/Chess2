@@ -127,6 +127,33 @@ chessAscii\fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\build
 .PHONY : chessAscii\fast
 
+src\Benchmarks.obj: src\Benchmarks.cpp.obj
+
+.PHONY : src\Benchmarks.obj
+
+# target to build an object file
+src\Benchmarks.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\Benchmarks.cpp.obj
+.PHONY : src\Benchmarks.cpp.obj
+
+src\Benchmarks.i: src\Benchmarks.cpp.i
+
+.PHONY : src\Benchmarks.i
+
+# target to preprocess a source file
+src\Benchmarks.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\Benchmarks.cpp.i
+.PHONY : src\Benchmarks.cpp.i
+
+src\Benchmarks.s: src\Benchmarks.cpp.s
+
+.PHONY : src\Benchmarks.s
+
+# target to generate assembly for a file
+src\Benchmarks.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\chessAscii.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\chessAscii.dir\src\Benchmarks.cpp.s
+.PHONY : src\Benchmarks.cpp.s
+
 src\Bitboards.obj: src\Bitboards.cpp.obj
 
 .PHONY : src\Bitboards.obj
@@ -460,6 +487,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... chessAscii
+	@echo ... src/Benchmarks.obj
+	@echo ... src/Benchmarks.i
+	@echo ... src/Benchmarks.s
 	@echo ... src/Bitboards.obj
 	@echo ... src/Bitboards.i
 	@echo ... src/Bitboards.s

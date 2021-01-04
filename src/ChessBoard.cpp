@@ -163,8 +163,10 @@ namespace Chess {
             Piece enemyPawn = makePiece(PIECE_TYPE_PAWN, ~currentPlayer);
             removePieceFrom(enPassantSquare, enemyPawn, ~currentPlayer);
         }
-        enPassantSquare = move.pawnForward2Square;
+
         MoveRevertData moveRevertData = getMoveRevertData();
+
+        enPassantSquare = move.pawnForward2Square;
         updateCastling(move);
         swapPlayer();
         return moveRevertData;
@@ -194,6 +196,7 @@ namespace Chess {
         whiteMayCastleQueenSide = moveRevertData.whiteMayCastleQueenSide;
         blackMayCastleKingSide = moveRevertData.blackMayCastleKingSide;
         blackMayCastleQueenSide = moveRevertData.blackMayCastleQueenSide;
+        enPassantSquare = moveRevertData.enPassantSquare;
     }
 
     //todo: should this be inline?
@@ -770,7 +773,6 @@ namespace Chess {
         currentPlayer = other.currentPlayer;
         checkEvasionSquares = other.checkEvasionSquares;
         pinned = other.pinned;
-
         for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
             pieceBitboards[piece] = other.pieceBitboards[piece];
             threatsByPiece[piece] = other.threatsByPiece[piece];
@@ -778,15 +780,18 @@ namespace Chess {
 
         pieceBitboards[PIECE_NONE] = other.pieceBitboards[PIECE_NONE];
 
+
         byPlayerBitboards[WHITE] = other.byPlayerBitboards[WHITE];
         byPlayerBitboards[BLACK] = other.byPlayerBitboards[BLACK];
 
         threatsBypLayer[WHITE] = other.threatsBypLayer[WHITE];
         threatsBypLayer[BLACK] = other.threatsBypLayer[BLACK];
 
-        for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
+        for (int square = SQ_FIRST; square <= SQ_LAST; ++square) {
             pieceBitboards[square] = other.pieceBitboards[square];
         }
+
+
 
         return *this;
     }

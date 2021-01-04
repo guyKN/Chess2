@@ -6,13 +6,14 @@
 
 namespace Chess {
 
-    Score Search::alphaBeta(Score alpha, Score beta, int depthLeft, ChessBoard chessBoard, const Move &move) {
-        chessBoard.doMove(move);
+    Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
+        numNodes++;
         Indent indent{4 - depthLeft};
         if(PRINT_DEBUG) if constexpr(PRINT_DEBUG) cout << indent
              << "Calling alphaBeta() with depthLeft = " << depthLeft << " alpha = " << alpha << " beta = " << beta
              << "\n";
         if (depthLeft == 0) {
+            numLeaves++;
             Score score = chessBoard.evaluate();
             if constexpr(PRINT_DEBUG) cout << indent << "Depth is zero. Evaluation score: " << score << "\n";
             return score;
@@ -39,10 +40,9 @@ namespace Chess {
             Move move = *pMove;
             if constexpr(PRINT_DEBUG) cout << indent << "Found move: " << move << "\n";
             gameHistory_.addMove(move);
-            //MoveRevertData moveRevertData = chessBoard.doMove(move);
-            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1, chessBoard, move);
-
-            //chessBoard.undoMove(move, moveRevertData);
+            MoveRevertData moveRevertData = chessBoard.doMove(move);
+            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
+            chessBoard.undoMove(move, moveRevertData);
 /*
             if(!chessBoard.samePositionAs(prevChessboard)){
                 cout << "Current Chess board: \n\n";
@@ -86,14 +86,15 @@ namespace Chess {
 
         assert(gameEndState == NO_GAME_END && depth > 0);
 
+
         for (const Move *pMove = moveList.firstMove(); pMove < moveList.lastMove(); pMove++) {
             Move move = *pMove;
             gameHistory_.addMove(move);
             if constexpr(PRINT_DEBUG) cout << "Trying move: " << move << "\n";
-            //MoveRevertData moveRevertData = chessBoard.doMove(move);
-            Score score = -alphaBeta(-beta, -alpha, depth - 1, chessBoard, move);
+            MoveRevertData moveRevertData = chessBoard.doMove(move);
+            Score score = -alphaBeta(-beta, -alpha, depth - 1);
             gameHistory_.pop();
-            //chessBoard.undoMove(move, moveRevertData);
+            chessBoard.undoMove(move, moveRevertData);
             if constexpr(PRINT_DEBUG) cout << "Score for move: " << score << "\n";
             if (score > alpha) {
                 if constexpr(PRINT_DEBUG) cout << "Score is greater than alpha increasing alpha\n";
@@ -101,6 +102,7 @@ namespace Chess {
                 bestMove = move;
             }
         }
+
 
         if constexpr(PRINT_DEBUG) cout << "searched through all moves. best move is: " << bestMove << "\n";
 

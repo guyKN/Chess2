@@ -21,6 +21,8 @@ namespace Chess {
         bool whiteMayCastleQueenSide;
         bool blackMayCastleKingSide;
         bool blackMayCastleQueenSide;
+
+        Square enPassantSquare;
     };
 
     //todo: expirement with additional representations in addition to bitboards
@@ -182,7 +184,7 @@ namespace Chess {
 
         inline MoveRevertData getMoveRevertData() {
             return MoveRevertData{whiteMayCastleKingSide, whiteMayCastleQueenSide,
-                                  blackMayCastleKingSide, blackMayCastleQueenSide};
+                                  blackMayCastleKingSide, blackMayCastleQueenSide, enPassantSquare};
         }
 
         template<Player player>

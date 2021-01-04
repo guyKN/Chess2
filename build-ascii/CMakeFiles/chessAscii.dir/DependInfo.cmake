@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Benchmarks.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/Benchmarks.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/EvalData.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/EvalData.cpp.o"
@@ -22,8 +23,9 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
   "COMMAND_LINE"
+  "FOR_RELEASE=1"
+  "GENERATE_SEEDS=0"
   "TO_COMMAND_LINE"
-  "USE_SEEDS"
   )
 
 # The include file search paths:

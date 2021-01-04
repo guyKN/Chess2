@@ -16,26 +16,39 @@ namespace Chess {
 
         GameHistory gameHistory_;
 
+        int numNodes = 0;
+        int numLeaves = 0;
+
     public:
 
-        const GameHistory& gameHistory = gameHistory_;
+        const GameHistory &gameHistory = gameHistory_;
 
         Search(const ChessBoard &chessBoard) : chessBoard(chessBoard) {}
 
         Search() = default;
 
-        inline Move bestMove(int depth){
+        inline Move bestMove(int depth) {
+            numNodes=0;
+            numLeaves=0;
             return alphaBetaRoot(depth);
         }
 
-        inline Search& setPos(const ChessBoard& newChessBoard){
+        inline Search &setPos(const ChessBoard &newChessBoard) {
             this->chessBoard = newChessBoard;
             return *this;
         }
 
+        int getNumLeaves(){
+            return numLeaves;
+        }
+        int getNumNodes(){
+            return numNodes;
+        }
+
+
     private:
 
-        Score alphaBeta(Score alpha, Score beta, int depthLeft, ChessBoard chessBoard, const Move &move);
+        Score alphaBeta(Score alpha, Score beta, int depthLeft);
 
         Move alphaBetaRoot(int depth);
     };

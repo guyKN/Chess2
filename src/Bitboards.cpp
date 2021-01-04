@@ -28,11 +28,13 @@ namespace Chess {
 
     static const int NUM_ATTEMPTS_SEARCH_MAGIC_HASH = 1'000'000;
 
-#ifdef GENERATE_SEEDS
-    static constexpr int LOOKUP_TABLE_LENGTH = 10'000'000;
-#else
-    static constexpr int LOOKUP_TABLE_LENGTH = 109'654;
-#endif
+    static constexpr int LOOKUP_TABLE_LENGTH_GENERATE_SEEDS = 10'000'000;
+    static constexpr int LOOKUP_TABLE_LENGTH_NORMAL = 109'654;
+
+
+    static constexpr int LOOKUP_TABLE_LENGTH = GENERATE_SEEDS ?
+                                               LOOKUP_TABLE_LENGTH_GENERATE_SEEDS :
+                                               LOOKUP_TABLE_LENGTH_NORMAL;
 
     Bitboard bishopSeeds[NUM_SQUARES] = {0x5230100681840d46, 0xb4964c0808a50114, 0x2408908408841c80, 0x8808410904061f,
                                          0x2106021004c0010a, 0xca41882008047912, 0x7804225490082206, 0x96a9208410111060,
@@ -440,7 +442,7 @@ namespace Chess {
         slidingPieceDataOf<pieceType>(square).magicHashData = magicHashData;
         slidingPieceDataOf<pieceType>(square).xrayData = xrayData;
 
-        currentBishopRookLookupPointer += maxIndex+1;
+        currentBishopRookLookupPointer += maxIndex + 1;
 
         if (!useSeeds) {
             lookupTableLength += maxIndex;
@@ -464,27 +466,18 @@ namespace Chess {
 
 
     void initLookupTables() {
+        //cout << "Lookup table length: " << LOOKUP_TABLE_LENGTH << "\n";
+        currentBishopRookLookupPointer = &rookBishopMoveTable[0];
         SquareMask squareMask = SQUARE_MASK_FIRST;
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square, squareMask <<= 1) {
             knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
             kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
-#ifdef USE_SEEDS
-            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, true);
-            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, true);
-#elif defined(GENERATE_SEEDS)
-            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, false);
-            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, false);
-
-#else
-#error must either use seeds or generate seeds
-#endif
+            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, !GENERATE_SEEDS);
+            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, !GENERATE_SEEDS);
         }
-
-        cout << std::dec << lookupTableLength << "\n";
-
-#ifdef GENERATE_SEEDS
-        printSeeds();
-#endif
+        if(GENERATE_SEEDS) {
+            printSeeds();
+        }
     }
 
 
@@ -494,7 +487,6 @@ namespace Chess {
         if (!lookUpTablesReady) {
             initLookupTables();
             lookUpTablesReady = true;
-            cout << "Done with init lookupTables\n";
         }
     }
 }
