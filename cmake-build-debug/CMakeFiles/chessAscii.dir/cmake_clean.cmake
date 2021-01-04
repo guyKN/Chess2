@@ -9,6 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/chessAscii.dir/src/Search.cpp.obj"
   "CMakeFiles/chessAscii.dir/src/jsInterface.cpp.obj"
   "CMakeFiles/chessAscii.dir/src/main.cpp.obj"
+  "CMakeFiles/chessAscii.dir/src/test.cpp.obj"
   "CMakeFiles/chessAscii.dir/src/types.cpp.obj"
   "chessAscii.exe"
   "chessAscii.exe.manifest"

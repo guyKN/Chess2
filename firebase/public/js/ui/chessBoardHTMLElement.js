@@ -86,7 +86,13 @@ class ChessBoardHTMLElement extends HTMLTableElement {
         this.boardPosition.undoMove();
         this.boardPosition.calculateAllLegalMoves();
         this.updateBoard();
+    }
 
+    gotoPos(){
+        this.removeAllHighlight();
+        this.boardPosition.gotoPos();
+        this.boardPosition.calculateAllLegalMoves();
+        this.updateBoard();
     }
 
     removeAllHighlight(){

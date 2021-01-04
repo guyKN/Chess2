@@ -116,5 +116,15 @@ namespace WASM {
         int a = 10;
         doThing(a);
     }
+
+    bool WASM_gotoPos() {
+        std::string fen = "r1bq1k1r/pppp1ppp/5n2/4pN2/4P3/b1N1B3/1PPK1PPP/R2Q1B1R b - -";
+        if(chessBoard.parseFen(fen)){
+            return true;
+        } else{
+            chessBoard = ChessBoard();
+            return false;
+        }
+    }
 }
 #pragma clang diagnostic pop

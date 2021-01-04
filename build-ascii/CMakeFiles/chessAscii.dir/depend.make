@@ -77,8 +77,13 @@ CMakeFiles/chessAscii.dir/src/main.cpp.o: ../include/Move.h
 CMakeFiles/chessAscii.dir/src/main.cpp.o: ../include/MoveInputData.h
 CMakeFiles/chessAscii.dir/src/main.cpp.o: ../include/MoveList.h
 CMakeFiles/chessAscii.dir/src/main.cpp.o: ../include/Search.h
+CMakeFiles/chessAscii.dir/src/main.cpp.o: ../include/test.h
 CMakeFiles/chessAscii.dir/src/main.cpp.o: ../include/types.h
 CMakeFiles/chessAscii.dir/src/main.cpp.o: ../src/main.cpp
+
+CMakeFiles/chessAscii.dir/src/test.cpp.o: ../include/Bitboards.h
+CMakeFiles/chessAscii.dir/src/test.cpp.o: ../include/types.h
+CMakeFiles/chessAscii.dir/src/test.cpp.o: ../src/test.cpp
 
 CMakeFiles/chessAscii.dir/src/types.cpp.o: ../include/types.h
 CMakeFiles/chessAscii.dir/src/types.cpp.o: ../src/types.cpp

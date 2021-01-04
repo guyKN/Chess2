@@ -47,6 +47,7 @@ if(WASM)
                 _WASM_resetBoard,                                                                        \
                 _WASM_printBitboards,                                                                    \
                 _WASM_undoMove,                                                                          \
+                _WASM_gotoPos,                                                                           \
                 _WASM_runTest                                                                            \
                 ]'")
 else(WASM)

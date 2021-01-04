@@ -4779,6 +4779,9 @@ var _WASM_doAiMove = Module["_WASM_doAiMove"] = createExportWrapper("WASM_doAiMo
 var _WASM_runTest = Module["_WASM_runTest"] = createExportWrapper("WASM_runTest");
 
 /** @type {function(...*):?} */
+var _WASM_gotoPos = Module["_WASM_gotoPos"] = createExportWrapper("WASM_gotoPos");
+
+/** @type {function(...*):?} */
 var _main = Module["_main"] = createExportWrapper("main");
 
 /** @type {function(...*):?} */

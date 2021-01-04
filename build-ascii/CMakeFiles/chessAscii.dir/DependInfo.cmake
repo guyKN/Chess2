@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/Search.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/jsInterface.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/main.cpp.o"
+  "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/test.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/test.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build-ascii/CMakeFiles/chessAscii.dir/src/types.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

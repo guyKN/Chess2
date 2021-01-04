@@ -227,6 +227,10 @@ namespace Chess {
 
         void updateCastling(const Move &move);
 
+        void updateBitboards();
+
+        void updateBitboardsForPlayer(Player player);
+
     public:
 
         inline ChessBoard(const Piece piecesBySquare[NUM_SQUARES], Player currentPlayerColor) :
@@ -281,9 +285,7 @@ namespace Chess {
 
         void undoMove(Move &move, MoveRevertData &moveRevertData);
 
-        void doMoveOld(Move &move);
-
-        inline Piece getPieceOn(Square square) const {
+        inline const Piece &getPieceOn(Square square) const {
             return piecesBySquare[square];
         }
 
@@ -317,238 +319,9 @@ namespace Chess {
 
         bool samePositionAs(const ChessBoard &other);
 
-        bool parseFen(std::string &fenString) {
+        bool parseFen(std::string &fenString);
 
-            whiteMayCastleQueenSide = false;
-            blackMayCastleQueenSide = false;
-            whiteMayCastleKingSide = false;
-            blackMayCastleKingSide = false;
-
-            File file = FILE_FIRST;
-            Rank rank = RANK_LAST;
-            int i=0;
-            while (true) {
-                if(i==fenString.size()){
-                    cout << "return false #1\n";
-                    return false;
-                }
-                char c = fenString[i];
-                i++;
-                switch (c) {
-                    case ' ':
-                        break;
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8': {
-                        int num = parseInt(c);
-                        for (int _ = 0; _ < num; _++) {
-                            pieceOn(makeSquare(rank, file)) = PIECE_NONE;
-                            ++file;
-                            if (!file_ok(file)){
-                                cout << "return false #2\n";
-                                return false;
-                            }
-                        }
-                        break;
-                    }
-                    case 'P':
-                    case 'N':
-                    case 'B':
-                    case 'R':
-                    case 'Q':
-                    case 'K':
-                    case 'p':
-                    case 'n':
-                    case 'b':
-                    case 'r':
-                    case 'q':
-                    case 'k': {
-                        Piece piece = parsePiece(c);
-                        pieceOn(makeSquare(rank, file)) = piece;
-                        ++file;
-                        if (!file_ok(file)){
-                            return false;
-                        }
-                    }
-                    case '/': {
-                        if (file != FILE_LAST){
-                            return false;
-                        }
-                        --rank;
-                        file = FILE_FIRST;
-                    }
-                    default:
-                        //invalid character
-                        cout << "return false #4\n";
-                        return false;
-                }
-                if (rank == RANK_FIRST && file == FILE_LAST){
-                    break;
-                }
-            }
-
-            while (true){
-                if(i==fenString.size()){
-                    cout << "return false #3\n";
-                    return false;
-                }
-                char c = fenString[i];
-                i++;
-                switch (c) {
-                    case ' ':
-                        break;
-                    case 'w':
-                    case 'W':
-                        currentPlayer = WHITE;
-                        goto endOfLoop;
-                    case 'b':
-                    case 'B':
-                        currentPlayer = BLACK;
-                        goto endOfLoop;
-                    default:
-                        // illegal character
-                        cout << "return false #5\n";
-                        return false;
-                }
-            }
-
-            endOfLoop:
-
-            bool atLeastOneCastling;
-            while (true){
-                if(i==fenString.size()){
-                    return false;
-                }
-                char c = fenString[i];
-                switch (c) {
-                    case ' ':
-                        break;
-                    case 'K':
-                        if (whiteMayCastleKingSide){
-                            // duplicate of the same castling
-                            return false;
-                        }
-                        whiteMayCastleKingSide = true;
-                        atLeastOneCastling = true;
-                        break;
-                    case 'Q':
-                        if (whiteMayCastleQueenSide){
-                            // duplicate of the same castling
-                            return false;
-                        }
-                        whiteMayCastleQueenSide = true;
-                        atLeastOneCastling = true;
-                        break;
-                    case 'k':
-                        if (blackMayCastleKingSide){
-                            // duplicate of the same castling
-                            return false;
-                        }
-                        blackMayCastleKingSide = true;
-                        atLeastOneCastling = true;
-                        break;
-                    case 'q':
-                        if (blackMayCastleQueenSide){
-                            // duplicate of the same castling
-                            return false;
-                        }
-                        blackMayCastleQueenSide = true;
-                        atLeastOneCastling = true;
-                        break;
-                    case '-':
-                        if (!atLeastOneCastling) {
-                            i++;
-                        }
-                        goto endOfLoop2;
-
-                    case 'a':
-                    case 'b':
-                    case 'c':
-                    case 'd':
-                    case 'e':
-                    case 'f':
-                    case 'g':
-                    case 'h':
-                    case 'A':
-                    case 'B':
-                    case 'C':
-                    case 'D':
-                    case 'E':
-                    case 'F':
-                    case 'G':
-                    case 'H':
-                        //does not increment i
-                        goto endOfLoop2;
-
-                    default:
-                        //illegal character
-                        assert(false);
-                }
-                i++;
-            }
-            endOfLoop2:
-
-            Rank enPassantRank = RANK_INVALID;
-            File enPassantFile = FILE_INVALID;
-
-            while (true){
-                if(i==fenString.size()){
-                    return false;
-                }
-                char c = fenString[i];
-                i++;
-                switch (c) {
-                    case ' ':
-                        break;
-                    case 'a':
-                    case 'b':
-                    case 'c':
-                    case 'd':
-                    case 'e':
-                    case 'f':
-                    case 'g':
-                    case 'h':
-                    case 'A':
-                    case 'B':
-                    case 'C':
-                    case 'D':
-                    case 'E':
-                    case 'F':
-                    case 'G':
-                    case 'H':
-                        if(! ((enPassantFile == FILE_INVALID) && (enPassantRank == RANK_INVALID))){
-                            return false;
-                        }
-                        enPassantFile = parseFile(c);
-                        break;
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                        if(!((enPassantFile != FILE_INVALID) && (enPassantRank == RANK_INVALID))){
-                            return false;
-                        }
-                        enPassantRank = parseRank(c);
-                        enPassantSquare = makeSquare(enPassantRank, enPassantFile);
-                        return true;
-                    case '-':
-                        enPassantSquare = SQ_INVALID;
-                        return true;
-                    default:
-                        assert(false);
-                }
-            }
-
-        }
+        ostream & getFen(ostream &outputStream) const;
     };
 }
 

@@ -77,8 +77,13 @@ CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/Move.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/MoveInputData.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/MoveList.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/Search.h
+CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/test.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../include/types.h
 CMakeFiles/chessWasm.dir/src/main.cpp.o: ../src/main.cpp
+
+CMakeFiles/chessWasm.dir/src/test.cpp.o: ../include/Bitboards.h
+CMakeFiles/chessWasm.dir/src/test.cpp.o: ../include/types.h
+CMakeFiles/chessWasm.dir/src/test.cpp.o: ../src/test.cpp
 
 CMakeFiles/chessWasm.dir/src/types.cpp.o: ../include/types.h
 CMakeFiles/chessWasm.dir/src/types.cpp.o: ../src/types.cpp

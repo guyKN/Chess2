@@ -1,1 +1,1 @@
-/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++     @CMakeFiles/chessAscii.dir/objects1.rsp  -o chessAscii.js 
+/home/guyknaan/webassembly/emsdk/upstream/emscripten/em++  -g -g   @CMakeFiles/chessAscii.dir/objects1.rsp  -o chessAscii.js 

@@ -11,6 +11,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/chessWasm.dir/src/Search.cpp.o"
   "CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o"
   "CMakeFiles/chessWasm.dir/src/main.cpp.o"
+  "CMakeFiles/chessWasm.dir/src/test.cpp.o"
   "CMakeFiles/chessWasm.dir/src/types.cpp.o"
 )
 

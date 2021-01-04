@@ -78,8 +78,13 @@ CMakeFiles/chessAscii.dir/src/main.cpp.o
  ../include/MoveInputData.h
  ../include/MoveList.h
  ../include/Search.h
+ ../include/test.h
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
+CMakeFiles/chessAscii.dir/src/test.cpp.o
+ ../include/Bitboards.h
+ ../include/types.h
+ /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/test.cpp
 CMakeFiles/chessAscii.dir/src/types.cpp.o
  ../include/types.h
  /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.cpp

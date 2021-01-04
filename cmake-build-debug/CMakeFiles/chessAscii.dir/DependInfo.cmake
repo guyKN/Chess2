@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/Search.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/jsInterface.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/main.cpp.obj"
+  "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/test.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/test.cpp.obj"
   "C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.cpp" "C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir/src/types.cpp.obj"
   )
 set(CMAKE_CXX_COMPILER_ID "MSVC")

@@ -122,6 +122,9 @@
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp">
 			<Option target="chessAscii"/>
 		</Unit>
+		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/test.cpp">
+			<Option target="chessAscii"/>
+		</Unit>
 		<Unit filename="C:/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.cpp">
 			<Option target="chessAscii"/>
 		</Unit>

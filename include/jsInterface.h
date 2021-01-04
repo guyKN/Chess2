@@ -19,39 +19,41 @@ using std::cout;
 namespace WASM {
 
     extern "C" {
-    void WASM_initData();
+        void WASM_initData();
 
-    int WASM_pieceOn(int square);
+        int WASM_pieceOn(int square);
 
-    void WASM_calculateMoves();
+        void WASM_calculateMoves();
 
-    bool WASM_isLegalMoveStart(int square);
+        bool WASM_isLegalMoveStart(int square);
 
-    void WASM_calculateMovesFrom(int square);
+        void WASM_calculateMovesFrom(int square);
 
-    bool WASM_isLegalMoveTo(int dstSquare);
+        bool WASM_isLegalMoveTo(int dstSquare);
 
-    bool WASM_doMoveIfLegal(int srcSquare, int dstSquare);
+        bool WASM_doMoveIfLegal(int srcSquare, int dstSquare);
 
-    void WASM_undoMove();
+        void WASM_undoMove();
 
-    int WASM_checkWinner();
+        int WASM_checkWinner();
 
-    void WASM_printMoves();
+        void WASM_printMoves();
 
-    bool WASM_currentPlayer();
+        bool WASM_currentPlayer();
 
-    void WASM_resetBoard();
+        void WASM_resetBoard();
 
-    bool WASM_isThreatTo(Square square);
+        bool WASM_gotoPos();
 
-    void WASM_printBitboards();
+        bool WASM_isThreatTo(Square square);
 
-    bool WASM_is64bit();
+        void WASM_printBitboards();
 
-    void WASM_doAiMove();
+        bool WASM_is64bit();
 
-    void WASM_runTest();
+        void WASM_doAiMove();
+
+        void WASM_runTest();
 
     };
 }

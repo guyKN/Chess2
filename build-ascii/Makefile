@@ -393,6 +393,33 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/test.o: src/test.cpp.o
+
+.PHONY : src/test.o
+
+# target to build an object file
+src/test.cpp.o:
+	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/test.cpp.o
+.PHONY : src/test.cpp.o
+
+src/test.i: src/test.cpp.i
+
+.PHONY : src/test.i
+
+# target to preprocess a source file
+src/test.cpp.i:
+	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/test.cpp.i
+.PHONY : src/test.cpp.i
+
+src/test.s: src/test.cpp.s
+
+.PHONY : src/test.s
+
+# target to generate assembly for a file
+src/test.cpp.s:
+	$(MAKE) -f CMakeFiles/chessAscii.dir/build.make CMakeFiles/chessAscii.dir/src/test.cpp.s
+.PHONY : src/test.cpp.s
+
 src/types.o: src/types.cpp.o
 
 .PHONY : src/types.o
@@ -459,6 +486,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/test.o"
+	@echo "... src/test.i"
+	@echo "... src/test.s"
 	@echo "... src/types.o"
 	@echo "... src/types.i"
 	@echo "... src/types.s"

@@ -49,30 +49,11 @@ namespace Chess {
         checkEvasionSquares = BITBOARD_FULL;
         pinned = BITBOARD_EMPTY;
 
-
-        for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
-            bitboardOf(piece) = BITBOARD_EMPTY;
-            threatsOf(piece) = BITBOARD_EMPTY;
-        }
-
-        bitboardOf(PIECE_NONE) = BITBOARD_EMPTY;
-
-        bitboardOf(WHITE) = BITBOARD_EMPTY;
-        bitboardOf(BLACK) = BITBOARD_EMPTY;
-
-        threatsOf(WHITE) = BITBOARD_EMPTY;
-        threatsOf(BLACK) = BITBOARD_EMPTY;
-
-        SquareMask squareMask = SQUARE_MASK_FIRST;
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
             Piece piece = piecesArray[square];
             pieceOn(square) = piece;
-            bitboardOf(piece) |= squareMask;
-            if (piece != PIECE_NONE) {
-                bitboardOf(playerOf(piece)) |= squareMask;
-            }
-            squareMask <<= 1;
         }
+        updateBitboards();
     }
 
     std::ostream &operator<<(std::ostream &os, const ChessBoard &chessBoard) {
@@ -97,6 +78,8 @@ namespace Chess {
         cout << "\n" << (isCheck ? "Check" : "Not Check");
 
         cout << "\n" << (isDoubleCheck ? "Double Check" : "Not Double Check");
+
+        cout << "\nen passant square: " << toString(enPassantSquare);
 
         cout << "\nPinned: ";
 
@@ -151,6 +134,9 @@ namespace Chess {
         cout << "\nBlack Pieces:";
         printBitboard(getBitboardOf(BLACK));
 
+        cout << "\nFen String: \n";
+        getFen(cout);
+
         cout << *this;
     }
 
@@ -160,49 +146,6 @@ namespace Chess {
             printBitboards();
             assert(false);
         }
-    }
-
-    void ChessBoard::doMoveOld(Move &move) {
-        /// returns the WinState after the move
-
-        //todo: see if execution time changes between making masks once as variable or as temp objects
-        assert(move.isOk());
-        assert(move.dstPiece == pieceOn(move.dstSquare));
-
-        bitboardOf(PIECE_NONE) |= maskOf(move.srcSquare);
-        (bitboardOf(move.srcPiece) &= notSquareMask(move.srcSquare));
-        (bitboardOf(move.dstPiece)) &= notSquareMask(move.dstSquare);
-        bitboardOf(move.promotionPiece) |= maskOf(move.dstSquare);
-        ((bitboardOf(currentPlayer)) &= notSquareMask(move.srcSquare)) |= maskOf(move.dstSquare);
-        bitboardOf(~currentPlayer) &= notSquareMask(move.dstSquare);
-
-        pieceOn(move.srcSquare) = PIECE_NONE;
-        pieceOn(move.dstSquare) = move.promotionPiece;
-
-        if (move.isEnPassant) {
-            Piece enemyPawn = makePiece(PIECE_TYPE_PAWN, ~currentPlayer);
-            bitboardOf(PIECE_NONE) |= maskOf(enPassantSquare);
-            bitboardOf(enemyPawn) &= notSquareMask(enPassantSquare);
-            bitboardOf(~currentPlayer) &= notSquareMask(enPassantSquare);
-            pieceOn(enPassantSquare) = PIECE_NONE;
-        } else if (move.castlingType != CASTLE_NONE) {
-            Piece rook = makePiece(PIECE_TYPE_ROOK, currentPlayer);
-            CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
-
-            (bitboardOf(rook) &= notSquareMask(castlingData.rookSrc)) |= maskOf(castlingData.rookDst);
-            ((bitboardOf(PIECE_NONE)) &= notSquareMask(castlingData.rookDst)) |= maskOf(castlingData.rookSrc);
-
-            ((bitboardOf(currentPlayer)) &= notSquareMask(castlingData.rookSrc)) |= maskOf(castlingData.rookDst);
-
-            pieceOn(castlingData.rookSrc) = PIECE_NONE;
-            pieceOn(castlingData.rookDst) = rook;
-        }
-
-        enPassantSquare = move.pawnForward2Square;
-
-        // update castling legality
-        updateCastling(move);
-        swapPlayer();
     }
 
     MoveRevertData ChessBoard::doMove(const Move &move) {
@@ -658,8 +601,11 @@ namespace Chess {
                     Bitboard checkDirection = slidingPieceData.xrayData.directionTo(bitboardOf(enemyKing));
                     if (checkDirection == BITBOARD_FULL) {
                         printBitboards();
-                        cout << "Square" << toString(square) << " threats: \n";
+                        cout << "Square: " << toString(square) << "\nthreats: ";
                         printBitboard(threats);
+                        cout << "otherPieces: ";
+                        printBitboard(otherPieces);
+                        cout << std::hex << "otherPiecesHex: 0x"<< otherPieces << std::dec << "\n";
                         assert(false);
                     }
                     checkEvasionSquares = (checkDirection & threats) | maskOf(square);
@@ -897,5 +843,315 @@ namespace Chess {
         }
 
         return true;
+    }
+
+    bool ChessBoard::parseFen(string &fenString) {
+
+        whiteMayCastleQueenSide = false;
+        blackMayCastleQueenSide = false;
+        whiteMayCastleKingSide = false;
+        blackMayCastleKingSide = false;
+
+        File file = FILE_FIRST;
+        Rank rank = RANK_LAST;
+        int i=0;
+        while (true) {
+            if(i==fenString.size()){
+                return false;
+            }
+            char c = fenString[i];
+            i++;
+            switch (c) {
+                case ' ':
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8': {
+                    int num = parseInt(c);
+                    cout << "num: " << num << "\n";
+                    for (int _ = 0; _ < num; _++) {
+                        if (!file_ok(file)){
+                            return false;
+                        }
+
+                        pieceOn(makeSquare(rank, file)) = PIECE_NONE;
+                        ++file;
+                    }
+                    break;
+                }
+                case 'P':
+                case 'N':
+                case 'B':
+                case 'R':
+                case 'Q':
+                case 'K':
+                case 'p':
+                case 'n':
+                case 'b':
+                case 'r':
+                case 'q':
+                case 'k': {
+                    if (!file_ok(file)){
+                        return false;
+                    }
+                    Piece piece = parsePiece(c);
+                    pieceOn(makeSquare(rank, file)) = piece;
+                    ++file;
+                    break;
+                }
+                case '/': {
+                    if (file != FILE_AFTER_LAST){
+                        return false;
+                    }
+                    --rank;
+                    file = FILE_FIRST;
+                    break;
+                }
+                default:
+                    //invalid character
+                    return false;
+            }
+            if (rank == RANK_FIRST && file == FILE_AFTER_LAST){
+                break;
+            }
+        }
+
+
+
+        while (true){
+            if(i==fenString.size()){
+                return false;
+            }
+            char c = fenString[i];
+            i++;
+            switch (c) {
+                case ' ':
+                    break;
+                case 'w':
+                case 'W':
+                    currentPlayer = WHITE;
+                    goto endOfLoop;
+                case 'b':
+                case 'B':
+                    currentPlayer = BLACK;
+                    goto endOfLoop;
+                default:
+                    // illegal character
+                    return false;
+            }
+        }
+
+        endOfLoop:
+        bool atLeastOneCastling;
+        while (true){
+            if(i==fenString.size()){
+                return false;
+            }
+            char c = fenString[i];
+            switch (c) {
+                case ' ':
+                    break;
+                case 'K':
+                    if (whiteMayCastleKingSide){
+                        // duplicate of the same castling
+                        return false;
+                    }
+                    whiteMayCastleKingSide = true;
+                    atLeastOneCastling = true;
+                    break;
+                case 'Q':
+                    if (whiteMayCastleQueenSide){
+                        // duplicate of the same castling
+                        return false;
+                    }
+                    whiteMayCastleQueenSide = true;
+                    atLeastOneCastling = true;
+                    break;
+                case 'k':
+                    if (blackMayCastleKingSide){
+                        // duplicate of the same castling
+                        return false;
+                    }
+                    blackMayCastleKingSide = true;
+                    atLeastOneCastling = true;
+                    break;
+                case 'q':
+                    if (blackMayCastleQueenSide){
+                        // duplicate of the same castling
+                        return false;
+                    }
+                    blackMayCastleQueenSide = true;
+                    atLeastOneCastling = true;
+                    break;
+                case '-':
+                    if (!atLeastOneCastling) {
+                        i++;
+                    }
+                    goto endOfLoop2;
+
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                    //does not increment i
+                    goto endOfLoop2;
+
+                default:
+                    //illegal character
+                    return false;
+            }
+            i++;
+        }
+        endOfLoop2:
+
+        Rank enPassantRank = RANK_INVALID;
+        File enPassantFile = FILE_INVALID;
+
+        while (true){
+            if(i==fenString.size()){
+                return false;
+            }
+            char c = fenString[i];
+            i++;
+            switch (c) {
+                case ' ':
+                    break;
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                    if(! ((enPassantFile == FILE_INVALID) && (enPassantRank == RANK_INVALID))){
+                        return false;
+                    }
+                    enPassantFile = parseFile(c);
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                    if(!((enPassantFile != FILE_INVALID) && (enPassantRank == RANK_INVALID))){
+                        return false;
+                    }
+                    enPassantRank = parseRank(c);
+                    enPassantSquare = makeSquare(enPassantRank, enPassantFile);
+                    goto endOfLoop3;
+                case '-':
+                    enPassantSquare = SQ_INVALID;
+                    goto endOfLoop3;
+                default:
+                    return false;
+            }
+        }
+        endOfLoop3:
+        updateBitboards();
+        return true;
+
+    }
+
+    void ChessBoard::updateBitboards() {
+        for (Piece piece = PIECE_FIRST; piece<= PIECE_LAST;++piece){
+            bitboardOf(piece) = BITBOARD_EMPTY;
+        }
+
+        for (Square square = SQ_FIRST; square <= SQ_LAST ; ++square) {
+            Piece piece = pieceOn(square);
+            bitboardOf(piece) |= maskOf(square);
+        }
+        updateBitboardsForPlayer(WHITE);
+        updateBitboardsForPlayer(BLACK);
+
+    }
+
+    ostream & ChessBoard::getFen(ostream &outputStream) const{
+        int numConnectedEmptySquares;
+        for(Rank rank = RANK_LAST; rank>= RANK_FIRST; --rank){
+            numConnectedEmptySquares = 0;
+            for(File file = FILE_FIRST; file<=FILE_LAST;++file){
+                const Piece &piece = getPieceOn(makeSquare(rank, file));
+                if(piece==PIECE_NONE){
+                    numConnectedEmptySquares++;
+                } else{
+                    if (numConnectedEmptySquares>0){
+                        outputStream << numConnectedEmptySquares;
+                        numConnectedEmptySquares = 0;
+                    }
+
+                    outputStream << toChar(piece);
+                }
+            }
+            if (numConnectedEmptySquares>0){
+                outputStream << numConnectedEmptySquares;
+                numConnectedEmptySquares = 0;
+            }
+            if(rank != RANK_FIRST){
+                outputStream << "/";
+            }
+        }
+
+        outputStream << " " << (currentPlayer == WHITE ? "w":"b") << " ";
+
+        if (whiteMayCastleKingSide){
+            outputStream << "K";
+        }
+        if (whiteMayCastleQueenSide){
+            outputStream << "Q";
+        }
+        if(blackMayCastleKingSide){
+            outputStream << "k";
+        }
+        if(blackMayCastleQueenSide){
+            outputStream << "q";
+        }
+
+        if (!whiteMayCastleKingSide && !whiteMayCastleQueenSide && !blackMayCastleKingSide &&
+            !whiteMayCastleQueenSide) {
+            outputStream << "-";
+        }
+        outputStream << " ";
+
+        outputStream << (enPassantSquare==SQ_INVALID ? "-":toString(enPassantSquare));
+
+        return outputStream;
+
+    }
+
+    void ChessBoard::updateBitboardsForPlayer(Player player){
+        bitboardOf(player) = BITBOARD_EMPTY;
+        for (Piece piece= firstPieceOf(player);piece<=lastPieceOf(player);++piece){
+            bitboardOf(player) |=bitboardOf(piece);
+        }
     }
 }

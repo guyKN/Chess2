@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/Search.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/main.cpp.o"
+  "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/test.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/test.cpp.o"
   "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.cpp" "/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir/src/types.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")

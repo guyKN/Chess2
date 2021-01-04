@@ -27,7 +27,12 @@ namespace Chess {
 
 
     static const int NUM_ATTEMPTS_SEARCH_MAGIC_HASH = 1'000'000;
-    static constexpr int LOOKUP_TABLE_LENGTH = 109'526;
+
+#ifdef GENERATE_SEEDS
+    static constexpr int LOOKUP_TABLE_LENGTH = 10'000'000;
+#else
+    static constexpr int LOOKUP_TABLE_LENGTH = 109'654;
+#endif
 
     Bitboard bishopSeeds[NUM_SQUARES] = {0x5230100681840d46, 0xb4964c0808a50114, 0x2408908408841c80, 0x8808410904061f,
                                          0x2106021004c0010a, 0xca41882008047912, 0x7804225490082206, 0x96a9208410111060,
@@ -417,6 +422,7 @@ namespace Chess {
         int maxIndex = 0;
         for (int i = 0; i < numPermutations; ++i) {
             hashed[i] >>= shift;
+            assert(currentBishopRookLookupPointer[hashed[i]] == BITBOARD_EMPTY);
             currentBishopRookLookupPointer[hashed[i]] = legalMoves[i];
             if (hashed[i] > maxIndex) {
                 maxIndex = hashed[i];
@@ -434,7 +440,7 @@ namespace Chess {
         slidingPieceDataOf<pieceType>(square).magicHashData = magicHashData;
         slidingPieceDataOf<pieceType>(square).xrayData = xrayData;
 
-        currentBishopRookLookupPointer += maxIndex;
+        currentBishopRookLookupPointer += maxIndex+1;
 
         if (!useSeeds) {
             lookupTableLength += maxIndex;

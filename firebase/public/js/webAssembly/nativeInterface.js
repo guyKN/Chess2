@@ -90,6 +90,20 @@ class NativeChessBoard{
     }
 
     doAiMove(){
+        try{
         Module._WASM_doAiMove();
+        }catch (e){
+            alert("Error in C++");
+            throw e;
+        }
+    }
+
+    gotoPos(){
+        try{
+        Module._WASM_gotoPos();
+        }catch (e){
+            alert("Error in C++");
+            throw e;
+        }
     }
 }

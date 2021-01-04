@@ -147,7 +147,7 @@ namespace Chess {
         RANK_8,
         RANK_FIRST = RANK_1,
         RANK_LAST = RANK_8,
-        RANK_INVALID = -1
+        RANK_INVALID = -1,
     };
 
     constexpr char RANK_NAMES[] = "12345678";
@@ -183,6 +183,7 @@ namespace Chess {
         FILE_H,
         FILE_FIRST = FILE_A,
         FILE_LAST = FILE_H,
+        FILE_AFTER_LAST = FILE_LAST+1,
         FILE_INVALID = -1
     };
 
