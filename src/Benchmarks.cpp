@@ -81,7 +81,8 @@ namespace Chess {
         if(!FOR_RELEASE){
             cout << "WARNING: doing benchmarks in debug code. Probably not recomended\n";
         }
-        alphaBetaSearchBenchmark(8);
+        initBitboards();
+        alphaBetaSearchBenchmark(7);
         //lookupTableBenchmark(3);
     }
 }

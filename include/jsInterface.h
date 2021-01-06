@@ -51,7 +51,7 @@ namespace WASM {
 
         bool WASM_is64bit();
 
-        void WASM_doAiMove();
+        void WASM_doAiMove(int depth);
 
         void WASM_runTest();
 

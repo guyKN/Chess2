@@ -11,9 +11,6 @@
 
 namespace Chess {
 
-    //todo: implement game history
-    //todo: investigate occasional weird bugs (bishop turning into rook)
-
     const Piece ChessBoard::startingBoard[] = {PIECE_WHITE_ROOK, PIECE_WHITE_KNIGHT, PIECE_WHITE_BISHOP,
                                                PIECE_WHITE_QUEEN, PIECE_WHITE_KING, PIECE_WHITE_BISHOP,
                                                PIECE_WHITE_KNIGHT, PIECE_WHITE_ROOK,
@@ -142,17 +139,20 @@ namespace Chess {
 
     //todo: make this not run in release mode
     void ChessBoard::assertOk() const {
+#if FOR_RELEASE==0
         if (!isOk()) {
             printBitboards();
+            cout << "in assertOk";
             assert(false);
         }
+#endif
     }
 
     MoveRevertData ChessBoard::doMove(const Move &move) {
         assert(move.isOk()); //inside of Chessboard.cpp
         assert(move.dstPiece == pieceOn(move.dstSquare));
         removePieceFrom(move.srcSquare, move.srcPiece, currentPlayer);
-        setPieceOn(move.dstSquare, move.dstPiece, move.srcPiece, currentPlayer);
+        setPieceOn(move.dstSquare, move.dstPiece, move.promotionPiece, currentPlayer);
 
         if (move.castlingType != CASTLE_NONE) {
             Piece rook = makePiece(PIECE_TYPE_ROOK, currentPlayer);
@@ -177,7 +177,7 @@ namespace Chess {
         //todo: incorperate promotions
         Player opponent = ~currentPlayer;
         placePieceOn(move.srcSquare, move.srcPiece, opponent);
-        setPieceOn2(move.dstSquare, move.srcPiece, opponent, move.dstPiece);
+        setPieceOn2(move.dstSquare, move.promotionPiece, opponent, move.dstPiece);
         if (move.isEnPassant) {
             Piece pawn = makePiece(PIECE_TYPE_PAWN, currentPlayer);
             Square prevEnPassantSquare = move.dstSquare + 8 * directionOf(currentPlayer);
@@ -315,6 +315,7 @@ namespace Chess {
         Bitboard pawns = bitboardOf(pawnPiece) & source;
         Bitboard emptySquares = bitboardOf(PIECE_NONE) & target;
         Bitboard enemyPieces = bitboardOf(~player) & target;
+        Bitboard enPassantTarget = signedShift<forward1shift>(target);
 
 
         // move forward 1
@@ -351,21 +352,20 @@ namespace Chess {
         if constexpr (!DISABLE_SPECIAL_MOVES) {
             if (enPassantSquare != SQ_INVALID) {
                 // en passent capture left
-                Bitboard enPassantLeft = signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & target;
+                Bitboard enPassantLeft = signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
                 if (enPassantLeft) {
                     Square dst = enPassantSquare + forward1shift;
                     moveList.addMove(Move::enPassant(enPassantSquare + 1, dst, pawnPiece, pieceOn(dst)));
                 }
 
                 // en passent capture right
-                Bitboard enPassantRight = signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & target;
+                Bitboard enPassantRight = signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
                 if (enPassantRight) {
                     Square dst = enPassantSquare + forward1shift;
                     moveList.addMove(Move::enPassant(enPassantSquare - 1, dst, pawnPiece, pieceOn(dst)));
                 }
             }
         }
-
 
         if constexpr (!DISABLE_SPECIAL_MOVES) {
             // promotion forward
@@ -1071,7 +1071,7 @@ namespace Chess {
                         return false;
                     }
                     enPassantRank = parseRank(c);
-                    enPassantSquare = makeSquare(enPassantRank, enPassantFile);
+                    enPassantSquare = makeSquare(enPassantRank, enPassantFile) - directionOf(currentPlayer)*8;
                     goto endOfLoop3;
                 case '-':
                     enPassantSquare = SQ_INVALID;
@@ -1083,7 +1083,6 @@ namespace Chess {
         endOfLoop3:
         updateBitboards();
         return true;
-
     }
 
     void ChessBoard::updateBitboards() {
@@ -1147,10 +1146,11 @@ namespace Chess {
         }
         outputStream << " ";
 
-        outputStream << (enPassantSquare==SQ_INVALID ? "-":toString(enPassantSquare));
+        outputStream << (enPassantSquare==SQ_INVALID ? "-":toString(enPassantSquare+directionOf(currentPlayer)*8));
+
+        outputStream << " 0 1";
 
         return outputStream;
-
     }
 
     void ChessBoard::updateBitboardsForPlayer(Player player){

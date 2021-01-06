@@ -16,7 +16,7 @@ namespace Chess {
 
         GameHistory gameHistory_;
 
-        int numNodes = 0;
+        int numNonLeafNodes = 0;
         int numLeaves = 0;
 
     public:
@@ -28,7 +28,7 @@ namespace Chess {
         Search() = default;
 
         inline Move bestMove(int depth) {
-            numNodes=0;
+            numNonLeafNodes=0;
             numLeaves=0;
             return alphaBetaRoot(depth);
         }
@@ -42,7 +42,7 @@ namespace Chess {
             return numLeaves;
         }
         int getNumNodes(){
-            return numNodes;
+            return numNonLeafNodes + numLeaves;
         }
 
 

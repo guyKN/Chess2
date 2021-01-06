@@ -1,3 +1,0 @@
-C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/chessAscii.dir
-C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/guykn/Documents/FirebaseProjects/CppChess/cmake-build-debug/CMakeFiles/rebuild_cache.dir

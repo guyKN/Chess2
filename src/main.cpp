@@ -5,6 +5,7 @@
 #include <Search.h>
 #include <test.h>
 #include "Benchmarks.h"
+#include "Uci.h"
 
 using namespace Chess;
 using std::cout;
@@ -33,16 +34,19 @@ using std::cout;
 }
 
 int main(int argc, char *argv[]) {
-    initBitboards();
-    cout << "done with lookup tables\n";
-    if(argc == 1) {
+    if (argc >= 1 && std::string(argv[1]) == "--benchmark"){
+        cout << "benchmarks\n";
+        doBenchmarks();
+        return 0;
+    }
+#ifdef TO_UCI
+    uciMain();
+#endif
 #ifdef TO_COMMAND_LINE
 #if GENERATE_SEEDS==0
+        initBitboards();
         playGame();
 #endif //GENERATE_SEEDS
 #endif //TO_COMMAND_LINE
-    } else if(std::string(argv[1]) == "--benchmark"){
-        doBenchmarks();
-    }
     return 0;
 }

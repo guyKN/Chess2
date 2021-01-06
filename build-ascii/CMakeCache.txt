@@ -222,7 +222,7 @@ Chess_BINARY_DIR:STATIC=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/b
 Chess_SOURCE_DIR:STATIC=/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess
 
 //optimize code for release
-FOR_RELEASE:BOOL=ON
+FOR_RELEASE:BOOL=OFF
 
 //generate seeds for bishop rook and queen movement, rather than
 // using the pre-existing ones

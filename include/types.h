@@ -389,6 +389,9 @@ namespace Chess {
                 return NO_WINNER;
             case MATED:
                 return (currentPlayer == WHITE) ? BLACK_WINS : BLACK_WINS;
+            default:
+                assert(false);
+                return NO_WINNER;
         }
     }
 

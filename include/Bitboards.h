@@ -8,6 +8,7 @@
 #include <random>
 #include <types.h>
 #include <stdexcept>
+#include <nmmintrin.h>
 
 namespace Chess {
 
@@ -380,4 +381,3 @@ namespace Chess {
 
 }
 #endif //CHESS_BITBOARD_H
-

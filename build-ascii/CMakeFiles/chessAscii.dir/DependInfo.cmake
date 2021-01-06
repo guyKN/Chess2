@@ -23,7 +23,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
   "COMMAND_LINE"
-  "FOR_RELEASE=1"
+  "FOR_RELEASE=0"
   "GENERATE_SEEDS=0"
   "TO_COMMAND_LINE"
   )

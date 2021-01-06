@@ -91,7 +91,7 @@ class NativeChessBoard{
 
     doAiMove(){
         try{
-        Module._WASM_doAiMove();
+        Module._WASM_doAiMove(5);
         }catch (e){
             alert("Error in C++");
             throw e;

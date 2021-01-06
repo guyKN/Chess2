@@ -55,7 +55,7 @@ namespace Chess {
 
         EvalData evalData;
 
-        static constexpr bool DISABLE_SPECIAL_MOVES = true;
+        static constexpr bool DISABLE_SPECIAL_MOVES = false;
 
         inline Bitboard &bitboardOf(Piece piece) {
             return pieceBitboards[piece];

@@ -318,11 +318,11 @@ namespace Chess {
     ///for every 1 in the bitboard, output an array where that one turns into a 0 or a 1
     ///eg. 10010 turns into [00000,10000,00010,10010]
     ///the length of the output array must be equal to 2^(number of 1s in the Bitboard)
-    void toggleBits(Bitboard bitboard, Bitboard *outputArray) {
+    void toggleBits(Bitboard bitboard, Bitboard *outputArray, Bitboard* buffer) {
         int population = populationCout(bitboard);
         unsigned int numCombinations = 1u << population;
-        Bitboard individualSquares[population];
-        Bitboard *ptr = &individualSquares[0];
+        Bitboard* individualSquares = buffer;
+        Bitboard *ptr = individualSquares;
         while (bitboard) {
             *(ptr++) = popLsbMask(&bitboard);
         }
@@ -353,7 +353,7 @@ namespace Chess {
         return shift;
     }
 
-    int maxPossibleShift(Bitboard *movesArray, Bitboard *hashedArray, unsigned int arrayLength, int previousBest) {
+    int maxPossibleShift(const Bitboard *movesArray, Bitboard *hashedArray, unsigned int arrayLength, int previousBest) {
         int currentMaxShift = 63;
         for (int i = 0; i < arrayLength; i++) {
             for (int j = 0; j < arrayLength; j++) {
@@ -394,16 +394,17 @@ namespace Chess {
 
 
     template<PieceType pieceType>
-    void initSlidingPieceLookup(Square square, bool useSeeds) {
+    void initSlidingPieceLookup(Square square, Bitboard* buffer, bool useSeeds) {
         static_assert(pieceType == PIECE_TYPE_BISHOP || pieceType == PIECE_TYPE_ROOK,
                       "may only do lookup tables for Rook or Bishop");
         Bitboard blockersMask = getBlockersMask<pieceType>(square);
         int population = populationCout(blockersMask);
         unsigned int numPermutations = 1u << population;
-        Bitboard blockers[numPermutations];
-        Bitboard legalMoves[numPermutations];
-        Bitboard hashed[numPermutations];
-        toggleBits(blockersMask, blockers);
+        Bitboard* blockers = buffer;
+        Bitboard* legalMoves = buffer+numPermutations;
+        Bitboard* hashed = buffer+2*numPermutations;
+        Bitboard* toggleBitsBuffer = buffer+3*numPermutations;
+        toggleBits(blockersMask, blockers, toggleBitsBuffer);
         for (int i = 0; i < numPermutations; ++i) {
             legalMoves[i] = generateMoves_slow<pieceType>(square, blockers[i]);
         }
@@ -467,13 +468,19 @@ namespace Chess {
 
     void initLookupTables() {
         //cout << "Lookup table length: " << LOOKUP_TABLE_LENGTH << "\n";
+        constexpr int maxLookupTablePopulation = 12;
+        constexpr int maxCombinations = 1u << maxLookupTablePopulation;
+        constexpr int bufferSize = maxCombinations*3+maxLookupTablePopulation;
+
+        Bitboard buffer[bufferSize];
+
         currentBishopRookLookupPointer = &rookBishopMoveTable[0];
         SquareMask squareMask = SQUARE_MASK_FIRST;
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square, squareMask <<= 1) {
             knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
             kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
-            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, !GENERATE_SEEDS);
-            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, !GENERATE_SEEDS);
+            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, buffer, !GENERATE_SEEDS);
+            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, buffer, !GENERATE_SEEDS);
         }
         if(GENERATE_SEEDS) {
             printSeeds();

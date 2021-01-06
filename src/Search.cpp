@@ -2,12 +2,13 @@
 // Created by guykn on 12/30/2020.
 //
 
+
+// todo: speed up by remove unnecassary checks
 #include "Search.h"
 
 namespace Chess {
 
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
-        numNodes++;
         Indent indent{4 - depthLeft};
         if(PRINT_DEBUG) if constexpr(PRINT_DEBUG) cout << indent
              << "Calling alphaBeta() with depthLeft = " << depthLeft << " alpha = " << alpha << " beta = " << beta
@@ -19,7 +20,9 @@ namespace Chess {
             return score;
         }
 
-        chessBoard.assertOk();
+        numNonLeafNodes++;
+
+        chessBoard.assertOk(); //todo: remove, or replace with assert isOk()
 
         MoveList moveList;
         GameEndState gameEndState = chessBoard.generateMoves(moveList);

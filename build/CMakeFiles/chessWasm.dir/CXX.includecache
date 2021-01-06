@@ -6,8 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../include/Benchmarks.h
-
 ../include/Bitboards.h
 random
 -
@@ -80,8 +78,6 @@ iostream
 Bitboards.h
 ../include/Bitboards.h
 
-../include/test.h
-
 ../include/types.h
 cstdint
 -
@@ -96,40 +92,6 @@ algorithm
 vector
 -
 
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Benchmarks.cpp
-cassert
--
-chrono
--
-thread
--
-iostream
--
-Bitboards.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
-ChessBoard.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
-Search.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.h
-
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.cpp
-string
--
-jsInterface.h
--
-stdexcept
--
-ChessBoard.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
-iostream
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/iostream
-Bitboards.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
-
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.cpp
-Search.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Search.h
-
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.cpp
 Search.h
 -
@@ -143,20 +105,4 @@ types.h
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/types.h
 jsInterface.h
 /mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/jsInterface.h
-
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/main.cpp
-iostream
--
-Bitboards.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Bitboards.h
-ChessBoard.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/ChessBoard.h
-climits
--
-Search.h
--
-test.h
--
-Benchmarks.h
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/src/Benchmarks.h
 

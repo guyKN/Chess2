@@ -101,9 +101,9 @@ namespace WASM {
         cout << search.gameHistory;
     }
 
-    void WASM_doAiMove(){
+    void WASM_doAiMove(int depth){
         search.setPos(chessBoard);
-        Move move = search.bestMove(5);
+        Move move = search.bestMove(depth);
         chessBoard.doMove(move);
         gameHistory.addMove(move);
     }
@@ -118,7 +118,7 @@ namespace WASM {
     }
 
     bool WASM_gotoPos() {
-        std::string fen = "r1bq1k1r/pppp1ppp/5n2/4pN2/4P3/b1N1B3/1PPK1PPP/R2Q1B1R b - -";
+        std::string fen = "8/8/8/8/1k1p1R2/8/4P3/7K w - - 0 1";
         if(chessBoard.parseFen(fen)){
             return true;
         } else{
