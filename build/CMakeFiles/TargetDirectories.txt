@@ -1,3 +1,0 @@
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/guykn/Documents/FirebaseProjects/CppChess/build/CMakeFiles/chessWasm.dir

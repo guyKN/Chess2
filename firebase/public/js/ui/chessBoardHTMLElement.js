@@ -8,7 +8,7 @@ class ChessBoardHTMLElement extends HTMLTableElement {
     pieceMovementAudio;
 
     static instance;
-    static AI_MOVE_DELAY = 1;
+    static AI_MOVE_DELAY = 0;
 
     static playAgainstAi = true;
 
@@ -178,18 +178,21 @@ class ChessBoardHTMLElement extends HTMLTableElement {
     }
 
     whiteWins(){
+        alert("White Wins!");
         this.winnerDisplay.innerText = "White Wins!";
         this.isGameActive = false;
         this.restartButton.style.visibility = "visible";
     }
 
     blackWins(){
+        alert("Black Wins!");
         this.winnerDisplay.innerText = "Black Wins!";
         this.isGameActive = false;
         this.restartButton.style.visibility = "visible";
     }
 
     draw(){
+        alert("It's a Draw!");
         this.winnerDisplay.innerText = "It's a Draw!";
         this.isGameActive = false;
         this.restartButton.style.visibility = "visible";
