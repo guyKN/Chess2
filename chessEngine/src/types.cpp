@@ -130,7 +130,7 @@ namespace Chess {
     }
 
     char toChar(PieceType pieceType) {
-        char pieceTypeToChar[] = " NBRQK";
+        char pieceTypeToChar[] = " nbrqk";
         return pieceTypeToChar[pieceType];
     }
 

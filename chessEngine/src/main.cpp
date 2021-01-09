@@ -5,6 +5,7 @@
 #include <Search.h>
 #include <test.h>
 #include <string>
+#include <NewMove.h>
 #include "Benchmarks.h"
 #include "Uci.h"
 
@@ -37,6 +38,30 @@ using std::cout;
     }
 }
 
+void test(){
+    NewMove move = NewMove::normalMove(SQ_E2, SQ_E4);
+    assert(move.moveType() == NewMove::NORMAL_MOVE);
+    cout << move << "\n";
+    move = NewMove::castle(CASTLE_BLACK_KING_SIDE);
+    assert(move.moveType() == NewMove::CASTLING_MOVE);
+    assert(move.castlingType()==CASTLE_BLACK_KING_SIDE);
+    cout << move << "\n";
+    move = NewMove::promotionMove(SQ_C7, SQ_C8, PIECE_TYPE_QUEEN);
+    assert(move.moveType()==NewMove::PROMOTION_MOVE);
+
+    move = NewMove::pawnForward2(SQ_E7, SQ_E5);
+    assert(move.moveType()==NewMove::EN_PASSANT_MOVE);
+    assert(!move.isEnPassantCapture());
+    cout << move << "\n";
+
+    move = NewMove::enPassant(SQ_D5, SQ_C6);
+    assert(move.moveType()==NewMove::EN_PASSANT_MOVE);
+    assert(move.isEnPassantCapture());
+    cout << move << "\n";
+
+
+}
+
 int main(int argc, char *argv[]) {
 #ifdef TO_WASM
     initAll();
@@ -65,7 +90,9 @@ int main(int argc, char *argv[]) {
             } catch (std::invalid_argument &e) {
                 cout << "Invalid arguments\n";
             }
-        } else {
+        } else if (firstArg=="--test") {
+            test();
+        } else{
             cout << "Invalid arguments\n";
         }
     }

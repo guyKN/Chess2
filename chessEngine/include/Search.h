@@ -16,6 +16,7 @@ namespace Chess {
 
         int numNonLeafNodes = 0;
         int numLeaves = 0;
+        int numCutoffs;
 
 
 

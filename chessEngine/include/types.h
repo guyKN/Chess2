@@ -45,14 +45,13 @@ namespace Chess {
     std::ostream &printArray(T *array, int length, const std::string& prefix="", ostream &outputStream = std::cout) {
         outputStream << '{';
         for (int i = 0; i < length; i++) {
-            //todo: add back 0x
             outputStream << prefix << array[i] << ", ";
         }
         outputStream << '}' << std::dec;
         return outputStream;
     }
 
-    enum Square : int {
+    enum Square : int{
         SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
         SQ_A2, SQ_B2, SQ_C2, SQ_D2, SQ_E2, SQ_F2, SQ_G2, SQ_H2,
         SQ_A3, SQ_B3, SQ_C3, SQ_D3, SQ_E3, SQ_F3, SQ_G3, SQ_H3,
@@ -63,7 +62,7 @@ namespace Chess {
         SQ_A8, SQ_B8, SQ_C8, SQ_D8, SQ_E8, SQ_F8, SQ_G8, SQ_H8,
         SQ_FIRST = SQ_A1,
         SQ_LAST = SQ_H8,
-        SQ_INVALID = -1
+        SQ_INVALID = SQ_LAST+1
     };
 
     constexpr int NUM_SQUARES = 64;
@@ -122,7 +121,7 @@ namespace Chess {
     }
 
     constexpr inline SquareMask maskOf(Square square) {
-        return static_cast<SquareMask>(SQUARE_MASK_FIRST << square);
+        return static_cast<SquareMask>(static_cast<Bitboard>(SQUARE_MASK_FIRST) << static_cast<unsigned int>(square));
     }
 
     bool squareMask_ok(SquareMask squareMask);
@@ -167,6 +166,10 @@ namespace Chess {
 
     char toChar(Rank rank);
 
+    inline std::ostream& operator<<(std::ostream& os, Rank rank){
+        return os << toChar(rank);
+    }
+
     Rank parseRank(char rankChar);
 
     ENABLE_INCR_OPERATORS_ON(Rank)
@@ -204,6 +207,10 @@ namespace Chess {
 
     char toChar(File file);
 
+    inline std::ostream& operator<<(std::ostream& os, File file){
+        return os << toChar(file);
+    }
+
     File parseFile(char file);
 
     ENABLE_INCR_OPERATORS_ON(File)
@@ -227,6 +234,11 @@ namespace Chess {
     inline constexpr Square makeSquare(Rank rank, File file) {
         return static_cast<Square>(rank * 8 + file);
     }
+
+    inline std::ostream& operator<<(std::ostream& os, Square square){
+        return os << fileOf(square) << rankOf(square);
+    }
+
 
     enum Player : bool {
         WHITE = true,
@@ -283,11 +295,6 @@ namespace Chess {
             default:
                 return false;
         }
-    }
-
-    constexpr inline unsigned int promotionCode(PieceType pieceType){
-        assert(isValidPromotion(pieceType));
-        return pieceType-1;
     }
 
     enum Piece : int {
@@ -407,7 +414,7 @@ namespace Chess {
             case NO_GAME_END:
                 return NO_WINNER;
             case MATED:
-                return (currentPlayer == WHITE) ? BLACK_WINS : BLACK_WINS;
+                return (currentPlayer == WHITE) ? BLACK_WINS : WHITE_WINS;
             default:
                 assert(false);
                 return NO_WINNER;
@@ -472,15 +479,15 @@ namespace Chess {
     constexpr int MAX_MOVES = 256;
 
     struct Indent{
-        Indent(int indent);
+        explicit Indent(int indent);
 
         int indent;
 
         friend ostream &operator<<(ostream &os, const Chess::Indent &indent);
     };
 
-    inline int parseInt(char c){
-        return c - '0';
+    inline int parseDigit(char digit){
+        return digit - '0';
     }
 }
 #endif //CHESS_TYPES_H

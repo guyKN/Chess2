@@ -894,7 +894,7 @@ namespace Chess {
                 case '6':
                 case '7':
                 case '8': {
-                    int num = parseInt(c);
+                    int num = parseDigit(c);
                     cout << "num: " << num << "\n";
                     for (int _ = 0; _ < num; _++) {
                         if (!file_ok(file)) {
