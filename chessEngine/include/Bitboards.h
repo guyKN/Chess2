@@ -137,22 +137,25 @@ namespace Chess {
             return moveSquares & disableCastlingMask;
         }
 
+        CastlingData(const CastlingData&) = delete;
+        CastlingData(const CastlingData&&) = delete;
+
         inline bool mayCastle(Bitboard pieces, Bitboard threats) const {
             return !(pieces & mustBeEmpty) && !(threats & mustNotBeInCheck);
         }
 
-        static inline CastlingData fromCastlingType(CastlingType castlingType) {
+        static inline const CastlingData& fromCastlingType(CastlingType castlingType) {
             assert(castlingType >= 0 && castlingType < NUM_CASTLE_TYPES);
             return castlingData[castlingType];
         }
 
         template<Player player>
-        static inline CastlingData kingSideCastleOf() {
+        static inline const CastlingData& kingSideCastleOf() {
             return fromCastlingType(Chess::kingSideCastleOf<player>());
         }
 
         template<Player player>
-        static inline CastlingData queenSideCastleOf() {
+        static inline const CastlingData& queenSideCastleOf() {
             return fromCastlingType(Chess::queenSideCastleOf<player>());
         }
 
@@ -414,7 +417,7 @@ namespace Chess {
 #endif
 
 /// popLsb() finds and clears the least significant bit in a non-zero bitboard
-
+//todo: check if passing by refrence mat be faster
     inline Square popLsb(Bitboard *b) {
         assert(*b);
         const Square s = lsb(*b);

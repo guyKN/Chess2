@@ -15,7 +15,7 @@ using std::ostream;
 using std::cout;
 namespace Chess {
     class MoveList {
-        Move moves[MAX_MOVES] = {};
+        Move moves[MAX_MOVES];//todo: remove default initialization!!!
         Move *currentMove = moves;
     public:
         MoveList() = default;
@@ -34,6 +34,17 @@ namespace Chess {
             *(currentMove) = move;
             currentMove++;
             assert(size() < MAX_MOVES);
+        }
+
+        inline void addPromotions(Square src, Square dst){
+            // optimize: should inline?
+            // optimize: should loop?
+            // optimize: should optimize a tiny bit by removing the -1 in promotionMove
+
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_QUEEN));
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_ROOK));
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_BISHOP));
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_KNIGHT));
         }
 
         inline int size() const {

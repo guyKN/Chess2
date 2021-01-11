@@ -55,9 +55,10 @@ namespace WASM {
 
         void WASM_runTest();
 
+        bool WASM_doMoveSequence();
+
     };
 }
-
 
 #endif //CHESS_WEBASSEMBLY_H
 #pragma clang diagnostic pop

@@ -146,5 +146,14 @@ namespace Chess {
         return os;
     }
 
+    PieceType parsePieceType(char c) {
+        for(PieceType pieceType = PIECE_TYPE_FIRST; pieceType<=PIECE_TYPE_LAST_NOT_NONE;++pieceType){
+            if(c==toChar(pieceType)){
+                return pieceType;
+            }
+        }
+        return PIECE_TYPE_INVALID;
+    }
+
     Indent::Indent(int indent) : indent(indent) {}
 }

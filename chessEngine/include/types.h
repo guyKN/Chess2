@@ -280,10 +280,24 @@ namespace Chess {
         PIECE_TYPE_ROOK,
         PIECE_TYPE_QUEEN,
         PIECE_TYPE_KING,
-        PIECE_TYPE_NONE
+        PIECE_TYPE_NONE,
+        PIECE_TYPE_INVALID,
+        PIECE_TYPE_FIRST = PIECE_TYPE_PAWN,
+        PIECE_TYPE_LAST_NOT_NONE = PIECE_TYPE_KING,
+        PIECE_TYPE_LAST = PIECE_TYPE_NONE
     };
 
+    constexpr inline bool pieceTypeOk(PieceType pieceType){
+        return pieceType >=PIECE_TYPE_FIRST && pieceType<=PIECE_TYPE_LAST;
+    }
+
+    inline PieceType& operator++(PieceType& pieceType){
+        return pieceType = static_cast<PieceType>(pieceType+1);
+    }
+
     constexpr int NUM_PIECE_TYPE = 6;
+
+    PieceType parsePieceType(char c);
 
     constexpr bool isValidPromotion(PieceType pieceType) {
         switch (pieceType) {
@@ -327,6 +341,10 @@ namespace Chess {
     ENABLE_INCR_OPERATORS_ON(Piece)
 
     char toChar(Piece piece);
+
+    inline ostream& operator<<(ostream& os, Piece piece){
+        return os << toChar(piece);
+    }
 
     char toChar(PieceType pieceType);
 

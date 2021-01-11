@@ -7,7 +7,7 @@
 
 
 #include "types.h"
-#include "Move.h"
+#include "OldMove.h"
 #include "MoveInputData.h"
 #include "MoveList.h"
 #include "GameHistory.h"
@@ -52,6 +52,8 @@ namespace Chess {
         CastlingRights castlingRights;
 
         Square enPassantSquare;
+
+        Piece capturedPiece;
     };
 
     //todo: expirement with additional representations in addition to bitboards
@@ -224,8 +226,8 @@ namespace Chess {
             }
         }
 
-        inline MoveRevertData getMoveRevertData() {
-            return MoveRevertData{castlingRights, enPassantSquare};
+        inline MoveRevertData getMoveRevertData(Piece capturedPiece) {
+            return MoveRevertData{castlingRights, enPassantSquare, capturedPiece};
         }
 
         template<Player player>
@@ -311,7 +313,7 @@ namespace Chess {
 
         bool doMoves(vector<MoveInputData> &moves);
 
-        bool doMoves(std::stringstream &moves);
+        bool doMoves(std::stringstream &moveStream);
 
         inline Player getCurrentPlayer() {
             return currentPlayer;
@@ -350,7 +352,7 @@ namespace Chess {
             return threatsOf(~currentPlayer);
         }
 
-        inline Bitboard getCheckEvasions() {
+        inline Bitboard getCheckEvasions() const{
             return checkEvasionSquares;
         }
 

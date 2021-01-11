@@ -10,7 +10,7 @@ Chess::Move Chess::MoveList::getMoveFromInputData(MoveInputData moveInput) const
             return *move;
         }
     }
-    return Move::invalidMove;
+    return Move::invalid();
 }
 
 ostream &Chess::operator<<(ostream &outStream, const Chess::MoveList &moveList) {
@@ -23,7 +23,7 @@ ostream &Chess::operator<<(ostream &outStream, const Chess::MoveList &moveList) 
 
 void Chess::MoveList::movesFrom(Chess::Square square, MoveList &moveList) const {
     for (const Move* move = firstMove(); move < lastMove(); move++) {
-        if(move->srcSquare == square){
+        if(move->src() == square){
             moveList.addMove(*move);
         }
     }

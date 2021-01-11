@@ -16,9 +16,8 @@ namespace Chess {
 
         int numNonLeafNodes = 0;
         int numLeaves = 0;
-        int numCutoffs;
 
-
+        Score bestLineScore;
 
     public:
 
@@ -48,10 +47,15 @@ namespace Chess {
             return numNonLeafNodes + numLeaves;
         }
 
+        inline Score getScore() const{
+            return bestLineScore;
+        }
+
 
 
 
     private:
+
 
         Score alphaBeta(Score alpha, Score beta, int depthLeft);
 

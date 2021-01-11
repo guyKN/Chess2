@@ -15,6 +15,7 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
     add_compile_definitions(FOR_RELEASE=1)
     if(CMAKE_COMPILER_IS_GNUCC)
         set(CMAKE_CXX_FLAGS "-O3")
+        set(CMAKE_CXX_FLAGS "-march=native")
     endif()
 elseif(CMAKE_BUILD_TYPE MATCHES Debug)
     message(STATUS "debug mode.")
@@ -52,6 +53,7 @@ if(WASM)
                 _WASM_printBitboards,                                                                    \
                 _WASM_undoMove,                                                                          \
                 _WASM_gotoPos,                                                                           \
+                _WASM_doMoveSequence,                                                                    \
                 _WASM_runTest                                                                            \
                 ]'")
 else(WASM)

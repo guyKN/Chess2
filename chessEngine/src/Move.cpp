@@ -1,77 +1,44 @@
 //
-// Created by guykn on 12/9/2020.
+// Created by guykn on 1/9/2021.
 //
 
 #include "Move.h"
-#include <iostream>
-#include <string>
-#include <Bitboards.h>
+namespace Chess{
+    const Move Move::castlingMoves[NUM_CASTLE_TYPES] = {castle_slow(CASTLE_WHITE_KING_SIDE),
+                                                        castle_slow(CASTLE_WHITE_QUEEN_SIDE),
+                                                        castle_slow(CASTLE_BLACK_KING_SIDE),
+                                                        castle_slow(CASTLE_BLACK_QUEEN_SIDE)};
 
-namespace Chess {
-    Move Move::invalidMove(SQ_INVALID, SQ_INVALID, PIECE_INVALID, PIECE_INVALID);
-
-
-    std::ostream& Move::longNotation(std::ostream &outputStream) const {
-        if (!isOk()) {
-            outputStream << "ILLEGAL";
-        } else {
-            if (castlingType != CASTLE_NONE) {
-                outputStream << (isKingSide(castlingType) ? "o-o  " : "o-o-o");
-            } else if (pieceTypeOf(srcPiece) != PIECE_TYPE_PAWN) {
-                outputStream << toChar(pieceTypeOf(srcPiece))
-                             << toString(srcSquare)
-                             << ((dstPiece == PIECE_NONE) ? '-' : 'x')
-                             << toString(dstSquare);
-            } else {
-                outputStream << Chess::toString(srcSquare)
-                             << ((dstPiece == PIECE_NONE) ? '-' : 'x')
-                             << toString(dstSquare)
-                             << ' ';
-            }
-        }
-        return outputStream;
-    }
-
-    bool Move::isOk() const {
-        return square_ok(srcSquare) &&
-               square_ok(dstSquare) &&
-               srcSquare != dstSquare &&
-               srcPiece != PIECE_NONE && pieceOk(srcPiece) &&
-               pieceOk(dstPiece) &&
-               (dstPiece == PIECE_NONE || ~playerOf(dstPiece) == playerOf(srcPiece)) &&
-               (pieceOk(promotionPiece)) &&
-               playerOf(promotionPiece) == playerOf(srcPiece) &&
-               (promotionPiece == srcPiece || isValidPromotion(pieceTypeOf(promotionPiece)));
-    }
-
-    bool Move::operator==(const Move &other) const {
-        return this->srcPiece == other.srcPiece &&
-               this->dstPiece == other.dstPiece &&
-               this->srcSquare == other.srcSquare &&
-               this->dstSquare == other.dstSquare &&
-               this->promotionPiece == other.promotionPiece &&
-               this->castlingType == other.castlingType;
+    Move Move::castle_slow(CastlingType castlingType) {
+        const CastlingData &castlingData = CastlingData::fromCastlingType(castlingType);
+        Square src = castlingData.kingSrc;
+        Square dst = castlingData.kingDst;
+        return Move(src | (dst << DST_SHIFT) | CASTLING_MOVE | (castlingType << EXTRA_CODE_SHIFT));
     }
 
     bool Move::matchesMoveInput(MoveInputData moveInputData) const {
-        return moveInputData.src == srcSquare &&
-               moveInputData.dst == dstSquare;
+
+        if (moveType() == CASTLING_MOVE) {
+            bool isKingSideCastle = isKingSide(castlingType());
+            if ((isKingSideCastle && moveInputData.isKingSideCastle) ||
+                (!isKingSideCastle && moveInputData.isQueenSideCastle)){
+                return true;
+            }
+        }
+
+        PieceType promotionPiece = moveType() == PROMOTION_MOVE ? promotionPieceType() : PIECE_TYPE_NONE;
+        return (moveInputData.src == src() &&
+                moveInputData.dst == dst() &&
+                moveInputData.promotionPiece == promotionPiece);
     }
 
-    Move::Move(CastlingData castlingData) :
-            srcSquare(castlingData.kingSrc),
-            dstSquare(castlingData.kingDst),
-            srcPiece(makePiece(PIECE_TYPE_KING, playerOf(castlingData.castlingType))),
-            dstPiece(PIECE_NONE),
-            promotionPiece(srcPiece),
-            pawnForward2Square(SQ_INVALID),
-            castlingType(castlingData.castlingType),
-            isEnPassant(false){}
+    ostream &operator<<(ostream &os, const Move &move) {
+        os << move.src() << move.dst();
+        if(move.moveType() == Move::PROMOTION_MOVE){
+            os << toChar(move.promotionPieceType());
+        }
+        return os;
+    }
 
-    const Move Move::castleMoves[NUM_CASTLE_TYPES] = {
-            Move(CastlingData::fromCastlingType(CASTLE_WHITE_KING_SIDE)),
-            Move(CastlingData::fromCastlingType(CASTLE_WHITE_QUEEN_SIDE)),
-            Move(CastlingData::fromCastlingType(CASTLE_BLACK_KING_SIDE)),
-            Move(CastlingData::fromCastlingType(CASTLE_BLACK_QUEEN_SIDE))
-    };
+
 }

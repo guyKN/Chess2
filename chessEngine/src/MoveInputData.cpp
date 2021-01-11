@@ -4,25 +4,51 @@
 
 #include <string>
 #include "MoveInputData.h"
+#include "Uci.h"
 namespace Chess {
-    const MoveInputData MoveInputData::invalidMove(SQ_INVALID, SQ_INVALID);
-    MoveInputData::MoveInputData(const Chess::Square src, const Chess::Square dst) : src(src), dst(dst) {}
+    const MoveInputData MoveInputData::invalidMove{SQ_INVALID, SQ_INVALID};
 
-    Chess::MoveInputData Chess::MoveInputData::parse(string moveString) {
-        moveString = removeSpaces(moveString);
-        if (moveString.length() != 4) {
-            return invalidMove;
+    MoveInputData MoveInputData::parse(const std::string& str) {
+        if (str == "o-o") {
+            return {
+                    SQ_FIRST,
+                    SQ_FIRST,
+                    PIECE_TYPE_NONE,
+                    true,
+                    false
+            };
+        } else if (str == "o-o-o") {
+            return {
+                    SQ_FIRST,
+                    SQ_FIRST,
+                    PIECE_TYPE_NONE,
+                    false,
+                    true
+            };
+        } else if (str.length() == 4 || str.length() == 5) {
+            File srcFile = parseFile(str[0]);
+            Rank srcRank = parseRank(str[1]);
+
+            File dstFile = parseFile(str[2]);
+            Rank dstRank = parseRank(str[3]);
+            PieceType promotionPiece = str.length() == 5 ? parsePieceType(str[4]) : PIECE_TYPE_NONE;
+
+            if (file_ok(srcFile) && rank_ok(dstRank) && file_ok(dstFile) && rank_ok(dstRank) &&
+                (isValidPromotion(promotionPiece) || (promotionPiece == PIECE_TYPE_NONE))) {
+                return{
+                        makeSquare(srcRank, srcFile),
+                        makeSquare(dstRank, dstFile),
+                        promotionPiece,
+                        false,
+                        false
+                };
+            } else{
+                return MoveInputData::invalidMove;
+            }
+
+
+        } else{
+            return MoveInputData::invalidMove;
         }
-        File fileSrc = parseFile(moveString[0]);
-        Rank rankSrc = parseRank(moveString[1]);
-
-        File fileDst = parseFile(moveString[2]);
-        Rank rankDst = parseRank(moveString[3]);
-
-        if (!file_ok(fileSrc) || !file_ok(fileDst) || !rank_ok(rankSrc) || !rank_ok(rankDst)) {
-            return invalidMove;
-        }
-        return MoveInputData(makeSquare(rankSrc, fileSrc), makeSquare(rankDst, fileDst));
     }
-
 }

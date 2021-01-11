@@ -5,7 +5,7 @@
 #include <Search.h>
 #include <test.h>
 #include <string>
-#include <NewMove.h>
+#include <Move.h>
 #include "Benchmarks.h"
 #include "Uci.h"
 
@@ -23,15 +23,20 @@ using std::cout;
         MoveList moveList;
         chessBoard.generateMoves(moveList);
         cout << chessBoard << "\n" << "Enter a move: ";
-        MoveInputData moveInput = MoveInputData::readMove(cin);
+        MoveInputData moveInput;
+        cin >> moveInput;
+
         Move move = moveList.getMoveFromInputData(moveInput);
         if (move.isOk()) {
-            chessBoard.doMove(move);
-            cout << "eval: " << chessBoard.evaluateWhite() << "\n";
-            search.chessBoard = chessBoard;
-            Move aiMove = search.bestMove(4);
-            cout << aiMove << "\n";
-            chessBoard.doMove(aiMove);
+            MoveRevertData moveRevertData =  chessBoard.doMove(move);
+            assert(chessBoard.isOk());
+            //chessBoard.undoMove(move, moveRevertData);
+
+//            cout << "eval: " << chessBoard.evaluateWhite() << "\n";
+//            search.chessBoard = chessBoard;
+//            Move aiMove = search.bestMove(4);
+//            cout << aiMove << "\n";
+//            chessBoard.doMove(aiMove);
         } else {
             cout << "Invalid move. Please enter a move again.";
         }
@@ -39,25 +44,34 @@ using std::cout;
 }
 
 void test(){
-    NewMove move = NewMove::normalMove(SQ_E2, SQ_E4);
-    assert(move.moveType() == NewMove::NORMAL_MOVE);
+    Move move = Move::normalMove(SQ_E2, SQ_E4);
+    assert(move.moveType() == Move::NORMAL_MOVE);
     cout << move << "\n";
-    move = NewMove::castle(CASTLE_BLACK_KING_SIDE);
-    assert(move.moveType() == NewMove::CASTLING_MOVE);
+    move = Move::castle(CASTLE_BLACK_KING_SIDE);
+    assert(move.moveType() == Move::CASTLING_MOVE);
     assert(move.castlingType()==CASTLE_BLACK_KING_SIDE);
     cout << move << "\n";
-    move = NewMove::promotionMove(SQ_C7, SQ_C8, PIECE_TYPE_QUEEN);
-    assert(move.moveType()==NewMove::PROMOTION_MOVE);
+    move = Move::promotionMove(SQ_C7, SQ_C8, PIECE_TYPE_QUEEN);
+    assert(move.moveType() == Move::PROMOTION_MOVE);
 
-    move = NewMove::pawnForward2(SQ_E7, SQ_E5);
-    assert(move.moveType()==NewMove::EN_PASSANT_MOVE);
+    move = Move::pawnForward2(SQ_E7, SQ_E5);
+    assert(move.moveType() == Move::EN_PASSANT_MOVE);
     assert(!move.isEnPassantCapture());
     cout << move << "\n";
 
-    move = NewMove::enPassant(SQ_D5, SQ_C6);
-    assert(move.moveType()==NewMove::EN_PASSANT_MOVE);
+    move = Move::enPassantCapture(SQ_D5, SQ_C6);
+    assert(move.moveType() == Move::EN_PASSANT_MOVE);
     assert(move.isEnPassantCapture());
     cout << move << "\n";
+
+    int a[5]{};
+    cout << "\n\n\n";
+    cout << a[0] << "\n";
+    cout << a[1]<< "\n";
+    cout << a[2]<< "\n";
+    cout << a[3]<< "\n";
+    cout << a[4]<< "\n";
+
 
 
 }

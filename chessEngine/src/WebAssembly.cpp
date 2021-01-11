@@ -27,6 +27,8 @@ namespace WASM {
 
     Search search;
 
+    Key prevKey;
+
     void WASM_initData() {
         initAll();
     }
@@ -51,16 +53,30 @@ namespace WASM {
     }
 
     bool WASM_isLegalMoveTo(int dstSquare) {
-        return movesFromSquare.getMoveFromInputData(
-                MoveInputData(selectedSquare, static_cast<Square>(dstSquare))).isOk();
+
+        MoveInputData moveInputData = {selectedSquare,
+                                       static_cast<Square>(dstSquare),
+                                       PIECE_TYPE_NONE,
+                                       false,
+                                       false};
+
+
+        return movesFromSquare.getMoveFromInputData(moveInputData).isOk();
     }
 
     bool WASM_doMoveIfLegal(int srcSquare, int dstSquare) {
-        Move move = movesFromSquare.getMoveFromInputData(
-                MoveInputData(static_cast<Square>(srcSquare), static_cast<Square>(dstSquare)));
+
+        MoveInputData moveInputData = {static_cast<Square>(srcSquare),
+                                       static_cast<Square>(dstSquare),
+                                       PIECE_TYPE_NONE,
+                                       false,
+                                       false};
+
+        Move move = movesFromSquare.getMoveFromInputData(moveInputData);
         if (!move.isOk()) {
             return false;
         } else {
+            prevKey = chessBoard.getHashKey();
             moveRevertData = chessBoard.doMove(move);
             gameHistory.addMove(move);
             prevMove = move;
@@ -73,6 +89,7 @@ namespace WASM {
     void WASM_undoMove(){
         chessBoard.undoMove(prevMove, moveRevertData);
         chessBoard.assertOk();
+        assert(chessBoard.getHashKey() == prevKey);
     }
 
     int WASM_checkWinner() {
@@ -118,11 +135,21 @@ namespace WASM {
     }
 
     bool WASM_gotoPos() {
-        std::string fen = "r3k2r/pppp1ppp/8/8/8/8/PPPP1PPP/R3K2R w KQkq - 0 1";
+        std::string fen = "r1bq1bnr/2pk1Qpp/2p1p3/p2p4/3P4/5N2/PPP2PPP/RNBQK2R w - 1 0";
         if(chessBoard.parseFen(fen)){
             return true;
         } else{
             chessBoard = ChessBoard();
+            return false;
+        }
+    }
+
+    bool WASM_doMoveSequence(){
+        std::string moveSequence = "e2e4 b8c6 d2d4 e7e6 e4e5 d7d5 f1b5 a7a6 b5c6 b7c6 g1f3 f7f6 e5f6";
+        std::stringstream stringStream{moveSequence};
+        if (chessBoard.doMoves(stringStream)){
+            return true;
+        } else{
             return false;
         }
     }

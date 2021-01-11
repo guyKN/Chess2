@@ -1,9 +1,6 @@
 //
 // Created by guykn on 12/7/2020.
 //
-
-#include <string>
-#include <WebAssembly.h>
 #include <stdexcept>
 #include "ChessBoard.h"
 #include "iostream"
@@ -160,7 +157,6 @@ namespace Chess {
 #if FOR_RELEASE == 0
         if (!isOk()) {
             printBitboards();
-            cout << "in assertOk";
             assert(false);
         }
 #endif
@@ -173,9 +169,65 @@ namespace Chess {
     }
 
     MoveRevertData ChessBoard::doMove(const Move &move) {
-        assert(move.isOk()); //inside of Chessboard.cpp
-        assert(move.dstPiece == pieceOn(move.dstSquare));
-        removePieceFrom(move.srcSquare, move.srcPiece, currentPlayer);
+
+        //todo: check if it's faster to call src() dst() once
+        // todo: use xor in order to do moves faster (can place and remove pieces with one bb)
+        /// https://www.chessprogramming.org/General_Setwise_Operations#UpdateByMove
+        assert(move.isOk());
+        Piece srcPiece = pieceOn(move.src());
+        Piece dstPiece = pieceOn(move.dst());
+
+        MoveRevertData moveRevertData = getMoveRevertData(dstPiece);
+
+        if (enPassantSquare != SQ_INVALID) {
+            hashKey ^= zobristData.keyOf(fileOf(enPassantSquare));
+        }
+
+        removePieceFrom(move.src(), srcPiece, currentPlayer);
+
+        switch (move.moveType()) {
+            case Move::EN_PASSANT_MOVE:
+                if (move.isEnPassantCapture()) {
+                    Piece enemyPawn = makePiece(PIECE_TYPE_PAWN, ~currentPlayer);
+                    removePieceFrom(enPassantSquare, enemyPawn, ~currentPlayer);
+                    enPassantSquare = SQ_INVALID;
+                } else {
+                    // pawn forward 2
+                    hashKey ^= zobristData.keyOf(fileOf(move.dst()));
+                    enPassantSquare = move.dst();
+                }
+                placePieceOn(move.dst(), srcPiece, currentPlayer);
+                break;
+            case Move::PROMOTION_MOVE:
+                setPieceOn(move.dst(),
+                           dstPiece,
+                           makePiece(move.promotionPieceType(), currentPlayer),
+                           currentPlayer);
+                enPassantSquare = SQ_INVALID;
+                break;
+            case Move::NORMAL_MOVE:
+                setPieceOn(move.dst(),
+                           dstPiece,
+                           srcPiece,
+                           currentPlayer);
+                enPassantSquare = SQ_INVALID;
+                break;
+            case Move::CASTLING_MOVE:
+                Piece rook = makePiece(PIECE_TYPE_ROOK, currentPlayer);
+                const CastlingData &castlingData = CastlingData::fromCastlingType(move.castlingType());
+                placePieceOn(move.dst(), srcPiece, currentPlayer);
+                removePieceFrom(castlingData.rookSrc, rook, currentPlayer);
+                placePieceOn(castlingData.rookDst, rook, currentPlayer);
+                enPassantSquare = SQ_INVALID;
+                break;
+        }
+
+        updateCastling(move);
+        swapPlayer();
+        return moveRevertData;
+
+/*
+        removePieceFrom(move.src(), srcPiece, currentPlayer);
         setPieceOn(move.dstSquare, move.dstPiece, move.promotionPiece, currentPlayer);
 
         if (move.castlingType != CASTLE_NONE) {
@@ -190,36 +242,47 @@ namespace Chess {
 
         MoveRevertData moveRevertData = getMoveRevertData();
 
-        if (enPassantSquare != SQ_INVALID) {
-
-            hashKey ^= zobristData.keyOf(fileOf(enPassantSquare));
-        }
         if (move.pawnForward2Square != SQ_INVALID) {
             hashKey ^= zobristData.keyOf(fileOf(move.pawnForward2Square));
         }
         enPassantSquare = move.pawnForward2Square;
-
-        updateCastling(move);
-        swapPlayer();
-        return moveRevertData;
+*/
     }
 
     void ChessBoard::undoMove(Move &move, MoveRevertData &moveRevertData) {
+        //todo: should pass move by refrence or value
         revertTo(moveRevertData);
         Player opponent = ~currentPlayer;
-        placePieceOn(move.srcSquare, move.srcPiece, opponent);
-        setPieceOn2(move.dstSquare, move.promotionPiece, opponent, move.dstPiece);
-        if (move.isEnPassant) {
-            Piece pawn = makePiece(PIECE_TYPE_PAWN, currentPlayer);
-            Square prevEnPassantSquare = move.dstSquare + 8 * directionOf(currentPlayer);
-            placePieceOn(prevEnPassantSquare, pawn, currentPlayer);
-        } else if (move.castlingType != CASTLE_NONE) {
-            Piece rook = makePiece(PIECE_TYPE_ROOK, opponent);
-            CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
-            removePieceFrom(castlingData.rookDst, rook, opponent);
-            placePieceOn(castlingData.rookSrc, rook, opponent);
+        //todo: see if refrence is faster than direct value
+        Piece currentPiece = pieceOn(move.dst());
+        Piece capturedPiece = moveRevertData.capturedPiece;
+        setPieceOn2(move.dst(), currentPiece, opponent, capturedPiece);
+        switch (move.moveType()) {
+            case Move::EN_PASSANT_MOVE:
+                if (move.isEnPassantCapture()) {
+                    Piece pawn = makePiece(PIECE_TYPE_PAWN, currentPlayer);
+                    Square prevEnPassantSquare = move.dst() + 8 * directionOf(currentPlayer);
+                    placePieceOn(prevEnPassantSquare, pawn, currentPlayer);
+                } else {
+                    //pawn forward 2, nothing to do here
+                }
+                placePieceOn(move.src(), currentPiece, opponent);
+                break;
+            case Move::PROMOTION_MOVE:
+                placePieceOn(move.src(), makePiece(PIECE_TYPE_PAWN, opponent), opponent);
+                break;
+            case Move::NORMAL_MOVE:
+                placePieceOn(move.src(), currentPiece, opponent);
+                break;
+            case Move::CASTLING_MOVE:
+                placePieceOn(move.src(), currentPiece, opponent);
+                Piece rook = makePiece(PIECE_TYPE_ROOK, opponent);
+                const CastlingData &castlingData = CastlingData::fromCastlingType(move.castlingType());
+                removePieceFrom(castlingData.rookDst, rook, opponent);
+                placePieceOn(castlingData.rookSrc, rook, opponent);
+                break;
         }
-        swapPlayer();
+        swapPlayer(); //optimize: move to front of fuction, replace opponent with currentPlayer
     }
 
     void ChessBoard::revertTo(const MoveRevertData &moveRevertData) {
@@ -227,20 +290,21 @@ namespace Chess {
         castlingRights = moveRevertData.castlingRights;
         hashKey ^= zobristData.keyOf(castlingRights);
 
-        if(enPassantSquare!=SQ_INVALID){
+        if (enPassantSquare != SQ_INVALID) {
             File file = fileOf(enPassantSquare);
-            hashKey^=zobristData.keyOf(file);
+            hashKey ^= zobristData.keyOf(file);
         }
-        if(moveRevertData.enPassantSquare!=SQ_INVALID){
+        if (moveRevertData.enPassantSquare != SQ_INVALID) {
             File file = fileOf(moveRevertData.enPassantSquare);
-            hashKey^=zobristData.keyOf(file);
+            hashKey ^= zobristData.keyOf(file);
         }
         enPassantSquare = moveRevertData.enPassantSquare;
     }
 
     //todo: should this be inline?
+    //todo: pass src and dst directly, or just pass a mask
     void ChessBoard::updateCastling(const Move &move) {
-        Bitboard moveSquares = maskOf(move.srcSquare) | maskOf(move.dstSquare);
+        Bitboard moveSquares = maskOf(move.src()) | maskOf(move.dst());
         hashKey ^= zobristData.keyOf(castlingRights);
         CastlingData::updateCastlingRights(moveSquares, castlingRights);
         hashKey ^= zobristData.keyOf(castlingRights);
@@ -340,89 +404,77 @@ namespace Chess {
         constexpr Bitboard rank7mask = maskOf(rank7);
 
         Bitboard pawns = bitboardOf(pawnPiece) & source;
-        Bitboard emptySquares = bitboardOf(PIECE_NONE) & target;
+        Bitboard &emptySquares = bitboardOf(PIECE_NONE);
+        Bitboard emptyTargetSquares = emptySquares & target;
         Bitboard enemyPieces = bitboardOf(~player) & target;
         Bitboard enPassantTarget = signedShift<forward1shift>(target);
 
-
-        // move forward 1
-        Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptySquares;
-        while (forward1Move) {
-            Square dst = popLsb(&forward1Move);
-            moveList.addMove(Move(dst - forward1shift, dst, pawnPiece, pieceOn(dst)));
-        }
-
-        //move forward 2
-        Bitboard forward2Move =
-                signedShift<forward2shift>(pawns & rank2mask) & emptySquares & signedShift<forward1shift>(emptySquares);
-        while (forward2Move) {
-            Square dst = popLsb(&forward2Move);
-            moveList.addMove(
-                    Move::pawnForward2(dst - forward2shift, dst, pawnPiece, pieceOn(dst))
-            );
+        // promotion forward
+        Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptyTargetSquares;
+        while (promotionForward) {
+            Square dst = popLsb(&promotionForward);
+            moveList.addPromotions(dst - forward1shift, dst);
+        }//promotion left
+        Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
+        while (promotionLeft) {
+            Square dst = popLsb(&promotionLeft);
+            moveList.addPromotions(dst - captureLeftShift, dst);
+        }//promotion right
+        Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
+        while (promotionRight) {
+            Square dst = popLsb(&promotionRight);
+            moveList.addPromotions(dst - captureRightShift, dst);
         }
 
         //capture left
         Bitboard captureLeft = signedShift<captureLeftShift>(pawns & ~rank7mask & shiftLeftMask) & enemyPieces;
         while (captureLeft) {
             Square dst = popLsb(&captureLeft);
-            moveList.addMove(Move(dst - captureLeftShift, dst, pawnPiece, pieceOn(dst)));
+            moveList.addMove(Move::normalMove(dst - captureLeftShift, dst));
         }
 
         //capture right
         Bitboard captureRight = signedShift<captureRightShift>(pawns & ~rank7mask & shiftRightMask) & enemyPieces;
         while (captureRight) {
             Square dst = popLsb(&captureRight);
-            moveList.addMove(Move(dst - captureRightShift, dst, pawnPiece, pieceOn(dst)));
+            moveList.addMove(Move::normalMove(dst - captureRightShift, dst));
         }
 
-        if constexpr (!DISABLE_SPECIAL_MOVES) {
-            if (enPassantSquare != SQ_INVALID) {
-                // en passent capture left
-                Bitboard enPassantLeft =
-                        signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
-                if (enPassantLeft) {
-                    Square dst = enPassantSquare + forward1shift;
-                    moveList.addMove(Move::enPassant(enPassantSquare + 1, dst, pawnPiece, pieceOn(dst)));
-                }
+        if (enPassantSquare != SQ_INVALID) {
+            // en passent capture left
+            Bitboard enPassantLeft =
+                    signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
+            if (enPassantLeft) {
+                moveList.addMove(Move::enPassantCapture(enPassantSquare + 1, enPassantSquare + forward1shift));
+            }
 
-                // en passent capture right
-                Bitboard enPassantRight =
-                        signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
-                if (enPassantRight) {
-                    Square dst = enPassantSquare + forward1shift;
-                    moveList.addMove(Move::enPassant(enPassantSquare - 1, dst, pawnPiece, pieceOn(dst)));
-                }
+            // en passent capture right
+            Bitboard enPassantRight =
+                    signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
+            if (enPassantRight) {
+                moveList.addMove(Move::enPassantCapture(enPassantSquare - 1, enPassantSquare + forward1shift));
             }
         }
 
-        if constexpr (!DISABLE_SPECIAL_MOVES) {
-            // promotionBits forward
-            Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptySquares;
-            while (promotionForward) {
-                Square dst = popLsb(&promotionForward);
-                moveList.addMove(
-                        Move::promotion(dst - forward1shift, dst, pawnPiece, pieceOn(dst), queen)
-                );
-            }
+        //move forward 2
+        Bitboard forward2Move =
+                signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
+                signedShift<forward1shift>(emptySquares);
+        while (forward2Move) {
+            Square dst = popLsb(&forward2Move);
+            moveList.addMove(
+                    Move::pawnForward2(dst - forward2shift, dst)
+            );
+        }
 
-            //promotionBits left
-            Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
-            while (promotionLeft) {
-                Square dst = popLsb(&promotionLeft);
-                moveList.addMove(
-                        Move::promotion(dst - captureLeftShift, dst, pawnPiece, pieceOn(dst), queen)
-                );
-            }
-
-            //promotionBits right
-            Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
-            while (promotionRight) {
-                Square dst = popLsb(&promotionRight);
-                moveList.addMove(
-                        Move::promotion(dst - captureRightShift, dst, pawnPiece, pieceOn(dst), queen)
-                );
-            }
+        // move forward 1
+        Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
+        while (forward1Move) {
+            Square dst = popLsb(&forward1Move);
+            moveList.addMove(
+                    Move::normalMove(dst - forward1shift, dst)
+            );
+            //moveList.addMove(Move(dst - forward1shift, dst, pawnPiece, pieceOn(dst)));
         }
     }
 
@@ -436,8 +488,7 @@ namespace Chess {
             Square srcSquare = popLsb(&knights);
             Bitboard knightMoves = knightMovesFrom(srcSquare) & availableSquares;
             while (knightMoves) {
-                Square dstSquare = popLsb(&knightMoves);
-                moveList.addMove(Move(srcSquare, dstSquare, knightPiece, pieceOn(dstSquare)));
+                moveList.addMove(Move::normalMove(srcSquare, popLsb(&knightMoves)));
             }
         }
     }
@@ -454,8 +505,7 @@ namespace Chess {
             Bitboard moves = slidingMovesFrom<pieceType>(srcSquare, otherPieces) &
                              availableSquares;//todo: is | availableSquares necessary
             while (moves) {
-                Square dstSquare = popLsb(&moves);
-                moveList.addMove(Move(srcSquare, dstSquare, piece, pieceOn(dstSquare)));
+                moveList.addMove(Move::normalMove(srcSquare, popLsb(&moves)));
             }
         }
     }
@@ -470,8 +520,7 @@ namespace Chess {
         Square srcSquare = lsb(king);
         Bitboard kingMoves = kingMovesFrom(srcSquare) & availableSquares;
         while (kingMoves) {
-            Square dstSquare = popLsb(&kingMoves);
-            moveList.addMove(Move(srcSquare, dstSquare, kingPiece, pieceOn(dstSquare)));
+            moveList.addMove(Move::normalMove(srcSquare, popLsb(&kingMoves)));
         }
     }
 
@@ -487,64 +536,61 @@ namespace Chess {
     template<Player player>
     GameEndState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
         calculateThreats<~player>();
-        generateKingMoves<player>(moveList);
         if (!isDoubleCheck) {
             Bitboard notPinned = ~pinned;
-            generateAllPieces<player>(moveList, notPinned, checkEvasionSquares);
             if (!isCheck) {
-                if constexpr (!DISABLE_SPECIAL_MOVES) {
-                    Bitboard pieces = bitboardOf(player) | bitboardOf(~player); //todo: speed up
-                    Bitboard threats = threatsOf(~player);
+                //castling
+                Bitboard pieces = bitboardOf(player) | bitboardOf(~player); //todo: speed up
+                Bitboard threats = threatsOf(~player);
 
-                    if (mayCastleKingSide<player>() &&
-                        CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
-                        moveList.addMove(Move::fromCastlingType(kingSideCastleOf<player>()));
-                    }
-
-                    if (mayCastleQueenSide<player>() &&
-                        CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
-                        moveList.addMove(Move::fromCastlingType(queenSideCastleOf<player>()));
-                    }
+                if (mayCastleKingSide<player>() &&
+                    CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
+                    moveList.addMove(Move::castle(kingSideCastleOf<player>()));
                 }
 
+                if (mayCastleQueenSide<player>() &&
+                    CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
+                    moveList.addMove(Move::castle(queenSideCastleOf<player>()));
+                }
+            }
 
-                if (pinned) {
-                    if constexpr (!DISABLE_SPECIAL_MOVES || true) {
-                        //calculate pins
-                        Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
-                        Square kingSquare = lsb(bitboardOf(kingPiece));
+            generateAllPieces<player>(moveList, notPinned, checkEvasionSquares);
 
-                        XrayData rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
-                        XrayData bishopXray = slidingPieceDataOf<PIECE_TYPE_BISHOP>(kingSquare).xrayData;
+            if (!isCheck && pinned) {
+                //calculate pins
+                Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
+                Square kingSquare = lsb(bitboardOf(kingPiece));
 
-                        Bitboard kingRank = rookXray.rankFileDiagonal1();
-                        Bitboard kingFile = rookXray.rankFileDiagonal2();
-                        Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
-                        Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
+                XrayData rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
+                XrayData bishopXray = slidingPieceDataOf<PIECE_TYPE_BISHOP>(kingSquare).xrayData;
 
-                        //todo: optimize for speed. Check whether ifs are helping or slowing down
-                        /// also think about not checking redundant pins, like a pinned knight which can't move at all
-                        /// like a rook pinned on a diagonal or a bishop pinned on a rank
+                Bitboard kingRank = rookXray.rankFileDiagonal1();
+                Bitboard kingFile = rookXray.rankFileDiagonal2();
+                Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
+                Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
 
-                        if (pinned & kingRank) {
-                            generateAllPieces<player>(moveList, pinned & kingRank, kingRank);
-                        }
+                //todo: optimize for speed. Check whether ifs are helping or slowing down
+                /// also think about not checking redundant pins, like a pinned knight which can't move at all
+                /// like a rook pinned on a diagonal or a bishop pinned on a rank
 
-                        if (pinned & kingFile) {
-                            generateAllPieces<player>(moveList, pinned & kingFile, kingFile);
-                        }
+                if (pinned & kingRank) {
+                    generateAllPieces<player>(moveList, pinned & kingRank, kingRank);
+                }
 
-                        if (pinned & kingDiagonal1) {
-                            generateAllPieces<player>(moveList, pinned & kingDiagonal1, kingDiagonal1);
-                        }
+                if (pinned & kingFile) {
+                    generateAllPieces<player>(moveList, pinned & kingFile, kingFile);
+                }
 
-                        if (pinned & kingDiagonal2) {
-                            generateAllPieces<player>(moveList, pinned & kingDiagonal2, kingDiagonal2);
-                        }
-                    }
+                if (pinned & kingDiagonal1) {
+                    generateAllPieces<player>(moveList, pinned & kingDiagonal1, kingDiagonal1);
+                }
+
+                if (pinned & kingDiagonal2) {
+                    generateAllPieces<player>(moveList, pinned & kingDiagonal2, kingDiagonal2);
                 }
             }
         }
+        generateKingMoves<player>(moveList);
 
         if (!moveList.isEmpty()) {
             return NO_GAME_END;
@@ -554,6 +600,7 @@ namespace Chess {
             return DRAW;
         }
     }
+
 
     GameEndState ChessBoard::generateMoves(MoveList &moveList) {
         if (currentPlayer == WHITE) {
@@ -835,10 +882,10 @@ namespace Chess {
         const bool byPlayerBitboardsBlackEquals = byPlayerBitboards[BLACK] == other.byPlayerBitboards[BLACK];
 
         PRINT_IF_FALSE(castlingRightsEqual, "castlingRightsEqual")
-        PRINT_IF_FALSE(currentPlayerEquals, "currentPlayerEquals");
-        PRINT_IF_FALSE(pieceBitboardsNoneEquals, "pieceBitboardsNoneEquals");
-        PRINT_IF_FALSE(bypLayerBitboardWhiteEquals, "bypLayerBitboardWhiteEquals");
-        PRINT_IF_FALSE(byPlayerBitboardsBlackEquals, "byPlayerBitboardsBlackEquals");
+        PRINT_IF_FALSE(currentPlayerEquals, "currentPlayerEquals")
+        PRINT_IF_FALSE(pieceBitboardsNoneEquals, "pieceBitboardsNoneEquals")
+        PRINT_IF_FALSE(bypLayerBitboardWhiteEquals, "bypLayerBitboardWhiteEquals")
+        PRINT_IF_FALSE(byPlayerBitboardsBlackEquals, "byPlayerBitboardsBlackEquals")
 
 
         if (!(castlingRightsEqual &&
@@ -1198,7 +1245,7 @@ namespace Chess {
             MoveList moveList;
             generateMoves(moveList);
             Move move = moveList.getMoveFromInputData(moveInputData);
-            if (move != Move::invalidMove) {
+            if (move.isOk()) {
                 doMove(move);
             } else {
                 return false;
@@ -1207,9 +1254,9 @@ namespace Chess {
         return true;
     }
 
-    bool ChessBoard::doMoves(stringstream &moves) {
-        string str;
-        while (moves >> str) {
+    bool ChessBoard::doMoves(stringstream &moveStream) {
+        // position startpos moves e2e4 e7e5
+        for (string str; moveStream >> str && !str.empty();) {
             MoveInputData moveInputData = MoveInputData::parse(str);
             if (!moveInputData.isOk()) {
                 return false;
@@ -1217,7 +1264,7 @@ namespace Chess {
             MoveList moveList;
             generateMoves(moveList);
             Move move = moveList.getMoveFromInputData(moveInputData);
-            if (move != Move::invalidMove) {
+            if (move.isOk()) {
                 doMove(move);
             } else {
                 return false;
@@ -1245,4 +1292,5 @@ namespace Chess {
         hashKey ^= zobristData.keyOf(castlingRights);
 
     }
+
 }

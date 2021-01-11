@@ -38,17 +38,22 @@ namespace Chess {
             MoveRevertData moveRevertData = chessBoard.doMove(move);
             Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
             chessBoard.undoMove(move, moveRevertData);
-            assert(originalKey == chessBoard.getHashKey());
-/*
-            if(!chessBoard.samePositionAs(prevChessboard)){
-                cout << "Current Chess board: \n\n";
+#if FOR_RELEASE == 0
+            if (originalKey != chessBoard.getHashKey()) {
+                cout << "\ngameHistory:" << gameHistory << "\n";
+                cout << "overlapping keys";
                 chessBoard.printBitboards();
-                cout << "Previous chess board: \n";
-                prevChessboard.printBitboards();
-                cout << "\n" << gameHistory;
                 assert(false);
             }
-*/
+#endif
+//            if(!chessBoard.samePositionAs(prevChessboard)){
+//                cout << "Current Chess board: \n\n";
+//                chessBoard.printBitboards();
+//                cout << "Previous chess board: \n";
+//                prevChessboard.printBitboards();
+//                cout << "\n" << gameHistory;
+//                assert(false);
+//            }
             gameHistory_.pop();
             if (score > alpha) {
                 alpha = score;
@@ -84,6 +89,9 @@ namespace Chess {
                 bestMove = move;
             }
         }
+
+        bestLineScore = alpha;
+
         return bestMove;
     }
 }

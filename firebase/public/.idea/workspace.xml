@@ -14,127 +14,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../chessEngine/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeCache.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CMakeCCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CMakeCXXCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CMakeSystem.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CompilerIdC/CMakeCCompilerId.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CompilerIdC/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/3.16.3/CompilerIdCXX/a.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/CMakeOutput.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/Makefile.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/Makefile2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/Move.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/MoveList.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/jsInterface.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/main.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/chessAscii.dir/src/types.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/cmake.check_cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/CMakeFiles/progress.marks" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/build.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/chessAscii" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build-ascii/cmake_install.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeCache.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/3.16.3/CMakeCCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/3.16.3/CMakeCXXCompiler.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/3.16.3/CMakeSystem.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/CMakeOutput.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/Makefile.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/Makefile2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/includes_CXX.rsp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/objects1.rsp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/Bitboards.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/ChessBoard.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/Move.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/MoveInputData.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/MoveList.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/jsInterface.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/main.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessAscii.dir/src/types.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/includes_CXX.rsp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/objects1.rsp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/Bitboards.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/ChessBoard.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/Move.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/MoveInputData.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/MoveList.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/jsInterface.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/main.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/chessWasm.dir/src/types.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/cmake.check_cache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/CMakeFiles/progress.marks" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/build.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../build/cmake_install.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/Benchmarks.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Benchmarks.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/Bitboards.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/ChessBoard.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/EvalData.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/EvalData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/GameHistory.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/GameHistory.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/Move.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Move.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/MoveInputData.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveInputData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/MoveList.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/Search.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Search.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/Uci.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Uci.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/jsInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/WebAssembly.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/test.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/test.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../include/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/types.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/Benchmarks.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Benchmarks.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/Bitboards.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/ChessBoard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/EvalData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/EvalData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/GameHistory.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/GameHistory.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/Move.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/MoveInputData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveInputData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/MoveList.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveList.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/Search.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/Uci.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/jsInterface.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/test.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../src/types.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/types.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../chessEngine/include/OldMove.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../chessEngine/src/OldMove.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Move.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Move.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/MoveInputData.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveInputData.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/NewMove.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Uci.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Uci.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/MoveInputData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveInputData.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/MoveList.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveList.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/NewMove.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/types.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/types.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -282,6 +182,8 @@
       <workItem from="1610046217498" duration="11000" />
       <workItem from="1610128933375" duration="785000" />
       <workItem from="1610134696666" duration="2555000" />
+      <workItem from="1610273872288" duration="3669000" />
+      <workItem from="1610301883804" duration="3257000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <created>1606146393380</created>

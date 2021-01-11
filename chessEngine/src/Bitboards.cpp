@@ -86,7 +86,7 @@ namespace Chess {
     //todo: check if inline is faster
     void CastlingData::updateCastlingRights(Bitboard moveSquares, CastlingRights &castlingRightsMask) {
         for (CastlingType castlingType = CASTLE_FIRST; castlingType <= CASTLE_LAST; ++castlingType) {
-            CastlingData castlingData = fromCastlingType(castlingType);
+            const CastlingData& castlingData = fromCastlingType(castlingType);
             // todo: is a single ? : operation faster than an if
             if (castlingData.moveDisablesCastling(moveSquares)) {
                 castlingRightsMask &= ~castlingRightsOf(castlingType);

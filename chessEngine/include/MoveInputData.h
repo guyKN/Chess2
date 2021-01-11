@@ -7,29 +7,35 @@
 
 #include "types.h"
 
+
 using std::string;
 
 namespace Chess {
     struct MoveInputData {
         static const MoveInputData invalidMove;
-        const Chess::Square src;
-        const Chess::Square dst;
+        Square src;
+        Square dst;
+        PieceType promotionPiece; //promotion piece may be PIECE_TYPE_NONE, in which case there is not promotion
+        bool isKingSideCastle;
+        bool isQueenSideCastle;
 
-        MoveInputData(const Square src, const Square dst);
-
-        bool isOk() const{
+        bool isOk() const {
             return square_ok(src) && square_ok(dst) && src != dst;
         }
 
-        template<typename stream>
-        static MoveInputData readMove(stream &inputStream=std::cin) {
-            string str;
-            inputStream >> str;
-            return parse(str);
-        }
-
-        static MoveInputData parse(string);
+        static MoveInputData parse(const std::string& str);
     };
+
+    template<class outputStream>
+    inline outputStream &operator>>(outputStream &stream, MoveInputData &moveInputData){
+        string str;
+        stream >> str;
+        moveInputData = MoveInputData::parse(str);
+        return stream;
+    }
+
+
+
 }
 
 #endif //CHESS_MOVEINPUTDATA_H
