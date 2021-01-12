@@ -318,6 +318,10 @@ namespace Chess {
         return signedShift<totalShift>(bitboard & mask);
     }
 
+    inline Key firstBits(int numBits) {
+        return static_cast<Key>((1u << numBits) - 1);
+    }
+
     Bitboard randomBitboard();
 
     Bitboard randomBitboard_fewBits();

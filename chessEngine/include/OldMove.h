@@ -29,7 +29,7 @@ namespace Chess {
             return os << toString(move.srcSquare) << toString(move.dstSquare);
         }
 
-        // returns true if the move's destination and source are both real squares. does not talk about move legality.
+        // returns true if the bestMove_'s destination and source are both real squares. does not talk about bestMove_ legality.
         bool isOk() const;
 
         OldMove() = default;

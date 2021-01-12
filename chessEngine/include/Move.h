@@ -17,8 +17,8 @@ namespace Chess {
         /// uses 16 bits
         /// bits 0-5 src square
         /// bits 6-11 dst square
-        /// bits 12-13 move code. 0b00=normal move, 0b01=promotion, 0b10=castling, 0b11=en passant
-        /// bits 14-15: extra special move data.
+        /// bits 12-13 bestMove_ code. 0b00=normal bestMove_, 0b01=promotion, 0b10=castling, 0b11=en passant
+        /// bits 14-15: extra special bestMove_ data.
         /// if promotionBits then:
         ///       0b00 means knight
         ///       0b01 mean bishop
@@ -26,10 +26,9 @@ namespace Chess {
         ///       0b11 means queen
         /// if castlingBits then corresponds to the castlingBits CastlingType enum
         /// if en passant, then 0b00 means pawn forward 2, 0b01 means en Passant capture
-        /// if dst==0, and src==0, then the move is invalid
+        /// if dst==0, and src==0, then the bestMove_ is invalid
     public:
         using codeType = unsigned int;
-    protected:
         constexpr explicit Move(codeType code) : code(code) {}
 
     private:
@@ -66,6 +65,9 @@ namespace Chess {
 
 
     public:
+        inline int getCode() const{
+            return code;
+        }
 
         inline Square src() const {
             return static_cast<Square>(code & SQUARE_BITS);

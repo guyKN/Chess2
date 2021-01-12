@@ -64,7 +64,7 @@ namespace Chess {
         Bitboard byPlayerBitboards[NUM_PLAYERS] = {};
 
         //todo: have threats just for pieces of the inactive player, to save memory
-        // (but remember that this may harm the value of pieces for static move evaluation)
+        // (but remember that this may harm the value of pieces for static bestMove_ evaluation)
         Bitboard threatsByPiece[NUM_NON_EMPTY_PIECES] = {};
         Bitboard threatsBypLayer[NUM_PLAYERS] = {};
 
@@ -85,8 +85,7 @@ namespace Chess {
 
         EvalData evalData;
 
-
-
+        unsigned int moveCount = 0;
         static constexpr bool DISABLE_SPECIAL_MOVES = false;
 
         inline Bitboard &bitboardOf(Piece piece) {
@@ -327,8 +326,12 @@ namespace Chess {
             return bitboardOf(piece);
         }
 
-        inline Bitboard getPinned() {
+        inline Bitboard getPinned() const {
             return pinned;
+        }
+
+        inline unsigned int getMoveCount() const {
+            return moveCount;
         }
 
         const static Piece startingBoard[NUM_SQUARES];
@@ -340,9 +343,15 @@ namespace Chess {
             return (piece != PIECE_NONE) && (playerOf(piece) == currentPlayer);
         }
 
-        MoveRevertData doMove(const Move &move);
+        MoveRevertData doMove(Move move);
 
-        void undoMove(Move &move, MoveRevertData &moveRevertData);
+        inline MoveRevertData doGameMove(Move move){
+            moveCount++;
+            return doMove(move);
+
+        }
+
+        void undoMove(Move move, MoveRevertData &moveRevertData);
 
         inline const Piece &getPieceOn(Square square) const {
             return piecesBySquare[square];

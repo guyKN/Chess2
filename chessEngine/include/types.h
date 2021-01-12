@@ -23,18 +23,27 @@ namespace Chess {
 
     typedef uint64_t Bitboard;
 
-    enum Key:uint64_t{
+    enum Key : uint64_t {
         KEY_ZERO = 0,
         KEY_FULL = ~KEY_ZERO
     };
 
-    constexpr inline Key operator^(Key key1, Key key2){
+    constexpr inline Key operator^(Key key1, Key key2) {
         return static_cast<Key>(static_cast<uint64_t>(key1) ^ static_cast<uint64_t>(key2));
     }
 
-    constexpr inline Key& operator^=(Key& key1, Key key2){
-        return key1 = key1^key2;
+    constexpr inline Key &operator^=(Key &key1, Key key2) {
+        return key1 = key1 ^ key2;
     }
+
+    constexpr inline Key operator&(Key key1, Key key2) {
+        return static_cast<Key>(static_cast<uint64_t>(key1) & static_cast<uint64_t>(key2));
+    }
+
+    constexpr inline Key &operator&=(Key &key1, Key key2) {
+        return key1 = key1 & key2;
+    }
+
 
     constexpr Bitboard BITBOARD_EMPTY = 0;
     constexpr Bitboard BITBOARD_FULL = ~BITBOARD_EMPTY;
@@ -42,7 +51,7 @@ namespace Chess {
     std::ostream &printBitboard(Bitboard bitboard, std::ostream &os = std::cout);
 
     template<typename T>
-    std::ostream &printArray(T *array, int length, const std::string& prefix="", ostream &outputStream = std::cout) {
+    std::ostream &printArray(T *array, int length, const std::string &prefix = "", ostream &outputStream = std::cout) {
         outputStream << '{';
         for (int i = 0; i < length; i++) {
             outputStream << prefix << array[i] << ", ";
@@ -51,7 +60,7 @@ namespace Chess {
         return outputStream;
     }
 
-    enum Square : int{
+    enum Square : int {
         SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
         SQ_A2, SQ_B2, SQ_C2, SQ_D2, SQ_E2, SQ_F2, SQ_G2, SQ_H2,
         SQ_A3, SQ_B3, SQ_C3, SQ_D3, SQ_E3, SQ_F3, SQ_G3, SQ_H3,
@@ -62,7 +71,7 @@ namespace Chess {
         SQ_A8, SQ_B8, SQ_C8, SQ_D8, SQ_E8, SQ_F8, SQ_G8, SQ_H8,
         SQ_FIRST = SQ_A1,
         SQ_LAST = SQ_H8,
-        SQ_INVALID = SQ_LAST+1
+        SQ_INVALID = SQ_LAST + 1
     };
 
     constexpr int NUM_SQUARES = 64;
@@ -166,7 +175,7 @@ namespace Chess {
 
     char toChar(Rank rank);
 
-    inline std::ostream& operator<<(std::ostream& os, Rank rank){
+    inline std::ostream &operator<<(std::ostream &os, Rank rank) {
         return os << toChar(rank);
     }
 
@@ -199,7 +208,7 @@ namespace Chess {
         FILE_H,
         FILE_FIRST = FILE_A,
         FILE_LAST = FILE_H,
-        FILE_AFTER_LAST = FILE_LAST+1,
+        FILE_AFTER_LAST = FILE_LAST + 1,
         FILE_INVALID = -1
     };
 
@@ -207,7 +216,7 @@ namespace Chess {
 
     char toChar(File file);
 
-    inline std::ostream& operator<<(std::ostream& os, File file){
+    inline std::ostream &operator<<(std::ostream &os, File file) {
         return os << toChar(file);
     }
 
@@ -235,7 +244,7 @@ namespace Chess {
         return static_cast<Square>(rank * 8 + file);
     }
 
-    inline std::ostream& operator<<(std::ostream& os, Square square){
+    inline std::ostream &operator<<(std::ostream &os, Square square) {
         return os << fileOf(square) << rankOf(square);
     }
 
@@ -287,12 +296,12 @@ namespace Chess {
         PIECE_TYPE_LAST = PIECE_TYPE_NONE
     };
 
-    constexpr inline bool pieceTypeOk(PieceType pieceType){
-        return pieceType >=PIECE_TYPE_FIRST && pieceType<=PIECE_TYPE_LAST;
+    constexpr inline bool pieceTypeOk(PieceType pieceType) {
+        return pieceType >= PIECE_TYPE_FIRST && pieceType <= PIECE_TYPE_LAST;
     }
 
-    inline PieceType& operator++(PieceType& pieceType){
-        return pieceType = static_cast<PieceType>(pieceType+1);
+    inline PieceType &operator++(PieceType &pieceType) {
+        return pieceType = static_cast<PieceType>(pieceType + 1);
     }
 
     constexpr int NUM_PIECE_TYPE = 6;
@@ -342,7 +351,7 @@ namespace Chess {
 
     char toChar(Piece piece);
 
-    inline ostream& operator<<(ostream& os, Piece piece){
+    inline ostream &operator<<(ostream &os, Piece piece) {
         return os << toChar(piece);
     }
 
@@ -489,14 +498,31 @@ namespace Chess {
         return score -= 1;
     }
 
-    inline constexpr Score operator *(Score score, Player player){
-        return static_cast<Score>(score*multiplierOf(player));
+    inline constexpr Score operator*(Score score, Player player) {
+        return static_cast<Score>(score * multiplierOf(player));
     }
+
+    enum BoundType : uint8_t {
+        BOUND_UNINITIALIZED = 0,
+        BOUND_LOWER = 0b01,
+        BOUND_UPPER = 0b10,
+        BOUND_EXACT = BOUND_LOWER | BOUND_UPPER,
+        BOUND_CURRENTLY_SEARCHING = 0b100
+    };
+
+    inline BoundType operator^(BoundType b1, BoundType b2) {
+        return static_cast<BoundType>(static_cast<uint8_t>(b1) ^ b2);
+    }
+
+    inline BoundType& operator^=(BoundType& b1, BoundType b2) {
+        return b1 = b1^b2;
+    }
+
 
 
     constexpr int MAX_MOVES = 256;
 
-    struct Indent{
+    struct Indent {
         explicit Indent(int indent);
 
         int indent;
@@ -504,7 +530,7 @@ namespace Chess {
         friend ostream &operator<<(ostream &os, const Chess::Indent &indent);
     };
 
-    inline int parseDigit(char digit){
+    inline int parseDigit(char digit) {
         return digit - '0';
     }
 }

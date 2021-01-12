@@ -36,6 +36,17 @@ namespace Chess {
             assert(size() < MAX_MOVES);
         }
 
+        inline bool contains(Move move) const{
+            for(const Move* pMove = firstMove(); pMove != lastMove();pMove++){
+                if(*pMove == move){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
         inline void addPromotions(Square src, Square dst){
             // optimize: should inline?
             // optimize: should loop?
@@ -47,7 +58,7 @@ namespace Chess {
             addMove(Move::promotionMove(src, dst, PIECE_TYPE_KNIGHT));
         }
 
-        inline int size() const {
+        inline unsigned int size() const {
             return currentMove - &moves[0];
         }
 

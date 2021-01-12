@@ -77,7 +77,7 @@ namespace WASM {
             return false;
         } else {
             prevKey = chessBoard.getHashKey();
-            moveRevertData = chessBoard.doMove(move);
+            moveRevertData = chessBoard.doGameMove(move);
             gameHistory.addMove(move);
             prevMove = move;
             chessBoard.assertOk();
@@ -121,7 +121,7 @@ namespace WASM {
     void WASM_doAiMove(int depth){
         search.chessBoard = chessBoard;
         Move move = search.bestMove(depth);
-        chessBoard.doMove(move);
+        chessBoard.doGameMove(move);
         gameHistory.addMove(move);
     }
 

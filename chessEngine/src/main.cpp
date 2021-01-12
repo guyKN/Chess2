@@ -22,23 +22,23 @@ using std::cout;
         chessBoard.assertOk();
         MoveList moveList;
         chessBoard.generateMoves(moveList);
-        cout << chessBoard << "\n" << "Enter a move: ";
+        cout << chessBoard << "\n" << "Enter a bestMove_: ";
         MoveInputData moveInput;
         cin >> moveInput;
 
         Move move = moveList.getMoveFromInputData(moveInput);
         if (move.isOk()) {
-            MoveRevertData moveRevertData =  chessBoard.doMove(move);
+            MoveRevertData moveRevertData =  chessBoard.doGameMove(move);
             assert(chessBoard.isOk());
-            //chessBoard.undoMove(move, moveRevertData);
+            //chessBoard.undoMove(bestMove_, moveRevertData);
 
 //            cout << "eval: " << chessBoard.evaluateWhite() << "\n";
 //            search.chessBoard = chessBoard;
-//            Move aiMove = search.bestMove(4);
+//            Move aiMove = search.bestMove_(4);
 //            cout << aiMove << "\n";
 //            chessBoard.doMove(aiMove);
         } else {
-            cout << "Invalid move. Please enter a move again.";
+            cout << "Invalid bestMove_. Please enter a bestMove_ again.";
         }
     }
 }

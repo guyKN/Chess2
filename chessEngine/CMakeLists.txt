@@ -67,5 +67,5 @@ else(WASM)
     add_executable(chessUci ${SOURCES})
 endif(WASM)
 
-#if(WASM)
-#endif(WASM)
+if(WASM)
+endif(WASM)

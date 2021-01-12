@@ -168,7 +168,7 @@ namespace Chess {
         }
     }
 
-    MoveRevertData ChessBoard::doMove(const Move &move) {
+    MoveRevertData ChessBoard::doMove(Move move) {
 
         //todo: check if it's faster to call src() dst() once
         // todo: use xor in order to do moves faster (can place and remove pieces with one bb)
@@ -225,32 +225,10 @@ namespace Chess {
         updateCastling(move);
         swapPlayer();
         return moveRevertData;
-
-/*
-        removePieceFrom(move.src(), srcPiece, currentPlayer);
-        setPieceOn(move.dstSquare, move.dstPiece, move.promotionPiece, currentPlayer);
-
-        if (move.castlingType != CASTLE_NONE) {
-            Piece rook = makePiece(PIECE_TYPE_ROOK, currentPlayer);
-            CastlingData castlingData = CastlingData::fromCastlingType(move.castlingType);
-            removePieceFrom(castlingData.rookSrc, rook, currentPlayer);
-            placePieceOn(castlingData.rookDst, rook, currentPlayer);
-        } else if (move.isEnPassant) {
-            Piece enemyPawn = makePiece(PIECE_TYPE_PAWN, ~currentPlayer);
-            removePieceFrom(enPassantSquare, enemyPawn, ~currentPlayer);
-        }
-
-        MoveRevertData moveRevertData = getMoveRevertData();
-
-        if (move.pawnForward2Square != SQ_INVALID) {
-            hashKey ^= zobristData.keyOf(fileOf(move.pawnForward2Square));
-        }
-        enPassantSquare = move.pawnForward2Square;
-*/
     }
 
-    void ChessBoard::undoMove(Move &move, MoveRevertData &moveRevertData) {
-        //todo: should pass move by refrence or value
+    void ChessBoard::undoMove(Move move, MoveRevertData &moveRevertData) {
+        //todo: should pass bestMove_ by refrence or value
         revertTo(moveRevertData);
         Player opponent = ~currentPlayer;
         //todo: see if refrence is faster than direct value
@@ -282,7 +260,7 @@ namespace Chess {
                 placePieceOn(castlingData.rookSrc, rook, opponent);
                 break;
         }
-        swapPlayer(); //optimize: move to front of fuction, replace opponent with currentPlayer
+        swapPlayer(); //optimize: bestMove_ to front of fuction, replace opponent with currentPlayer
     }
 
     void ChessBoard::revertTo(const MoveRevertData &moveRevertData) {
@@ -385,7 +363,7 @@ namespace Chess {
     template<Player player>
     void ChessBoard::generatePawnMoves(MoveList &moveList, Bitboard source, Bitboard target) {
         // note: promotionPiece is the piece that the pawns promote to, but it may also be PIECE_PAWN, which means that the pawns don't promote
-        // only make promotionPiece into queen when it is know the pawns will promote this move
+        // only make promotionPiece into queen when it is know the pawns will promote this bestMove_
         constexpr int direction = directionOf(player);
         constexpr int forward1shift = direction * 8;
         constexpr int forward2shift = 2 * forward1shift;
@@ -456,7 +434,7 @@ namespace Chess {
             }
         }
 
-        //move forward 2
+        //bestMove_ forward 2
         Bitboard forward2Move =
                 signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
                 signedShift<forward1shift>(emptySquares);
@@ -467,7 +445,7 @@ namespace Chess {
             );
         }
 
-        // move forward 1
+        // bestMove_ forward 1
         Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
         while (forward1Move) {
             Square dst = popLsb(&forward1Move);
@@ -570,7 +548,7 @@ namespace Chess {
                 Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
 
                 //todo: optimize for speed. Check whether ifs are helping or slowing down
-                /// also think about not checking redundant pins, like a pinned knight which can't move at all
+                /// also think about not checking redundant pins, like a pinned knight which can't bestMove_ at all
                 /// like a rook pinned on a diagonal or a bishop pinned on a rank
 
                 if (pinned & kingRank) {
@@ -658,7 +636,7 @@ namespace Chess {
     }
 
 //todo: check if queen should be combined with bishop and rook
-// (but remember that this may harm the value of pieces for static move evaluation)
+// (but remember that this may harm the value of pieces for static bestMove_ evaluation)
     template<Player player, PieceType pieceType>
     void ChessBoard::calculateSlidingPieceThreats() {
         constexpr Piece piece = makePiece(pieceType, player);
@@ -865,6 +843,7 @@ namespace Chess {
         }
 
         hashKey = other.hashKey;
+        moveCount = other.moveCount;
 
         return *this;
     }

@@ -54,7 +54,7 @@ namespace Chess {
         int numLeaves = search.getNumLeaves();
         double nodesPerSecond = numNodes/timeElapsed;
         cout << std::dec << "Done with benchmark for AlphaBeta Search\n" <<
-        "best move: " << move <<  "\n" <<
+        "best bestMove_: " << move <<  "\n" <<
         "Depth: " << depth << "\n" <<
         "Time elapsed: " << timeElapsed << "\n" <<
         "num nodes searched: " << std::scientific << numNodes << "\n" <<
@@ -72,6 +72,6 @@ namespace Chess {
         initAll();
         double timeElapsed = stopwatch.getSecondsElapsed();
         cout << "time for initLookUpTables: " << timeElapsed << "sec" << "\n";
-        alphaBetaSearchBenchmark(8);
+        alphaBetaSearchBenchmark(4);
     }
 }

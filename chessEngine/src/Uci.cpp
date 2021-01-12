@@ -106,7 +106,7 @@ namespace Uci {
                     setPosition(lineStream);
                     log("success in going to position");
                 } else if (firstWord == "go") {
-                    log("searching for best move");
+                    log("searching for best bestMove_");
                     Stopwatch stopwatch{};
                     stopwatch.start();
                     Move bestMove = search.bestMove(7);

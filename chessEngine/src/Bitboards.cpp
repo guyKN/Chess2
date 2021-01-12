@@ -3,6 +3,7 @@
 //
 
 #include <ChessBoard.h>
+#include <TransPositionTable.h>
 #include "Bitboards.h"
 #include "EvalData.h"
 
@@ -522,6 +523,11 @@ namespace Chess {
             initLookupTables();
             lookUpTablesReady = true;
         }
+        if (!transPositionTable.isInitialized()){
+            transPositionTable = TransPositionTable::fromSize(2'000'000'000);
+            cout << "num buckets: " << transPositionTable.getNumBuckets() << "\n";
+        }
         zobristData.init();
+
     }
 }
