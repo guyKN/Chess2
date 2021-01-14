@@ -5,14 +5,19 @@
 #ifndef CHESS_TRANSPOSITION_TABLE_H
 #define CHESS_TRANSPOSITION_TABLE_H
 
+#include <ostream>
 #include "Bitboards.h"
 #include "Move.h"
+#include <climits>
+#include <memory>
 
 namespace Chess {
 
     class TransPositionTable {
-
     public:
+
+        static size_t TRANSPOSITION_TABLE_SIZE;
+
         struct Entry {
             Entry() = default;
 
@@ -24,6 +29,22 @@ namespace Chess {
             Key key_ = KEY_ZERO;
             uint8_t moveCount_ = 0; // the number of half moves at the root of the search when this entry was last used
             uint16_t numVisits_ = 0; // the number of times this position was visited, resets to zero every bestMove.
+        public:
+            bool operator==(const Entry &rhs) const {
+                return boundType_ == rhs.boundType_ &&
+                       bestMove_ == rhs.bestMove_ &&
+                       score_ == rhs.score_ &&
+                       depth_ == rhs.depth_ &&
+                       key_ == rhs.key_ &&
+                       moveCount_ == rhs.moveCount_ &&
+                       numVisits_ == rhs.numVisits_;
+            }
+
+            bool operator!=(const Entry &rhs) const {
+                return !(rhs == *this);
+            }
+
+            friend ostream &operator<<(ostream &os, const Entry &entry);
 
         public:
 
@@ -42,7 +63,7 @@ namespace Chess {
 
             inline void stopSearching(){
                 assert(isCurrentlySearched());
-                boundType_^=BOUND_CURRENTLY_SEARCHING;
+                boundType_ = static_cast<BoundType>(boundType_ & ~BOUND_CURRENTLY_SEARCHING);
             }
 
             inline Move bestMove() const {
@@ -93,6 +114,10 @@ namespace Chess {
                 key_ = key;
             }
 
+            inline BoundType boundType(){
+                return boundType_;
+            }
+
             inline unsigned int getImportance() const {
                 // represents how important the current entry is, in order to decide which entry to replace
                 // todo: play around with the numbers to see which replacement function is best
@@ -119,7 +144,6 @@ namespace Chess {
             Entry &operator=(Entry &) = delete;
 
             Entry &operator=(Entry &&) = delete;
-
         };
 
     private:
@@ -131,7 +155,7 @@ namespace Chess {
             Bucket() = default;
 
             /// if all there is an unused, returns that, otherwise returns the entry with the lowest value
-            Entry &freeEntry();
+            Entry &entryToReplace();
 
             Bucket(Bucket &) = delete;
 
@@ -141,6 +165,9 @@ namespace Chess {
 
             Bucket &operator=(Bucket &&) = delete;
         };
+
+        int64_t numEntriesUsed = 0;
+        int64_t numEntriesDeleted = 0;
 
         size_t numBuckets;
         Key hashMask;
@@ -164,21 +191,24 @@ namespace Chess {
 
         explicit TransPositionTable(int log2size);
 
-        static inline TransPositionTable fromSize(size_t size){
-            size_t bucketSize = sizeof (Bucket);
-            size_t numBuckets = size/bucketSize;
-            int log2size = msb(numBuckets); // we want the number of buckets to be a power of 2 for faster hashing, so we take the largest bit only
-            return TransPositionTable(log2size);
-        }
+        static TransPositionTable fromSize(size_t size);
 
         inline bool isInitialized() const{
-            return numBuckets != 0 && buckets == nullptr;
+            return numBuckets != 0;
         }
 
         Entry &probe(Key key, bool &found);
 
-        inline size_t getNumBuckets() const{
-            return numBuckets;
+        inline size_t getNumEntries() const{
+            return numBuckets * Bucket::BUCKET_SIZE;
+        }
+
+        inline uint64_t perMillEntriesUsed() const{
+            return (numEntriesUsed*1000)/getNumEntries();
+        }
+
+        inline uint64_t entriesDeleted() const{
+            return numEntriesDeleted;
         }
     };
 

@@ -893,7 +893,7 @@ namespace Chess {
         return true;
     }
 
-    bool ChessBoard::parseFen(string &fenString) {
+    bool ChessBoard::parseFen(const string &fenString) {
 
         bool whiteMayCastleQueenSide = false;
         bool blackMayCastleQueenSide = false;
@@ -921,7 +921,6 @@ namespace Chess {
                 case '7':
                 case '8': {
                     int num = parseDigit(c);
-                    cout << "num: " << num << "\n";
                     for (int _ = 0; _ < num; _++) {
                         if (!file_ok(file)) {
                             return false;
@@ -994,7 +993,7 @@ namespace Chess {
         }
 
         endOfLoop:
-        bool atLeastOneCastling;
+        bool atLeastOneCastling = false;
         while (true) {
             if (i == fenString.size()) {
                 return false;

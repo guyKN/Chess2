@@ -36,14 +36,9 @@ namespace Chess {
             assert(size() < MAX_MOVES);
         }
 
-        inline bool contains(Move move) const{
-            for(const Move* pMove = firstMove(); pMove != lastMove();pMove++){
-                if(*pMove == move){
-                    return true;
-                }
-            }
-            return false;
-        }
+        bool contains(Move move) const;
+
+        bool notFirstContains(Move move) const;
 
 
 

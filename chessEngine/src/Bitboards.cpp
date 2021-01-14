@@ -524,10 +524,10 @@ namespace Chess {
             lookUpTablesReady = true;
         }
         if (!transPositionTable.isInitialized()){
-            transPositionTable = TransPositionTable::fromSize(2'000'000'000);
-            cout << "num buckets: " << transPositionTable.getNumBuckets() << "\n";
+            cout << "init transposition table\n";
+            transPositionTable = TransPositionTable::fromSize(TransPositionTable::TRANSPOSITION_TABLE_SIZE);
+            cout << "num entries: " << transPositionTable.getNumEntries() << "\n";
         }
         zobristData.init();
-
     }
 }

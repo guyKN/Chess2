@@ -36,7 +36,7 @@ namespace Chess {
         }
 
         inline void clearHashTable(){
-            // todo
+
         }
 
 
@@ -54,8 +54,9 @@ namespace Chess {
 
 
 
-    private:
+        uint64_t perft(int depth);
 
+    private:
 
         Score alphaBeta(Score alpha, Score beta, int depthLeft);
 

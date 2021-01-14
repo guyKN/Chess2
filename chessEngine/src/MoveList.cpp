@@ -28,3 +28,21 @@ void Chess::MoveList::movesFrom(Chess::Square square, MoveList &moveList) const 
         }
     }
 }
+
+bool Chess::MoveList::contains(Chess::Move move) const {
+    for(const Move* pMove = firstMove(); pMove != lastMove();pMove++){
+        if(*pMove == move){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Chess::MoveList::notFirstContains(Chess::Move move) const {
+    for(const Move* pMove = firstMove()+1; pMove != lastMove();pMove++){
+        if(*pMove == move){
+            return true;
+        }
+    }
+    return false;
+}

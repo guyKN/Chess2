@@ -385,7 +385,7 @@ namespace Chess {
 
         bool samePositionAs(const ChessBoard &other);
 
-        bool parseFen(std::string &fenString);
+        bool parseFen(const string &fenString);
 
         ostream &getFen(ostream &outputStream) const;
     };

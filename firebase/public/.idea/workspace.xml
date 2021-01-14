@@ -13,29 +13,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../chessEngine/include/OldMove.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../chessEngine/src/OldMove.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Move.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Move.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/MoveInputData.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveInputData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/NewMove.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Uci.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Uci.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/types.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/MoveInputData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveInputData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/MoveList.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveList.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/NewMove.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/types.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/types.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -184,6 +162,7 @@
       <workItem from="1610134696666" duration="2555000" />
       <workItem from="1610273872288" duration="3669000" />
       <workItem from="1610301883804" duration="3257000" />
+      <workItem from="1610467114713" duration="10000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <created>1606146393380</created>
