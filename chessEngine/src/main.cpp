@@ -30,13 +30,13 @@ using std::cout;
         if (move.isOk()) {
             MoveRevertData moveRevertData =  chessBoard.doGameMove(move);
             assert(chessBoard.isOk());
-            //chessBoard.undoMove(bestMove_, moveRevertData);
+            //chessBoard_.undoMove(bestMove_, moveRevertData);
 
-//            cout << "eval: " << chessBoard.evaluateWhite() << "\n";
-//            search.chessBoard = chessBoard;
+//            cout << "eval: " << chessBoard_.evaluateWhite() << "\n";
+//            search.chessBoard_ = chessBoard_;
 //            Move aiMove = search.bestMove_(4);
 //            cout << aiMove << "\n";
-//            chessBoard.doMove(aiMove);
+//            chessBoard_.doMove(aiMove);
         } else {
             cout << "Invalid bestMove_. Please enter a bestMove_ again.";
         }

@@ -383,7 +383,7 @@ namespace Chess {
 
         bool isOk() const;
 
-        bool samePositionAs(const ChessBoard &other);
+        bool samePositionAs(const ChessBoard &other) const;
 
         bool parseFen(const string &fenString);
 

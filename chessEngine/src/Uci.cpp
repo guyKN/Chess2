@@ -84,7 +84,6 @@ namespace Uci {
             stringstream lineStream{line};
             string firstWord;
             if (lineStream >> firstWord) {
-                log("firstword: " + firstWord);
                 if (firstWord == "uci") {
                     cout << "id name EngineTest" << "\n"
                          << "id author Guy Knaan" << "\n"
@@ -106,10 +105,10 @@ namespace Uci {
                     setPosition(lineStream);
                     log("success in going to position");
                 } else if (firstWord == "go") {
-                    log("searching for best bestMove_");
+                    log("searching for best bestMove");
                     Stopwatch stopwatch{};
                     stopwatch.start();
-                    Move bestMove = search.bestMove(7);
+                    Move bestMove = search.bestMove(5);
                     double timeElapsed = stopwatch.getSecondsElapsed();
                     int numNodes = search.getNumNodes();
                     int nodesPerSecond = numNodes / timeElapsed;

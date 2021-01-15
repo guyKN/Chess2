@@ -5,9 +5,10 @@
 #ifndef CHESS_TRANSPOSITION_TABLE_H
 #define CHESS_TRANSPOSITION_TABLE_H
 
-#include <ostream>
 #include "Bitboards.h"
 #include "Move.h"
+#include "ChessBoard.h"
+#include <ostream>
 #include <climits>
 #include <memory>
 
@@ -29,6 +30,7 @@ namespace Chess {
             Key key_ = KEY_ZERO;
             uint8_t moveCount_ = 0; // the number of half moves at the root of the search when this entry was last used
             uint16_t numVisits_ = 0; // the number of times this position was visited, resets to zero every bestMove.
+            ChessBoard chessBoard_{};
         public:
             bool operator==(const Entry &rhs) const {
                 return boundType_ == rhs.boundType_ &&
@@ -49,7 +51,7 @@ namespace Chess {
         public:
 
             inline bool isUninitialized() const {
-                return depth_ == 0;
+                return boundType_ == BOUND_UNINITIALIZED;
             }
 
             inline bool isCurrentlySearched() const {
@@ -114,11 +116,17 @@ namespace Chess {
                 key_ = key;
             }
 
-            inline BoundType boundType(){
-                return boundType_;
+            inline const ChessBoard &chessBoard(){
+                return chessBoard_;
             }
 
-            inline unsigned int getImportance() const {
+            inline void setChessBoard(ChessBoard chessBoard){
+                chessBoard_ = chessBoard;
+            }
+
+
+
+            inline uint32_t getImportance() const {
                 // represents how important the current entry is, in order to decide which entry to replace
                 // todo: play around with the numbers to see which replacement function is best
                 /// also check if wether it is a PV node or not is relevant

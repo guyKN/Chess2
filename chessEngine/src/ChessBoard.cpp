@@ -848,39 +848,12 @@ namespace Chess {
         return *this;
     }
 
-#define PRINT_IF_FALSE(VAR, VAR_NAME) \
-    if(!(VAR)){                             \
-        cout << "Falied " << (VAR_NAME) << " \n";            \
-    }
+    bool ChessBoard::samePositionAs(const ChessBoard &other) const {
 
-    bool ChessBoard::samePositionAs(const ChessBoard &other) {
-        const bool castlingRightsEqual = castlingRights == other.castlingRights;
-        const bool currentPlayerEquals = currentPlayer == other.currentPlayer;
-        const bool pieceBitboardsNoneEquals = pieceBitboards[PIECE_NONE] == other.pieceBitboards[PIECE_NONE];
-        const bool bypLayerBitboardWhiteEquals = byPlayerBitboards[WHITE] == other.byPlayerBitboards[WHITE];
-        const bool byPlayerBitboardsBlackEquals = byPlayerBitboards[BLACK] == other.byPlayerBitboards[BLACK];
-
-        PRINT_IF_FALSE(castlingRightsEqual, "castlingRightsEqual")
-        PRINT_IF_FALSE(currentPlayerEquals, "currentPlayerEquals")
-        PRINT_IF_FALSE(pieceBitboardsNoneEquals, "pieceBitboardsNoneEquals")
-        PRINT_IF_FALSE(bypLayerBitboardWhiteEquals, "bypLayerBitboardWhiteEquals")
-        PRINT_IF_FALSE(byPlayerBitboardsBlackEquals, "byPlayerBitboardsBlackEquals")
-
-
-        if (!(castlingRightsEqual &&
-              currentPlayerEquals &&
-              pieceBitboardsNoneEquals &&
-              bypLayerBitboardWhiteEquals &&
-              byPlayerBitboardsBlackEquals)) {
-            cout << "Failed v2\n";
+        if (!(castlingRights == other.castlingRights &&
+              currentPlayer == other.currentPlayer &&
+              enPassantSquare == other.enPassantSquare)) {
             return false;
-        }
-
-        for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
-            if (pieceBitboards[piece] != other.pieceBitboards[piece]) {
-                cout << "Piece Bitboard unequal: " << toChar(piece) << "\n";
-                return false;
-            }
         }
 
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {

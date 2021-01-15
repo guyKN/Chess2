@@ -6,7 +6,7 @@
 // todo: speed up by remove unnecassary checks
 #include <TransPositionTable.h>
 #include "Search.h"
-
+#include "Uci.h"
 #define USE_TRANSPOSITION_TABLE
 
 namespace Chess {
@@ -23,43 +23,53 @@ namespace Chess {
         numNonLeafNodes++;
         MoveList moveList;
 
-        assert(chessBoard.isOk());
+        if(!chessBoard.isOk()){
+            cout << "chessBoard not OK\n";
+            chessBoard.printBitboards();
+            cout << gameHistory_;
+            exit(987);
+        }
         bool ttEntryFound;
         TransPositionTable::Entry &ttEntry = transPositionTable.probe(chessBoard.getHashKey(), ttEntryFound);
         ttEntry.onVisit(chessBoard.getMoveCount());
         Move ttBestMove = Move::invalid();
         if (ttEntryFound) {
-            if (ttEntry.isCurrentlySearched()) {
-                // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
-                return SCORE_DRAW;
+            if (!ttEntry.chessBoard().isOk()){
+                cout << "other chessboard not ok\n";
+                exit(456);
             }
-            if (ttEntry.depth() >= depthLeft) {
-                if (ttEntry.isExact() ||
-                    (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
-                    (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
-                    return ttEntry.score();
+
+            if(!chessBoard.samePositionAs(ttEntry.chessBoard())){
+                Uci::log("Key collision\n");
+                chessBoard.getFen(cout << "current Chessboard: ") << "\n";
+                ttEntry.chessBoard().getFen(cout << "ttEntry chessboard: ") << "\n";
+                cout << "current key: " << chessBoard.getHashKey();
+                //exit(321);
+            } else {
+                if (ttEntry.isCurrentlySearched()) {
+                    // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
+                    return SCORE_DRAW;
                 }
+                if (ttEntry.depth() >= depthLeft) {
+                    if (ttEntry.isExact() ||
+                        (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
+                        (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
+                        return ttEntry.score();
+                    }
+                }
+                ttBestMove = ttEntry.bestMove();
+                moveList.addMove(ttBestMove);
+                assert(ttBestMove.isOk());
+                assert(ttEntry.key() == chessBoard.getHashKey());
             }
-            ttBestMove = ttEntry.bestMove();
-            assert(ttBestMove.isOk());
-            assert(ttEntry.key()==chessBoard.getHashKey());
-            moveList.addMove(ttBestMove);
         } else{
             ttEntry.setKey(chessBoard.getHashKey());
+            ttEntry.setChessBoard(chessBoard);
         }
-
-//        if(ttEntry.isCurrentlySearched()){
-//            cout << ttEntry << "\n";
-//            exit(1234);
-//        }
 
         ttEntry.startSearching();
         GameEndState gameEndState = chessBoard.generateMoves(moveList);
 
-//        if(ttEntryFound && !moveList.notFirstContains(ttBestMove)){
-//            cout << "error. Exiting. \n";
-//            exit(123);
-//        }
         switch (gameEndState) {
             case DRAW:
                 //todo: handle putting data into transposition table

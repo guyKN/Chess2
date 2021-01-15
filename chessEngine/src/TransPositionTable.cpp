@@ -55,7 +55,7 @@ namespace Chess {
 
     TransPositionTable TransPositionTable::fromSize(size_t size) {
         std::cout << "Calling from size\n";
-        size_t bucketSize = sizeof (Bucket);
+        size_t bucketSize = sizeof(Bucket);
         size_t numBuckets = size/bucketSize;
         int log2size = msb(numBuckets); // we want the number of buckets to be a power of 2 for faster hashing, so we take the largest bit only
         return TransPositionTable(log2size);
