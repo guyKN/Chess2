@@ -513,6 +513,7 @@ namespace Chess {
 
     template<Player player>
     GameEndState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
+        const Move* const originalLastMove = moveList.lastMove();
         calculateThreats<~player>();
         if (!isDoubleCheck) {
             Bitboard notPinned = ~pinned;
@@ -570,7 +571,7 @@ namespace Chess {
         }
         generateKingMoves<player>(moveList);
 
-        if (!moveList.isEmpty()) {
+        if (originalLastMove != moveList.lastMove()) { //at least one move was generated
             return NO_GAME_END;
         } else if (isCheck) {
             return MATED;

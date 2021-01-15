@@ -7,7 +7,7 @@ namespace Chess {
 
     TransPositionTable transPositionTable{};
 
-    size_t TransPositionTable::TRANSPOSITION_TABLE_SIZE = 10'000'000'000;
+    size_t TransPositionTable::TRANSPOSITION_TABLE_SIZE = 17'000'000'000;
 
     TransPositionTable::Entry &TransPositionTable::Bucket::entryToReplace() {
         Entry* worstEntry = entries;

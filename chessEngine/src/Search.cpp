@@ -44,7 +44,7 @@ namespace Chess {
                 chessBoard.getFen(cout << "current Chessboard: ") << "\n";
                 ttEntry.chessBoard().getFen(cout << "ttEntry chessboard: ") << "\n";
                 cout << "current key: " << chessBoard.getHashKey();
-                //exit(321);
+                exit(321);
             } else {
                 if (ttEntry.isCurrentlySearched()) {
                     // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
@@ -74,9 +74,15 @@ namespace Chess {
             case DRAW:
                 //todo: handle putting data into transposition table
                 ttEntry.stopSearching();
+                ttEntry.setBoundType(BOUND_EXACT);
+                ttEntry.setDepth(0);
+                ttEntry.setScore(SCORE_DRAW);
                 return SCORE_DRAW;
             case MATED:
+                ttEntry.setBoundType(BOUND_EXACT);
+                ttEntry.setScore(SCORE_MATED);
                 ttEntry.stopSearching();
+                ttEntry.setDepth(0);
                 return SCORE_MATED;
             case NO_GAME_END:
                 break;

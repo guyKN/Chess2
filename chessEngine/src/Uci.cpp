@@ -108,7 +108,7 @@ namespace Uci {
                     log("searching for best bestMove");
                     Stopwatch stopwatch{};
                     stopwatch.start();
-                    Move bestMove = search.bestMove(5);
+                    Move bestMove = search.bestMove(7);
                     double timeElapsed = stopwatch.getSecondsElapsed();
                     int numNodes = search.getNumNodes();
                     int nodesPerSecond = numNodes / timeElapsed;
