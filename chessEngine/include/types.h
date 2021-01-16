@@ -419,12 +419,15 @@ namespace Chess {
         return static_cast<WinState>(player);
     }
 
+    constexpr int MAX_DEPTH = 512;
 
     enum Score : int {
         SCORE_DRAW = 0,
         SCORE_ZERO = 0,
         SCORE_MATE = 1'000'000,
+        SCORE_KNOWN_WIN = SCORE_MATE - MAX_DEPTH,
         SCORE_MATED = -SCORE_MATE,
+        SCORE_KNOWN_LOSS = -SCORE_KNOWN_WIN,
         SCORE_INFINITY = SCORE_MATE + 1,
     };
 
@@ -458,7 +461,6 @@ namespace Chess {
                 assert(false);//only draw or mated can be converted to score be draw or mated
         }
     }
-
 
     inline constexpr Score operator+(Score score1, Score score2) {
         return static_cast<Score>(static_cast<int>(score1) + static_cast<int>(score2));
@@ -501,6 +503,17 @@ namespace Chess {
     inline constexpr Score operator*(Score score, Player player) {
         return static_cast<Score>(score * multiplierOf(player));
     }
+
+    inline constexpr Score mateIn(int depth){
+        assert(depth<MAX_DEPTH);
+        return SCORE_MATE - depth;
+    }
+
+    inline constexpr Score matedIn(int depth){
+        assert(depth<MAX_DEPTH);
+        return SCORE_MATED + depth;
+    }
+
 
     enum BoundType : uint8_t {
         BOUND_UNINITIALIZED = 0,

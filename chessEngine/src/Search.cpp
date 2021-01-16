@@ -7,6 +7,7 @@
 #include <TransPositionTable.h>
 #include "Search.h"
 #include "Uci.h"
+
 #define USE_TRANSPOSITION_TABLE
 
 namespace Chess {
@@ -23,7 +24,7 @@ namespace Chess {
         numNonLeafNodes++;
         MoveList moveList;
 
-        if(!chessBoard.isOk()){
+        if (!chessBoard.isOk()) {
             cout << "chessBoard not OK\n";
             chessBoard.printBitboards();
             cout << gameHistory_;
@@ -34,65 +35,57 @@ namespace Chess {
         ttEntry.onVisit(chessBoard.getMoveCount());
         Move ttBestMove = Move::invalid();
         if (ttEntryFound) {
-            if (!ttEntry.chessBoard().isOk()){
-                cout << "other chessboard not ok\n";
-                exit(456);
+            if (ttEntry.isCurrentlySearched()) {
+                // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
+                return SCORE_DRAW;
             }
-
-            if(!chessBoard.samePositionAs(ttEntry.chessBoard())){
-                Uci::log("Key collision\n");
-                chessBoard.getFen(cout << "current Chessboard: ") << "\n";
-                ttEntry.chessBoard().getFen(cout << "ttEntry chessboard: ") << "\n";
-                cout << "current key: " << chessBoard.getHashKey();
-                exit(321);
-            } else {
-                if (ttEntry.isCurrentlySearched()) {
-                    // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
-                    return SCORE_DRAW;
+            if (ttEntry.depth() >= depthLeft) {
+                if (ttEntry.isExact() ||
+                    (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
+                    (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
+                    return fromTranspositionTable(ttEntry.score(), depthLeft);
                 }
-                if (ttEntry.depth() >= depthLeft) {
-                    if (ttEntry.isExact() ||
-                        (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
-                        (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
-                        return ttEntry.score();
-                    }
-                }
-                ttBestMove = ttEntry.bestMove();
-                moveList.addMove(ttBestMove);
-                assert(ttBestMove.isOk());
-                assert(ttEntry.key() == chessBoard.getHashKey());
             }
-        } else{
-            ttEntry.setKey(chessBoard.getHashKey());
-            ttEntry.setChessBoard(chessBoard);
+            ttBestMove = ttEntry.bestMove();
+            moveList.addMove(ttBestMove);
+            assert(ttBestMove.isOk());
+            assert(ttEntry.key() == chessBoard.getHashKey());
         }
 
-        ttEntry.startSearching();
         GameEndState gameEndState = chessBoard.generateMoves(moveList);
 
         switch (gameEndState) {
             case DRAW:
                 //todo: handle putting data into transposition table
-                ttEntry.stopSearching();
-                ttEntry.setBoundType(BOUND_EXACT);
-                ttEntry.setDepth(0);
-                ttEntry.setScore(SCORE_DRAW);
                 return SCORE_DRAW;
             case MATED:
-                ttEntry.setBoundType(BOUND_EXACT);
-                ttEntry.setScore(SCORE_MATED);
-                ttEntry.stopSearching();
-                ttEntry.setDepth(0);
-                return SCORE_MATED;
+                return matedIn(startingDepth - depthLeft);
             case NO_GAME_END:
                 break;
         }
 
+        if (ttEntry.isCurrentlySearched()){
+            Uci::error("empty ttEntry is currently being searched ");
+            exit(713);
+        }
+
+        ttEntry.startSearching();
+
+        if (!ttEntryFound){
+            ttEntry.setKey(chessBoard.getHashKey());
+        }
+
         Score bestScore = -SCORE_INFINITY;
+        bool skipTtMove = ttEntryFound && !moveList.notFirstContains(ttBestMove);
+
+        if(skipTtMove){
+            Uci::log("skipping TT move Due to key conflict. ");
+        }
+
         Move bestMove = Move::invalid();
-        for (const Move *pMove = moveList.firstMove(); pMove != moveList.lastMove(); pMove++) {
+        for (const Move *pMove = moveList.firstMove() + (skipTtMove ? 1 : 0); pMove != moveList.lastMove(); pMove++) {
             if (pMove != moveList.firstMove() && (*pMove == ttBestMove)) {
-                //since the best bestMove apears both in the movelist by natural generatin by being pushed to its front, we ignore it
+                //since the best bestMove apears both in the movelist by natural generating by being pushed to its front, we ignore it
                 continue;
             }
             gameHistory_.addMove(*pMove);
@@ -108,7 +101,7 @@ namespace Chess {
                 if (score > alpha) {
                     if (score < beta) {
                         alpha = score;
-                    } else{
+                    } else {
                         break;
                     }
                 }
@@ -117,21 +110,24 @@ namespace Chess {
 
         ttEntry.stopSearching();
         ttEntry.setBestMove(bestMove);
-        if (bestScore<alpha){
+        if (bestScore < alpha) {
             ttEntry.setBoundType(BOUND_UPPER);
-        } else if (bestScore>beta){
+        } else if (bestScore > beta) {
             ttEntry.setBoundType(BOUND_LOWER);
-        } else{
+        } else {
             ttEntry.setBoundType(BOUND_EXACT);
         }
-        ttEntry.setScore(bestScore);
+        ttEntry.setScore(toTranspositionTable(bestScore, depthLeft));
         ttEntry.setDepth(depthLeft);
 
-        assert(ttEntry.key() == chessBoard.getHashKey()); //the entry can't be overwritten
+        if(ttEntry.key() != chessBoard.getHashKey()){
+            Uci::error("ttEntry key changed mid search. ");
+        }
         return bestScore;
     }
 
     Move Search::alphaBetaRoot(int depth) {
+        startingDepth = depth;
         gameHistory_.clear();
         Score alpha = -SCORE_INFINITY;
         Score beta = SCORE_INFINITY;
@@ -164,12 +160,12 @@ namespace Chess {
         MoveList moveList;
         uint64_t numNodes = 0;
         chessBoard.generateMoves(moveList);
-        if(depth==1){
+        if (depth == 1) {
             return moveList.size();
         }
-        for (const Move* move = moveList.firstMove();move!=moveList.lastMove();++move){
-            MoveRevertData moveRevertData =  chessBoard.doMove(*move);
-            numNodes+=perft(depth-1);
+        for (const Move *move = moveList.firstMove(); move != moveList.lastMove(); ++move) {
+            MoveRevertData moveRevertData = chessBoard.doMove(*move);
+            numNodes += perft(depth - 1);
             chessBoard.undoMove(*move, moveRevertData);
         }
         return numNodes;

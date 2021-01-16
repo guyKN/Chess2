@@ -25,7 +25,8 @@ namespace Chess {
     Chess::TransPositionTable::TransPositionTable(int log2size) {
         numBuckets = 1u << log2size;
         hashMask = firstBits(log2size);
-        buckets = std::unique_ptr<Bucket[]>(new Bucket[numBuckets]{});
+        buckets = std::unique_ptr<Bucket[]>(new Bucket[numBuckets]);
+        clear();
     }
 
     Chess::TransPositionTable::Entry &Chess::TransPositionTable::probe(Chess::Key key, bool &found) {
@@ -59,5 +60,14 @@ namespace Chess {
         size_t numBuckets = size/bucketSize;
         int log2size = msb(numBuckets); // we want the number of buckets to be a power of 2 for faster hashing, so we take the largest bit only
         return TransPositionTable(log2size);
+    }
+
+    bool TransPositionTable::isEmpty() {
+        for (int i=0;i<numBuckets;++i) {
+            if(!buckets[i].isEmpty()){
+                return false;
+            }
+        }
+        return true;
     }
 }

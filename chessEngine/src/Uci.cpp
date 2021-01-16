@@ -9,6 +9,7 @@
 #include <sstream>
 #include <Search.h>
 #include <Benchmarks.h>
+#include "TransPositionTable.h"
 
 using std::cout;
 using std::cin;
@@ -99,7 +100,7 @@ namespace Uci {
                 } else if (firstWord == "setoption") {
                     //todo
                 } else if (firstWord == "ucinewgame") {
-                    search.clearHashTable();
+                    transPositionTable.clear();
                 } else if (firstWord == "position") {
                     log("trying to go to position");
                     setPosition(lineStream);

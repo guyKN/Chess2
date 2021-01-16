@@ -526,6 +526,11 @@ namespace Chess {
         if (!transPositionTable.isInitialized()){
             cout << "init transposition table\n";
             transPositionTable = TransPositionTable::fromSize(TransPositionTable::TRANSPOSITION_TABLE_SIZE);
+            if(!transPositionTable.isEmpty()){
+                cout << "tt not empty\n";
+            } else{
+                cout << "tt Empty\n";
+            }
             cout << "num entries: " << transPositionTable.getNumEntries() << "\n";
         }
         zobristData.init();

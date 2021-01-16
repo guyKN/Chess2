@@ -30,7 +30,7 @@ namespace Chess {
             Key key_ = KEY_ZERO;
             uint8_t moveCount_ = 0; // the number of half moves at the root of the search when this entry was last used
             uint16_t numVisits_ = 0; // the number of times this position was visited, resets to zero every bestMove.
-            ChessBoard chessBoard_{};
+
         public:
             bool operator==(const Entry &rhs) const {
                 return boundType_ == rhs.boundType_ &&
@@ -116,16 +116,6 @@ namespace Chess {
                 key_ = key;
             }
 
-            inline const ChessBoard &chessBoard(){
-                return chessBoard_;
-            }
-
-            inline void setChessBoard(ChessBoard chessBoard){
-                chessBoard_ = chessBoard;
-            }
-
-
-
             inline uint32_t getImportance() const {
                 // represents how important the current entry is, in order to decide which entry to replace
                 // todo: play around with the numbers to see which replacement function is best
@@ -162,8 +152,16 @@ namespace Chess {
 
             Bucket() = default;
 
-            /// if all there is an unused, returns that, otherwise returns the entry with the lowest value
             Entry &entryToReplace();
+
+            inline bool isEmpty(){
+                for (Entry& entry: entries){
+                    if (entry != Entry()){
+                        return false;
+                    }
+                }
+                return true;
+            }
 
             Bucket(Bucket &) = delete;
 
@@ -218,6 +216,13 @@ namespace Chess {
         inline uint64_t entriesDeleted() const{
             return numEntriesDeleted;
         }
+
+        inline void clear(){
+            memset(buckets.get(), 0, sizeof(Bucket)*numBuckets);
+        }
+
+        bool isEmpty();
+
     };
 
     extern TransPositionTable transPositionTable;
