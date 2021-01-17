@@ -8,8 +8,6 @@
 #include "Search.h"
 #include "Uci.h"
 
-#define USE_TRANSPOSITION_TABLE
-
 namespace Chess {
 
     //todo: fuilty pruning. have a threshold for max improvement per depth, and if the score physicly can't surpass that, given the number of moves, return the evaluation
@@ -30,27 +28,39 @@ namespace Chess {
             cout << gameHistory_;
             exit(987);
         }
+
+        //check for threefold repetition
+        if (repeatedPositions.count(chessBoard.getHashKey())) {
+            cout << "in threefold repetition. \n";
+            return SCORE_DRAW;
+        }
+
         bool ttEntryFound;
         TransPositionTable::Entry &ttEntry = transPositionTable.probe(chessBoard.getHashKey(), ttEntryFound);
         ttEntry.onVisit(chessBoard.getMoveCount());
         Move ttBestMove = Move::invalid();
         if (ttEntryFound) {
+            //todo: check if this is causing the engine to constantly blunder
             if (ttEntry.isCurrentlySearched()) {
                 // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
-                return SCORE_DRAW;
+                // return SCORE_DRAW;
             }
             if (ttEntry.depth() >= depthLeft) {
-                if (ttEntry.isExact() ||
-                    (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
-                    (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
-                    return fromTranspositionTable(ttEntry.score(), depthLeft);
-                }
+                //todo: already use fromTranspositionTable() when comparing scores
+                //todo: bring back upon implementing PV search
+
+//                if (ttEntry.isExact() ||
+//                    (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
+//                    (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
+//                    return fromTranspositionTable(ttEntry.score(), depthLeft);
+//                }
             }
             ttBestMove = ttEntry.bestMove();
             moveList.addMove(ttBestMove);
             assert(ttBestMove.isOk());
             assert(ttEntry.key() == chessBoard.getHashKey());
         }
+
 
         GameEndState gameEndState = chessBoard.generateMoves(moveList);
 
@@ -64,25 +74,30 @@ namespace Chess {
                 break;
         }
 
-        if (ttEntry.isCurrentlySearched()){
-            Uci::error("empty ttEntry is currently being searched ");
+        if (ttEntry.isCurrentlySearched()) {
+            cout <<  "key: " << chessBoard.getHashKey() << "\n";
+            Uci::error("empty ttEntry is currently being searched\n ");
             exit(713);
         }
 
+
         ttEntry.startSearching();
 
-        if (!ttEntryFound){
-            ttEntry.setKey(chessBoard.getHashKey());
-        }
+//        if (!ttEntryFound){
+//            ttEntry.setKey(chessBoard.getHashKey());
+//        }
 
         Score bestScore = -SCORE_INFINITY;
         bool skipTtMove = ttEntryFound && !moveList.notFirstContains(ttBestMove);
 
-        if(skipTtMove){
+        if (skipTtMove) {
             Uci::log("skipping TT move Due to key conflict. ");
         }
 
         Move bestMove = Move::invalid();
+
+        bool passedAlpha = false;
+
         for (const Move *pMove = moveList.firstMove() + (skipTtMove ? 1 : 0); pMove != moveList.lastMove(); pMove++) {
             if (pMove != moveList.firstMove() && (*pMove == ttBestMove)) {
                 //since the best bestMove apears both in the movelist by natural generating by being pushed to its front, we ignore it
@@ -99,6 +114,7 @@ namespace Chess {
                 bestScore = score;
                 bestMove = *pMove;
                 if (score > alpha) {
+                    passedAlpha = true;
                     if (score < beta) {
                         alpha = score;
                     } else {
@@ -110,7 +126,8 @@ namespace Chess {
 
         ttEntry.stopSearching();
         ttEntry.setBestMove(bestMove);
-        if (bestScore < alpha) {
+        //if (bestScore <= alpha) {
+        if (!passedAlpha) {
             ttEntry.setBoundType(BOUND_UPPER);
         } else if (bestScore > beta) {
             ttEntry.setBoundType(BOUND_LOWER);
@@ -119,9 +136,11 @@ namespace Chess {
         }
         ttEntry.setScore(toTranspositionTable(bestScore, depthLeft));
         ttEntry.setDepth(depthLeft);
+        ttEntry.setKey(chessBoard.getHashKey());
 
-        if(ttEntry.key() != chessBoard.getHashKey()){
+        if (ttEntry.key() != chessBoard.getHashKey()) {
             Uci::error("ttEntry key changed mid search. ");
+            exit(171);
         }
         return bestScore;
     }
@@ -131,6 +150,10 @@ namespace Chess {
         gameHistory_.clear();
         Score alpha = -SCORE_INFINITY;
         Score beta = SCORE_INFINITY;
+
+        numLowerBound = 0;
+        numUpperBound = 0;
+        numExactBound = 0;
 
         Move bestMove;
 
@@ -152,6 +175,10 @@ namespace Chess {
         }
 
         bestLineScore = alpha;
+
+        cout << "num Lower bound: " << numLowerBound << "\n";
+        cout << "num upper bound: " << numUpperBound << "\n";
+        cout << "num exact bound: " << numExactBound << "\n";
 
         return bestMove;
     }

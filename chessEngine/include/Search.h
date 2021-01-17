@@ -6,6 +6,7 @@
 #define CHESS_SEARCH_H
 
 #include "ChessBoard.h"
+#include <set>
 
 namespace Chess {
     class Search {
@@ -20,6 +21,12 @@ namespace Chess {
 
         Score bestLineScore = SCORE_ZERO;
 
+        int numLowerBound = 0;
+        int numUpperBound = 0;
+        int numExactBound =0;
+
+        std::set<Key> repeatedPositions;
+
     public:
 
         ChessBoard chessBoard;
@@ -33,6 +40,8 @@ namespace Chess {
         inline Move bestMove(int depth) {
             numNonLeafNodes = 0;
             numLeaves = 0;
+            repeatedPositions = chessBoard.getRepeatedPositions();
+            printList(cout << "repeatedPositions: ", repeatedPositions) << "\n";
             return alphaBetaRoot(depth);
         }
 

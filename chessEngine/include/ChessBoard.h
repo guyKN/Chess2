@@ -13,12 +13,16 @@
 #include "GameHistory.h"
 #include "EvalData.h"
 #include "sstream"
+#include <vector>
+#include <set>
 
 using std::cout;
 using std::stringstream;
+using std::set;
+using std::vector;
 namespace Chess {
 
-    class ZobristData{
+    class ZobristData {
         bool initialized = false;
         Key pieceKeys[NUM_SQUARES][NUM_NON_EMPTY_PIECES];
         Key castlingRightKeys[NUM_CASTLING_RIGHTS];
@@ -26,20 +30,22 @@ namespace Chess {
         Key blackToMove;
     public:
         //todo: check if returning is faster by refrence or value
-        inline Key keyOf(Square square, Piece piece) const{
+        inline Key keyOf(Square square, Piece piece) const {
             assert(pieceOk(piece) && piece != PIECE_NONE);
             return pieceKeys[square][piece];
         }
-        inline Key keyOf(CastlingRights castlingRights) const{
-            assert(castlingRights>=CASTLE_RIGHTS_NONE && (castlingRights <= CASTLE_RIGHTS_ALL));
+
+        inline Key keyOf(CastlingRights castlingRights) const {
+            assert(castlingRights >= CASTLE_RIGHTS_NONE && (castlingRights <= CASTLE_RIGHTS_ALL));
             return castlingRightKeys[castlingRights];
         }
-        inline Key keyOf(File file) const{
+
+        inline Key keyOf(File file) const {
             assert(file_ok(file));
             return enPassantFiles[file];
         }
 
-        inline Key keyBlackToMove() const{
+        inline Key keyBlackToMove() const {
             return blackToMove;
         }
 
@@ -55,9 +61,6 @@ namespace Chess {
 
         Piece capturedPiece;
     };
-
-    //todo: expirement with additional representations in addition to bitboards
-    // specificly: pieceLists as vectors, and an array of all pieces by squarew
 
     class ChessBoard {
         Bitboard pieceBitboards[NUM_PIECES] = {};
@@ -85,6 +88,8 @@ namespace Chess {
 
         EvalData evalData;
 
+        vector<Key> positionsForRepetition{};
+
         unsigned int moveCount = 0;
         static constexpr bool DISABLE_SPECIAL_MOVES = false;
 
@@ -111,7 +116,7 @@ namespace Chess {
 
             bitboardOf(PIECE_NONE) &= ~squareMask;
 
-            hashKey^=zobristData.keyOf(square, newPiece);
+            hashKey ^= zobristData.keyOf(square, newPiece);
         }
 
         /// used when there was a piece on a square, and now a piece of the opposite color is there
@@ -128,8 +133,8 @@ namespace Chess {
             bitboardOf(prevPiece) &= ~squareMask;
             bitboardOf(~newPlayer) &= ~squareMask;
 
-            hashKey^=zobristData.keyOf(square, prevPiece);
-            hashKey^=zobristData.keyOf(square, newPiece);
+            hashKey ^= zobristData.keyOf(square, prevPiece);
+            hashKey ^= zobristData.keyOf(square, newPiece);
         }
 
         /// used when there previously a peice on a square, and now there isn't
@@ -143,7 +148,7 @@ namespace Chess {
             bitboardOf(prevPiece) &= ~squareMask;
             bitboardOf(prevPlayer) &= ~squareMask;
 
-            hashKey^=zobristData.keyOf(square, prevPiece);
+            hashKey ^= zobristData.keyOf(square, prevPiece);
         }
 
         /// used the same as changePieceOn, but only when prevPiece may or may not be PIECE_NONE
@@ -160,9 +165,9 @@ namespace Chess {
             bitboardOf(prevPiece) &= ~squareMask;
             if (prevPiece != PIECE_NONE) {
                 bitboardOf(~newPlayer) &= ~squareMask;
-                hashKey^= zobristData.keyOf(square, prevPiece);
+                hashKey ^= zobristData.keyOf(square, prevPiece);
             }
-            hashKey^= zobristData.keyOf(square, newPiece);
+            hashKey ^= zobristData.keyOf(square, newPiece);
         }
 
         /// same as setPieceOn, except that prevPiece must not be pieceNone, but newPiece may or may not be
@@ -175,9 +180,9 @@ namespace Chess {
             bitboardOf(newPiece) |= squareMask;
             if (newPiece != PIECE_NONE) {
                 bitboardOf(~prevPlayer) |= squareMask;
-                hashKey^= zobristData.keyOf(square, newPiece);
+                hashKey ^= zobristData.keyOf(square, newPiece);
             }
-            hashKey^= zobristData.keyOf(square, prevPiece);
+            hashKey ^= zobristData.keyOf(square, prevPiece);
 
             bitboardOf(prevPiece) &= ~squareMask;
             bitboardOf(prevPlayer) &= ~squareMask;
@@ -203,7 +208,7 @@ namespace Chess {
 
         inline void swapPlayer() {
             currentPlayer = ~currentPlayer;
-            hashKey^=zobristData.keyBlackToMove();
+            hashKey ^= zobristData.keyBlackToMove();
         }
 
 
@@ -227,6 +232,12 @@ namespace Chess {
 
         inline MoveRevertData getMoveRevertData(Piece capturedPiece) {
             return MoveRevertData{castlingRights, enPassantSquare, capturedPiece};
+        }
+
+        /// returns true if the move is a pawn advance or a capture
+        inline bool isIreversible(Move move) const {
+            return (pieceTypeOf(getPieceOn(move.src())) == PIECE_TYPE_PAWN) ||
+                   (getPieceOn(move.dst()) != PIECE_NONE);
         }
 
         template<Player player>
@@ -302,7 +313,7 @@ namespace Chess {
             setPosition(startingBoard, STARTING_PLAYER);
         }
 
-        inline Key getHashKey(){
+        inline Key getHashKey() {
             return hashKey;
         }
 
@@ -345,11 +356,7 @@ namespace Chess {
 
         MoveRevertData doMove(Move move);
 
-        inline MoveRevertData doGameMove(Move move){
-            moveCount++;
-            return doMove(move);
-
-        }
+        MoveRevertData doGameMove(Move move);
 
         void undoMove(Move move, MoveRevertData &moveRevertData);
 
@@ -361,7 +368,7 @@ namespace Chess {
             return threatsOf(~currentPlayer);
         }
 
-        inline Bitboard getCheckEvasions() const{
+        inline Bitboard getCheckEvasions() const {
             return checkEvasionSquares;
         }
 
@@ -388,6 +395,8 @@ namespace Chess {
         bool parseFen(const string &fenString);
 
         ostream &getFen(ostream &outputStream) const;
+
+        set<Key> getRepeatedPositions();
     };
 }
 

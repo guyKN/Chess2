@@ -546,5 +546,13 @@ namespace Chess {
     inline int parseDigit(char digit) {
         return digit - '0';
     }
+
+    template<typename T>
+    ostream & printList(ostream& os, T t){
+        for(auto& tt:t){
+            os << tt << ", ";
+        }
+        return os;
+    }
 }
 #endif //CHESS_TYPES_H

@@ -9,19 +9,20 @@
 namespace Chess {
 
     void ZobristData::init() {
+        PRNG rng{1070372};
         if (!initialized) {
             for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
                 for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
-                    pieceKeys[square][piece] = randomKey();
+                    pieceKeys[square][piece] = rng.rand<Key>();
                 }
             }
             for (auto &castlingRight : castlingRightKeys) {
-                castlingRight = randomKey();
+                castlingRight = rng.rand<Key>();
             }
             for (File file = FILE_FIRST; file <= FILE_LAST; ++file) {
-                enPassantFiles[file] = randomKey();
+                enPassantFiles[file] = rng.rand<Key>();
             }
-            blackToMove = randomKey();
+            blackToMove = rng.rand<Key>();
             initialized = true;
         }
     }
@@ -164,7 +165,7 @@ namespace Chess {
 
     void ChessBoard::setGameHistory(GameHistory &gameHistory) {
         for (Move move: gameHistory.moves) {
-            doMove(move);
+            doGameMove(move);
         }
     }
 
@@ -1217,7 +1218,7 @@ namespace Chess {
             generateMoves(moveList);
             Move move = moveList.getMoveFromInputData(moveInputData);
             if (move.isOk()) {
-                doMove(move);
+                doGameMove(move);
             } else {
                 return false;
             }
@@ -1242,7 +1243,35 @@ namespace Chess {
         }
 
         hashKey ^= zobristData.keyOf(castlingRights);
+    }
 
+    MoveRevertData ChessBoard::doGameMove(Move move) {
+        moveCount++;
+        if(isIreversible(move)){
+            positionsForRepetition.clear();
+        }
+        MoveRevertData moveRevertData = doMove(move);
+        positionsForRepetition.push_back(getHashKey());
+        return moveRevertData;
+    }
+
+    set<Key> ChessBoard::getRepeatedPositions() {
+        printList(cout << "positions for repetition: ", positionsForRepetition) << "\n";
+        set<Key> repeatedPositions{};
+        for (int i = 0; i < positionsForRepetition.size(); ++i) {
+            const Key &key = positionsForRepetition[i];
+            // if the key is already in the set, we continue, since we don't want the same key twice
+            if (repeatedPositions.count(key)){
+                continue;
+            }
+            for (int j = i + 1; j < positionsForRepetition.size(); ++j) {
+                if (positionsForRepetition[j] == key) {
+                    repeatedPositions.insert(key);
+                    break;
+                }
+            }
+        }
+        return repeatedPositions;
     }
 
 }
