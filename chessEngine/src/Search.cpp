@@ -43,7 +43,7 @@ namespace Chess {
             //todo: check if this is causing the engine to constantly blunder
             if (ttEntry.isCurrentlySearched()) {
                 // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
-                // return SCORE_DRAW;
+                 return SCORE_DRAW;
             }
             if (ttEntry.depth() >= depthLeft) {
                 //todo: already use fromTranspositionTable() when comparing scores
@@ -83,9 +83,9 @@ namespace Chess {
 
         ttEntry.startSearching();
 
-//        if (!ttEntryFound){
-//            ttEntry.setKey(chessBoard.getHashKey());
-//        }
+        if (!ttEntryFound){
+            ttEntry.setKey(chessBoard.getHashKey());
+        }
 
         Score bestScore = -SCORE_INFINITY;
         bool skipTtMove = ttEntryFound && !moveList.notFirstContains(ttBestMove);
@@ -136,7 +136,6 @@ namespace Chess {
         }
         ttEntry.setScore(toTranspositionTable(bestScore, depthLeft));
         ttEntry.setDepth(depthLeft);
-        ttEntry.setKey(chessBoard.getHashKey());
 
         if (ttEntry.key() != chessBoard.getHashKey()) {
             Uci::error("ttEntry key changed mid search. ");
