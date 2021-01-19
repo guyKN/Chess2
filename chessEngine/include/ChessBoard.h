@@ -201,7 +201,16 @@ namespace Chess {
             return threatsBypLayer[player];
         }
 
+        inline const Bitboard &getThreatsOf(Player player) const {
+            return threatsBypLayer[player];
+        }
+
         inline Bitboard &threatsOf(Piece piece) {
+            assert(piece != PIECE_NONE);
+            return threatsByPiece[piece];
+        }
+
+        inline const Bitboard &getThreatsOf(Piece piece) const {
             assert(piece != PIECE_NONE);
             return threatsByPiece[piece];
         }
@@ -237,7 +246,7 @@ namespace Chess {
         /// returns true if the move is a pawn advance or a capture
         inline bool isIreversible(Move move) const {
             return (pieceTypeOf(getPieceOn(move.src())) == PIECE_TYPE_PAWN) ||
-                   (getPieceOn(move.dst()) != PIECE_NONE);
+                   (getPieceOn(move.dst()) != PIECE_NONE) || move.moveType() == Move::CASTLING_MOVE;
         }
 
         template<Player player>
@@ -276,6 +285,8 @@ namespace Chess {
         template<Player player>
         void calculateKingThreats();
 
+        inline ThreatMap makeThreatMap(SquareMask squareMask) const;
+
         bool noPieceOverlap() const;
 
         bool noColorOverlap() const;
@@ -289,6 +300,9 @@ namespace Chess {
         void revertTo(const MoveRevertData &moveRevertData);
 
         void initHashKey();
+
+        template<Player player>
+        void calculateWiningCaptures();
 
     public:
 

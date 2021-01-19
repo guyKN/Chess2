@@ -7,10 +7,12 @@
 #include <TransPositionTable.h>
 #include "Search.h"
 #include "Uci.h"
+#include <ostream>
 
 namespace Chess {
 
     //todo: fuilty pruning. have a threshold for max improvement per depth, and if the score physicly can't surpass that, given the number of moves, return the evaluation
+
 
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
         if (depthLeft == 0) {
@@ -43,7 +45,8 @@ namespace Chess {
             //todo: check if this is causing the engine to constantly blunder
             if (ttEntry.isCurrentlySearched()) {
                 // repeated position, but to save time, we just a call it a draw instead of waiting for threethold repetition
-                 return SCORE_DRAW;
+                // todo: ensure this is only called in the correct times
+                return SCORE_DRAW;
             }
             if (ttEntry.depth() >= depthLeft) {
                 //todo: already use fromTranspositionTable() when comparing scores
@@ -75,7 +78,7 @@ namespace Chess {
         }
 
         if (ttEntry.isCurrentlySearched()) {
-            cout <<  "key: " << chessBoard.getHashKey() << "\n";
+            cout << "key: " << chessBoard.getHashKey() << "\n";
             Uci::error("empty ttEntry is currently being searched\n ");
             exit(713);
         }
@@ -83,7 +86,7 @@ namespace Chess {
 
         ttEntry.startSearching();
 
-        if (!ttEntryFound){
+        if (!ttEntryFound) {
             ttEntry.setKey(chessBoard.getHashKey());
         }
 
@@ -174,10 +177,12 @@ namespace Chess {
         }
 
         bestLineScore = alpha;
-
-        cout << "num Lower bound: " << numLowerBound << "\n";
-        cout << "num upper bound: " << numUpperBound << "\n";
-        cout << "num exact bound: " << numExactBound << "\n";
+        if (false) {
+            if (transPositionTable.numPositionsCurrentlySearched() != 0) {
+                Uci::error("positions are still being searched after search is done");
+                exit(129);
+            }
+        }
 
         return bestMove;
     }

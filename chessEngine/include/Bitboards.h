@@ -12,6 +12,7 @@
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 
 #include <nmmintrin.h>
+#include <intrin.h>
 
 #endif
 
@@ -137,25 +138,26 @@ namespace Chess {
             return moveSquares & disableCastlingMask;
         }
 
-        CastlingData(const CastlingData&) = delete;
-        CastlingData(const CastlingData&&) = delete;
+        CastlingData(const CastlingData &) = delete;
+
+        CastlingData(const CastlingData &&) = delete;
 
         inline bool mayCastle(Bitboard pieces, Bitboard threats) const {
             return !(pieces & mustBeEmpty) && !(threats & mustNotBeInCheck);
         }
 
-        static inline const CastlingData& fromCastlingType(CastlingType castlingType) {
+        static inline const CastlingData &fromCastlingType(CastlingType castlingType) {
             assert(castlingType >= 0 && castlingType < NUM_CASTLE_TYPES);
             return castlingData[castlingType];
         }
 
         template<Player player>
-        static inline const CastlingData& kingSideCastleOf() {
+        static inline const CastlingData &kingSideCastleOf() {
             return fromCastlingType(Chess::kingSideCastleOf<player>());
         }
 
         template<Player player>
-        static inline const CastlingData& queenSideCastleOf() {
+        static inline const CastlingData &queenSideCastleOf() {
             return fromCastlingType(Chess::queenSideCastleOf<player>());
         }
 
@@ -361,12 +363,13 @@ namespace Chess {
     public:
         PRNG(uint64_t seed) : s(seed) { assert(seed); }
 
-        template<typename T> T rand() { return T(rand64()); }
+        template<typename T>
+        T rand() { return T(rand64()); }
 
         /// Special generator used to fast init magic numbers.
         /// Output values only have 1/8th of their bits set on average.
-        template<typename T> T sparse_rand()
-        { return T(rand64() & rand64() & rand64()); }
+        template<typename T>
+        T sparse_rand() { return T(rand64() & rand64() & rand64()); }
     };
 
 
@@ -409,9 +412,9 @@ namespace Chess {
 
     inline Square lsb(Bitboard b) {
         assert(b);
-        unsigned long idx;
-        _BitScanForward64(&idx, b);
-        return static_cast<Square>(idx);
+        unsigned long index;
+        _BitScanForward64(&index, b);
+        return static_cast<Square>(index);
     }
 
     inline Square msb(Bitboard b) {
@@ -419,6 +422,13 @@ namespace Chess {
         unsigned long idx;
         _BitScanReverse64(&idx, b);
         return static_cast<Square>(idx);
+    }
+
+    inline Piece lsb(ThreatMap threatMap) {
+        assert(threatMap);
+        unsigned long index;
+        _BitScanForward(&index, threatMap);
+        return static_cast<Piece>(index);
     }
 
 #else  // MSVC, WIN32
@@ -472,11 +482,19 @@ namespace Chess {
     }
 
 
-/// frontmost_sq() returns the most advanced pawnForward2Square for the given color,
+/// frontmost_sq() returns the most advanced Square for the given color,
 /// requires a non-zero bitboard.
     inline Square frontmost_sq(Player c, Bitboard b) {
         assert(b);
         return c == WHITE ? msb(b) : lsb(b);
     }
+
+    inline Piece popLsb(ThreatMap &threatMap, Player player) {
+        assert(threatMap);
+        Piece piece = lsb(threatMap & threatMapOf(player));
+        threatMap ^= threatMapOf(piece);
+        return piece;
+    }
+
 }
 #endif //CHESS_BITBOARD_H

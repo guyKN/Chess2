@@ -304,7 +304,7 @@ namespace Chess {
         return pieceType = static_cast<PieceType>(pieceType + 1);
     }
 
-    constexpr int NUM_PIECE_TYPE = 6;
+    constexpr int NUM_PIECE_TYPES_NOT_EMPTY = 6;
 
     PieceType parsePieceType(char c);
 
@@ -320,6 +320,7 @@ namespace Chess {
         }
     }
 
+    //todo: should this be signed?
     enum Piece : int {
         PIECE_WHITE_PAWN,
         PIECE_WHITE_KNIGHT,
@@ -356,6 +357,8 @@ namespace Chess {
     }
 
     char toChar(PieceType pieceType);
+
+    char toChar2(PieceType pieceType);
 
     Piece parsePiece(char pieceChar);
 
@@ -404,9 +407,21 @@ namespace Chess {
     constexpr inline Piece flip(Piece piece) {
         Player player = playerOf(piece);
         return (player == WHITE) ?
-               static_cast<Piece>(piece + NUM_PIECE_TYPE) :
-               static_cast<Piece>(piece - NUM_PIECE_TYPE);
+               static_cast<Piece>(piece + NUM_PIECE_TYPES_NOT_EMPTY) :
+               static_cast<Piece>(piece - NUM_PIECE_TYPES_NOT_EMPTY);
     }
+
+    enum PieceValue : int {
+        PIECE_VALUE_PAWN,
+        PIECE_VALUE_KNIGHT_BISHOP,
+        PIECE_VALUE_ROOK,
+        PIECE_VALUE_QUEEN,
+        PIECE_VALUE_KING
+    };
+
+    ENABLE_INCR_OPERATORS_ON(PieceValue)
+
+    constexpr int NUM_PIECE_VALUES = 5;
 
     enum WinState : int {
         BLACK_WINS,
@@ -504,13 +519,13 @@ namespace Chess {
         return static_cast<Score>(score * multiplierOf(player));
     }
 
-    inline constexpr Score mateIn(int depth){
-        assert(depth<MAX_DEPTH);
+    inline constexpr Score mateIn(int depth) {
+        assert(depth < MAX_DEPTH);
         return SCORE_MATE - depth;
     }
 
-    inline constexpr Score matedIn(int depth){
-        assert(depth<MAX_DEPTH);
+    inline constexpr Score matedIn(int depth) {
+        assert(depth < MAX_DEPTH);
         return SCORE_MATED + depth;
     }
 
@@ -527,13 +542,74 @@ namespace Chess {
         return static_cast<BoundType>(static_cast<uint8_t>(b1) ^ b2);
     }
 
-    inline BoundType& operator^=(BoundType& b1, BoundType b2) {
-        return b1 = b1^b2;
+    inline BoundType &operator^=(BoundType &b1, BoundType b2) {
+        return b1 = b1 ^ b2;
+    }
+
+    constexpr int MAX_MOVES = 256;
+
+    enum ThreatMap : unsigned {
+        THREAT_MAP_NONE = 0,
+        THREAT_MAP_ALL = (1 << NUM_NON_EMPTY_PIECES) - 1,
+        WHITE_THREATS = (1 << NUM_PIECE_TYPES_NOT_EMPTY) - 1,
+        BLACK_THREATS = THREAT_MAP_ALL ^WHITE_THREATS
+    };
+
+    constexpr unsigned NUM_THREAT_COMBINATIONS = (1 << NUM_NON_EMPTY_PIECES);
+
+    inline ThreatMap threatMapOf(Player player) {
+        return (player == WHITE) ? WHITE_THREATS : BLACK_THREATS;
+    }
+
+    constexpr inline ThreatMap threatMapOf(Piece piece) {
+        assert(pieceOk(piece) && piece != PIECE_NONE);
+        return static_cast<ThreatMap>(1u << piece);
+    }
+
+    ENABLE_INCR_OPERATORS_ON(ThreatMap)
+
+
+    constexpr inline ThreatMap operator|(ThreatMap threatMap1, ThreatMap threatMap2) {
+        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) ^ static_cast<uint64_t>(threatMap2));
     }
 
 
 
-    constexpr int MAX_MOVES = 256;
+    constexpr inline ThreatMap &operator|=(ThreatMap &threatMap1, ThreatMap threatMap2) {
+        return threatMap1 = threatMap1 | threatMap2;
+    }
+
+    constexpr inline ThreatMap operator^(ThreatMap threatMap1, ThreatMap threatMap2) {
+        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) ^ static_cast<uint64_t>(threatMap2));
+    }
+
+    constexpr inline ThreatMap &operator^=(ThreatMap &threatMap1, ThreatMap threatMap2) {
+        return threatMap1 = threatMap1 ^ threatMap2;
+    }
+
+    constexpr inline ThreatMap operator&(ThreatMap threatMap1, ThreatMap threatMap2) {
+        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) & static_cast<uint64_t>(threatMap2));
+    }
+
+    constexpr inline ThreatMap &operator&=(ThreatMap &threatMap1, ThreatMap threatMap2) {
+        return threatMap1 = threatMap1 & threatMap2;
+    }
+
+    constexpr inline ThreatMap operator<<(ThreatMap threatMap1, int shift) {
+        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) << shift);
+    }
+
+    constexpr inline ThreatMap &operator<<=(ThreatMap &threatMap1, int shift) {
+        return threatMap1 = threatMap1 << shift;
+    }
+
+    constexpr inline ThreatMap operator>>(ThreatMap threatMap1, int shift) {
+        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) >> shift);
+    }
+
+    constexpr inline ThreatMap &operator>>=(ThreatMap &threatMap1, int shift) {
+        return threatMap1 = threatMap1 >> shift;
+    }
 
     struct Indent {
         explicit Indent(int indent);
@@ -548,8 +624,8 @@ namespace Chess {
     }
 
     template<typename T>
-    ostream & printList(ostream& os, T t){
-        for(auto& tt:t){
+    ostream &printList(ostream &os, T t) {
+        for (auto &tt:t) {
             os << tt << ", ";
         }
         return os;

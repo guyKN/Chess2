@@ -514,7 +514,7 @@ namespace Chess {
 
     template<Player player>
     GameEndState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
-        const Move* const originalLastMove = moveList.lastMove();
+        const Move *const originalLastMove = moveList.lastMove();
         calculateThreats<~player>();
         if (!isDoubleCheck) {
             Bitboard notPinned = ~pinned;
@@ -772,6 +772,31 @@ namespace Chess {
         Square kingSquare = lsb(bitboardOf(kingPiece));
         threatsOf(kingPiece) = kingMovesFrom(kingSquare);
     }
+
+    template<Player player>
+    void ChessBoard::calculateWiningCaptures() {
+        constexpr Player opponent = ~player;
+
+        Bitboard allWinningCaptures = BITBOARD_EMPTY;
+
+
+
+        // at least stores all enemy pieces that are more valuable than a certain piece. moreValuableThan[ROOK] = ROOK | QUEEN | KING, etc.
+        Bitboard moreValuableThan[NUM_PIECE_VALUES];
+        moreValuableThan[PIECE_VALUE_KING] = BITBOARD_EMPTY;
+        moreValuableThan[PIECE_VALUE_QUEEN] = bitboardOf(makePiece(PIECE_TYPE_KING, opponent));
+        moreValuableThan[PIECE_VALUE_ROOK] =
+                moreValuableThan[PIECE_VALUE_QUEEN] | bitboardOf(makePiece(PIECE_TYPE_QUEEN, opponent));
+        moreValuableThan[PIECE_VALUE_KNIGHT_BISHOP] = moreValuableThan[PIECE_VALUE_ROOK] |
+                                                      bitboardOf(makePiece(PIECE_TYPE_ROOK, opponent));
+        moreValuableThan[PIECE_VALUE_PAWN] = bitboardOf(opponent) ^ bitboardOf(makePiece(PIECE_TYPE_PAWN, opponent));
+
+        for (PieceValue pieceValue = PIECE_VALUE_PAWN; pieceValue <= PIECE_VALUE_KING; ++pieceValue) {
+            allWinningCaptures |= moreValuableThan[pieceValue];
+            threatsOf
+        }
+    }
+
 
     template<Player player>
     inline void ChessBoard::calculateThreats() {
@@ -1247,7 +1272,7 @@ namespace Chess {
 
     MoveRevertData ChessBoard::doGameMove(Move move) {
         moveCount++;
-        if(isIreversible(move)){
+        if (isIreversible(move)) {
             positionsForRepetition.clear();
         }
         MoveRevertData moveRevertData = doMove(move);
@@ -1261,7 +1286,7 @@ namespace Chess {
         for (int i = 0; i < positionsForRepetition.size(); ++i) {
             const Key &key = positionsForRepetition[i];
             // if the key is already in the set, we continue, since we don't want the same key twice
-            if (repeatedPositions.count(key)){
+            if (repeatedPositions.count(key)) {
                 continue;
             }
             for (int j = i + 1; j < positionsForRepetition.size(); ++j) {
@@ -1272,6 +1297,18 @@ namespace Chess {
             }
         }
         return repeatedPositions;
+    }
+
+    /// todo: see if this should be inline or not
+    /// see if loop unrolling can help. See if an incrementally updated makeThreatMap mask can help
+    ThreatMap ChessBoard::makeThreatMap(SquareMask squareMask) const {
+        ThreatMap threatMap = THREAT_MAP_NONE;
+        for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
+            if (getThreatsOf(piece) & squareMask) {
+                threatMap |= threatMapOf(piece);
+            }
+        }
+        return threatMap;
     }
 
 }

@@ -217,6 +217,18 @@ namespace Chess {
             return numEntriesDeleted;
         }
 
+        int numPositionsCurrentlySearched(){
+            int numCurrentlySearched = 0;
+            for (int i=0;i<numBuckets;++i){
+                for (int j=0;j<Bucket::BUCKET_SIZE;++j){
+                    if (buckets[i].entries[j].isCurrentlySearched()){
+                        ++numCurrentlySearched;
+                    }
+                }
+            }
+            return numCurrentlySearched;
+        }
+
         inline void clear(){
             memset(buckets.get(), 0, sizeof(Bucket)*numBuckets);
         }

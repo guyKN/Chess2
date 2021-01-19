@@ -27,6 +27,8 @@ namespace Chess {
 
         std::set<Key> repeatedPositions;
 
+        PRNG prng{123456789};
+
     public:
 
         ChessBoard chessBoard;

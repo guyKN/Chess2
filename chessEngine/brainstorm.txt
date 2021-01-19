@@ -1,0 +1,16 @@
+A capture is worth it if:
+1. It is capturing a more valuable piece, or an unprotected piece
+2. It is capturing an equally valuable piece, and after capturing the piece, the see without the piece is worth it
+
+
+table:
+5 bits:
+
+
+Things to do with see and move ordering:
+1. check if a capture is worth it. If it's worthwile, put it in front of the move order. Use mvvlva to order winning captures.
+If it's a neutral capture, put it lower but still high. Losing captures go way later.
+2. See if a move leaves a piece hanging. Put those moves at the very end of the list.
+3. See if a moves threatens a piece which could be captured, and then put it higher on the list.
+For these sorts of moves, also place a flag on that square, and put earlier on the list moves that defend or move that piece or capture the attaking piece.
+Also maybe check for potential forks

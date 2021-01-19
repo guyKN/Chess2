@@ -6,6 +6,7 @@
 #include <test.h>
 #include <string>
 #include <Move.h>
+#include <ExchangeEvaluation.h>
 #include "Benchmarks.h"
 #include "Uci.h"
 
@@ -71,9 +72,6 @@ void test(){
     cout << a[2]<< "\n";
     cout << a[3]<< "\n";
     cout << a[4]<< "\n";
-
-
-
 }
 
 int main(int argc, char *argv[]) {
@@ -106,6 +104,8 @@ int main(int argc, char *argv[]) {
             }
         } else if (firstArg=="--test") {
             test();
+        } else if (firstArg == "--see") {
+            initExchangeMaps();
         } else{
             cout << "Invalid arguments\n";
         }

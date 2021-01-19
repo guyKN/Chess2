@@ -106,7 +106,7 @@ namespace Chess {
     }
 
     char toChar(Piece piece) {
-        char pieceToChar[] = "PNBRQKpnbrqk ";
+        static char pieceToChar[] = "PNBRQKpnbrqk ";
         assert(pieceOk(piece));
         return pieceToChar[piece];
     }
@@ -130,9 +130,15 @@ namespace Chess {
     }
 
     char toChar(PieceType pieceType) {
-        char pieceTypeToChar[] = " nbrqk";
+        static char pieceTypeToChar[] = " nbrqk";
         return pieceTypeToChar[pieceType];
     }
+
+    char toChar2(PieceType pieceType) {
+        static char pieceTypeToChar[] = "pnbrqk";
+        return pieceTypeToChar[pieceType];
+    }
+
 
     std::ostream &operator<<(ostream &outputStream, Player player) {
         return outputStream << (player == WHITE ? "White" : "Black");
