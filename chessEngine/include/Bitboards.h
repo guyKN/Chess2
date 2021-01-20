@@ -18,9 +18,7 @@
 
 
 namespace Chess {
-
-    void initAll();
-
+    void initPieceMoveLookup();
     void generateSeeds(int numAttempts);
 
 

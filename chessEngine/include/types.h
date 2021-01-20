@@ -570,17 +570,15 @@ namespace Chess {
 
 
     constexpr inline ThreatMap operator|(ThreatMap threatMap1, ThreatMap threatMap2) {
-        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) ^ static_cast<uint64_t>(threatMap2));
+        return static_cast<ThreatMap>(static_cast<unsigned>(threatMap1) ^ static_cast<unsigned>(threatMap2));
     }
-
-
 
     constexpr inline ThreatMap &operator|=(ThreatMap &threatMap1, ThreatMap threatMap2) {
         return threatMap1 = threatMap1 | threatMap2;
     }
 
     constexpr inline ThreatMap operator^(ThreatMap threatMap1, ThreatMap threatMap2) {
-        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) ^ static_cast<uint64_t>(threatMap2));
+        return static_cast<ThreatMap>(static_cast<unsigned>(threatMap1) ^ static_cast<unsigned>(threatMap2));
     }
 
     constexpr inline ThreatMap &operator^=(ThreatMap &threatMap1, ThreatMap threatMap2) {
@@ -588,7 +586,7 @@ namespace Chess {
     }
 
     constexpr inline ThreatMap operator&(ThreatMap threatMap1, ThreatMap threatMap2) {
-        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) & static_cast<uint64_t>(threatMap2));
+        return static_cast<ThreatMap>(static_cast<unsigned>(threatMap1) & static_cast<unsigned>(threatMap2));
     }
 
     constexpr inline ThreatMap &operator&=(ThreatMap &threatMap1, ThreatMap threatMap2) {
@@ -596,7 +594,7 @@ namespace Chess {
     }
 
     constexpr inline ThreatMap operator<<(ThreatMap threatMap1, int shift) {
-        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) << shift);
+        return static_cast<ThreatMap>(static_cast<unsigned>(threatMap1) << shift);
     }
 
     constexpr inline ThreatMap &operator<<=(ThreatMap &threatMap1, int shift) {
@@ -604,11 +602,38 @@ namespace Chess {
     }
 
     constexpr inline ThreatMap operator>>(ThreatMap threatMap1, int shift) {
-        return static_cast<ThreatMap>(static_cast<uint64_t>(threatMap1) >> shift);
+        return static_cast<ThreatMap>(static_cast<unsigned>(threatMap1) >> shift);
     }
 
     constexpr inline ThreatMap &operator>>=(ThreatMap &threatMap1, int shift) {
         return threatMap1 = threatMap1 >> shift;
+    }
+
+
+    enum StaticEvalScore: int8_t {
+        STATIC_SCORE_ZERO = 0,
+        STATIC_SCORE_PAWN = 1,
+        STATIC_SCORE_KNIGHT,
+        STATIC_SCORE_BISHOP = 3,
+        STATIC_SCORE_ROOK = 5,
+        STATIC_SCORE_QUEEN = 9,
+        STATIC_SCORE_PROMOTION = 8,
+        STATIC_SCORE_PROMOTION_CAPTURE = 12,
+        STATIC_SCORE_KING = 80
+    };
+
+    inline StaticEvalScore staticPieceValue(Piece piece) {
+        static StaticEvalScore basicPieceValues[NUM_PIECES] = {STATIC_SCORE_PAWN, STATIC_SCORE_KNIGHT,
+                                                                              STATIC_SCORE_BISHOP, STATIC_SCORE_ROOK,
+                                                                              STATIC_SCORE_QUEEN, STATIC_SCORE_KING,
+                                                                              STATIC_SCORE_PAWN, STATIC_SCORE_KNIGHT,
+                                                                              STATIC_SCORE_BISHOP, STATIC_SCORE_ROOK,
+                                                                              STATIC_SCORE_QUEEN, STATIC_SCORE_KING, STATIC_SCORE_ZERO};
+        return basicPieceValues[piece];
+    }
+
+    constexpr inline StaticEvalScore operator-(StaticEvalScore staticEvalScore1, StaticEvalScore staticEvalScore2) {
+        return static_cast<StaticEvalScore>(static_cast<int8_t>(staticEvalScore1) - static_cast<int8_t>(staticEvalScore2));
     }
 
     struct Indent {

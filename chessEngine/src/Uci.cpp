@@ -10,6 +10,7 @@
 #include <Search.h>
 #include <Benchmarks.h>
 #include "TransPositionTable.h"
+#include "init.h"
 
 using std::cout;
 using std::cin;

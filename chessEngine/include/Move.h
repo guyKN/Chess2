@@ -14,7 +14,8 @@ namespace Chess {
 
     class Move {
         //todo: check the best order for bits. the last and first bits are importantlyly convenient, because they only require a shift or mask operation, not both
-        /// uses 16 bits
+        /// uses 32 bits
+        /// the first 16 bits represents the move itself. Moves may be stored in transposition table using just the first 16 bits
         /// bits 0-5 src square
         /// bits 6-11 dst square
         /// bits 12-13 bestMove_ code. 0b00=normal bestMove_, 0b01=promotion, 0b10=castling, 0b11=en passant
@@ -27,18 +28,23 @@ namespace Chess {
         /// if castlingBits then corresponds to the castlingBits CastlingType enum
         /// if en passant, then 0b00 means pawn forward 2, 0b01 means en Passant capture
         /// if dst==0, and src==0, then the bestMove_ is invalid
+        /// the last 16 bits are a score given to the move for move ordering.
+        /// Since comparasion functions the later bits first, it means we can easly sort by move value without having to mask or anything
+
     public:
-        using codeType = unsigned int;
-        constexpr explicit Move(codeType code) : code(code) {}
+        using CodeType = uint32_t;
+
+        constexpr explicit Move(CodeType code) : code(code) {}
 
     private:
-        codeType code;
+        CodeType code;
         static constexpr int DST_SHIFT = 6;
         static constexpr int MOVE_TYPE_SHIFT = 12;
         static constexpr int EXTRA_CODE_SHIFT = 14;
+        static constexpr int MOVE_SCORE_SHIFT = 16;
 
     public:
-        enum MoveType : codeType {
+        enum MoveType : CodeType {
             NORMAL_MOVE = 0b00 << MOVE_TYPE_SHIFT,
             PROMOTION_MOVE = 0b01 << MOVE_TYPE_SHIFT,
             CASTLING_MOVE = 0b10 << MOVE_TYPE_SHIFT,
@@ -46,26 +52,27 @@ namespace Chess {
         };
     private:
 
-        static constexpr codeType SQUARE_BITS = 0b111111;
-        static constexpr codeType MOVE_TYPE_BITS = 0b11 << MOVE_TYPE_SHIFT;
-        static constexpr codeType EN_PASSANT_CAPTURE = 1 << EXTRA_CODE_SHIFT;
+        static constexpr CodeType SQUARE_BITS = 0b111111;
+        static constexpr CodeType MOVE_TYPE_BITS = 0b11 << MOVE_TYPE_SHIFT;
+        static constexpr CodeType EN_PASSANT_CAPTURE = 1 << EXTRA_CODE_SHIFT;
+        static constexpr CodeType EXTRA_CODE_BITS = 0b11 << EXTRA_CODE_SHIFT;
 
         static Move castle_slow(CastlingType castlingType);
 
         static const Move castlingMoves[NUM_CASTLE_TYPES];
 
-        static constexpr inline codeType promotionCode(PieceType pieceType) {
+        static constexpr inline CodeType promotionCode(PieceType pieceType) {
             assert(isValidPromotion(pieceType));
             return pieceType - 1;
         }
 
-        static constexpr inline PieceType fromPromotionCode(codeType promotionCode) {
+        static constexpr inline PieceType fromPromotionCode(CodeType promotionCode) {
             return static_cast<PieceType>(promotionCode + 1);
         }
 
 
     public:
-        inline int getCode() const{
+        inline int getCode() const {
             return code;
         }
 
@@ -83,17 +90,17 @@ namespace Chess {
 
         inline CastlingType castlingType() const {
             assert(moveType() == CASTLING_MOVE);
-            return static_cast<CastlingType>(code >> EXTRA_CODE_SHIFT);
+            return static_cast<CastlingType>((code & EXTRA_CODE_BITS) >> EXTRA_CODE_SHIFT);
         }
 
         inline PieceType promotionPieceType() const {
             assert(moveType() == PROMOTION_MOVE);
-            return fromPromotionCode(code >> EXTRA_CODE_SHIFT);
+            return fromPromotionCode((code & EXTRA_CODE_BITS) >> EXTRA_CODE_SHIFT);
         }
 
         inline bool isEnPassantCapture() const {
             assert(moveType() == EN_PASSANT_MOVE);
-            return code >> EXTRA_CODE_SHIFT;
+            return (code & EXTRA_CODE_BITS);
         }
 
         inline bool isOk() const {
@@ -102,26 +109,42 @@ namespace Chess {
 
         Move() : code(0) {}
 
-        // todo: change square to unsigned int
+        static constexpr inline Move normalMove(Square src, Square dst, unsigned score) {
+            return Move(src | (dst << DST_SHIFT) | (score << MOVE_SCORE_SHIFT));
+        }
+
         static constexpr inline Move normalMove(Square src, Square dst) {
-            return Move(src | (dst << DST_SHIFT));
+            return normalMove(src, dst, 0);
         }
 
         static inline Move castle(CastlingType castlingType) {
             return castlingMoves[castlingType];
         }
 
-        static constexpr inline Move promotionMove(Square src, Square dst, PieceType promotionPiece) {
+        static constexpr inline Move promotionMove(Square src, Square dst, PieceType promotionPiece, unsigned score) {
             return Move(
-                    src | (dst << DST_SHIFT) | PROMOTION_MOVE | (promotionCode(promotionPiece) << EXTRA_CODE_SHIFT));
+                    src | (dst << DST_SHIFT) | PROMOTION_MOVE | (promotionCode(promotionPiece) << EXTRA_CODE_SHIFT) |
+                    (score << MOVE_SCORE_SHIFT));
+        }
+
+        static constexpr inline Move promotionMove(Square src, Square dst, PieceType promotionPiece) {
+            return promotionMove(src, dst, promotionPiece, 0);
+        }
+
+        static constexpr inline Move pawnForward2(Square src, Square dst, unsigned score) {
+            return Move(src | (dst << DST_SHIFT) | EN_PASSANT_MOVE | (score << MOVE_SCORE_SHIFT));
         }
 
         static constexpr inline Move pawnForward2(Square src, Square dst) {
-            return Move(src | (dst << DST_SHIFT) | EN_PASSANT_MOVE);
+            return pawnForward2(src, dst, 0);
+        }
+
+        static constexpr inline Move enPassantCapture(Square src, Square dst, unsigned score) {
+            return Move(src | (dst << DST_SHIFT) | EN_PASSANT_MOVE | EN_PASSANT_CAPTURE | (score << MOVE_SCORE_SHIFT));
         }
 
         static constexpr inline Move enPassantCapture(Square src, Square dst) {
-            return Move(src | (dst << DST_SHIFT) | EN_PASSANT_MOVE | EN_PASSANT_CAPTURE);
+            return enPassantCapture(src, dst, 0);
         }
 
         static constexpr inline Move invalid() {
@@ -134,6 +157,22 @@ namespace Chess {
 
         inline constexpr bool operator!=(const Move &other) const {
             return !(other == *this);
+        }
+
+        inline constexpr bool operator>(const Move &other) const {
+            return code > other.code;
+        }
+
+        inline constexpr bool operator<=(const Move &other) const {
+            return !(*this>other);
+        }
+
+        inline constexpr bool operator<(const Move &other) const {
+            return code < other.code;
+        }
+
+        inline constexpr bool operator>=(const Move &other) const {
+            return !(*this<other);
         }
 
         bool matchesMoveInput(MoveInputData moveInputData) const;

@@ -101,8 +101,8 @@ namespace Chess {
 
         bool passedAlpha = false;
 
-        for (const Move *pMove = moveList.firstMove() + (skipTtMove ? 1 : 0); pMove != moveList.lastMove(); pMove++) {
-            if (pMove != moveList.firstMove() && (*pMove == ttBestMove)) {
+        for (const Move *pMove = moveList.cbegin() + (skipTtMove ? 1 : 0); pMove != moveList.cend(); pMove++) {
+            if (pMove != moveList.cbegin() && (*pMove == ttBestMove)) {
                 //since the best bestMove apears both in the movelist by natural generating by being pushed to its front, we ignore it
                 continue;
             }
@@ -164,7 +164,7 @@ namespace Chess {
 
         assert(gameEndState == NO_GAME_END && depth > 0);
 
-        for (const Move *pMove = moveList.firstMove(); pMove < moveList.lastMove(); pMove++) {
+        for (const Move *pMove = moveList.cbegin(); pMove < moveList.cend(); pMove++) {
             gameHistory_.addMove(*pMove);
             MoveRevertData moveRevertData = chessBoard.doMove(*pMove);
             Score score = -alphaBeta(-beta, -alpha, depth - 1);
@@ -194,7 +194,7 @@ namespace Chess {
         if (depth == 1) {
             return moveList.size();
         }
-        for (const Move *move = moveList.firstMove(); move != moveList.lastMove(); ++move) {
+        for (const Move *move = moveList.cbegin(); move != moveList.cend(); ++move) {
             MoveRevertData moveRevertData = chessBoard.doMove(*move);
             numNodes += perft(depth - 1);
             chessBoard.undoMove(*move, moveRevertData);

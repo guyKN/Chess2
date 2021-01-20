@@ -13,6 +13,7 @@
 #include "GameHistory.h"
 #include "EvalData.h"
 #include "sstream"
+#include "ExchangeEvaluation.h"
 #include <vector>
 #include <set>
 
@@ -60,6 +61,12 @@ namespace Chess {
         Square enPassantSquare;
 
         Piece capturedPiece;
+    };
+
+    enum class MoveGenType{
+        ALL,
+        CAPTURES, // note: promotions are also included as captures
+        NON_CAPTURE
     };
 
     class ChessBoard {
@@ -252,14 +259,14 @@ namespace Chess {
         template<Player player>
         void generateAllPieces(MoveList &moveList, Bitboard source, Bitboard target);
 
-        template<Player player>
-        void generatePawnMoves(MoveList &moveList, Bitboard source, Bitboard target);
+        template<Player player, MoveGenType moveGenType>
+        void generatePawnMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target);
 
-        template<Player player>
-        void generateKnightMoves(MoveList &moveList, Bitboard source, Bitboard target);
+        template<Player player, MoveGenType moveGenType>
+        void generateKnightMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target);
 
-        template<Player player, PieceType pieceType>
-        void generateSlidingPieceMoves(MoveList &moveList, Bitboard source, Bitboard target);
+        template<Player player, PieceType pieceType, MoveGenType moveGenType>
+        void generateSlidingPieceMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target);
 
         template<Player player>
         void generateKingMoves(MoveList &moveList);
@@ -285,7 +292,14 @@ namespace Chess {
         template<Player player>
         void calculateKingThreats();
 
-        inline ThreatMap makeThreatMap(SquareMask squareMask) const;
+        ThreatMap makeThreatMap(SquareMask squareMask) const;
+
+        inline StaticEvalScore evalCapture(Square dstSquare, Piece srcPiece){
+            Piece dstPiece = pieceOn(dstSquare);
+            ThreatMap threatMap = makeThreatMap(maskOf(dstSquare));
+            assert(threatMap & threatMapOf(srcPiece));
+            return staticPieceValue(dstPiece) - staticExchangeEval(threatMap ^ threatMapOf(srcPiece), srcPiece);
+        }
 
         bool noPieceOverlap() const;
 
@@ -300,9 +314,6 @@ namespace Chess {
         void revertTo(const MoveRevertData &moveRevertData);
 
         void initHashKey();
-
-        template<Player player>
-        void calculateWiningCaptures();
 
     public:
 
@@ -376,10 +387,6 @@ namespace Chess {
 
         inline const Piece &getPieceOn(Square square) const {
             return piecesBySquare[square];
-        }
-
-        inline Bitboard getThreats() {
-            return threatsOf(~currentPlayer);
         }
 
         inline Bitboard getCheckEvasions() const {

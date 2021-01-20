@@ -361,10 +361,10 @@ namespace Chess {
 
     /// maybe also get rid of template<Player player>, since it just makes functions bigger, and harder to all keep in the cache
 
-    template<Player player>
-    void ChessBoard::generatePawnMoves(MoveList &moveList, Bitboard source, Bitboard target) {
-        // note: promotionPiece is the piece that the pawns promote to, but it may also be PIECE_PAWN, which means that the pawns don't promote
-        // only make promotionPiece into queen when it is know the pawns will promote this bestMove_
+    template<Player player, MoveGenType moveGenType>
+    void ChessBoard::generatePawnMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) {
+        // todo: pawn captures can never be losing, so make it an error if they are and don't add to losing move list.
+        // todo: merge similar actions with captures for readability and speed
         constexpr int direction = directionOf(player);
         constexpr int forward1shift = direction * 8;
         constexpr int forward2shift = 2 * forward1shift;
@@ -377,10 +377,18 @@ namespace Chess {
         constexpr Piece pawnPiece = makePiece(PIECE_TYPE_PAWN, player);
         constexpr Piece queen = makePiece(PIECE_TYPE_QUEEN, player);
 
+        constexpr Player opponent = ~player;
+
         constexpr Rank rank2 = flipIfBlack(player, RANK_2);
         constexpr Bitboard rank2mask = maskOf(rank2);
         constexpr Rank rank7 = flipIfBlack(player, RANK_7);
         constexpr Bitboard rank7mask = maskOf(rank7);
+
+
+        constexpr bool doCaptures = (moveGenType == MoveGenType::CAPTURES) || (moveGenType == MoveGenType::ALL);
+        constexpr bool doNonCaptures = (moveGenType == MoveGenType::NON_CAPTURE) || (moveGenType == MoveGenType::ALL);
+        constexpr bool doStaticEval =
+                (moveGenType == MoveGenType::CAPTURES) || (moveGenType == MoveGenType::NON_CAPTURE);
 
         Bitboard pawns = bitboardOf(pawnPiece) & source;
         Bitboard &emptySquares = bitboardOf(PIECE_NONE);
@@ -388,103 +396,242 @@ namespace Chess {
         Bitboard enemyPieces = bitboardOf(~player) & target;
         Bitboard enPassantTarget = signedShift<forward1shift>(target);
 
-        // promotion forward
-        Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptyTargetSquares;
-        while (promotionForward) {
-            Square dst = popLsb(&promotionForward);
-            moveList.addPromotions(dst - forward1shift, dst);
-        }//promotion left
-        Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
-        while (promotionLeft) {
-            Square dst = popLsb(&promotionLeft);
-            moveList.addPromotions(dst - captureLeftShift, dst);
-        }//promotion right
-        Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
-        while (promotionRight) {
-            Square dst = popLsb(&promotionRight);
-            moveList.addPromotions(dst - captureRightShift, dst);
-        }
 
-        //capture left
-        Bitboard captureLeft = signedShift<captureLeftShift>(pawns & ~rank7mask & shiftLeftMask) & enemyPieces;
-        while (captureLeft) {
-            Square dst = popLsb(&captureLeft);
-            moveList.addMove(Move::normalMove(dst - captureLeftShift, dst));
-        }
+        if constexpr (doCaptures) {
 
-        //capture right
-        Bitboard captureRight = signedShift<captureRightShift>(pawns & ~rank7mask & shiftRightMask) & enemyPieces;
-        while (captureRight) {
-            Square dst = popLsb(&captureRight);
-            moveList.addMove(Move::normalMove(dst - captureRightShift, dst));
-        }
-
-        if (enPassantSquare != SQ_INVALID) {
-            // en passent capture left
-            Bitboard enPassantLeft =
-                    signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
-            if (enPassantLeft) {
-                moveList.addMove(Move::enPassantCapture(enPassantSquare + 1, enPassantSquare + forward1shift));
+            //promotion left
+            Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
+            while (promotionLeft) {
+                Square dst = popLsb(&promotionLeft);
+                Square src = dst - captureLeftShift;
+                if constexpr (doStaticEval) {
+                    moveChunk.moveList.addMove(
+                            Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION_CAPTURE)
+                    );
+                    moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
+                } else {
+                    moveChunk.moveList.addPromotions(src, dst);
+                }
             }
 
-            // en passent capture right
-            Bitboard enPassantRight =
-                    signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
-            if (enPassantRight) {
-                moveList.addMove(Move::enPassantCapture(enPassantSquare - 1, enPassantSquare + forward1shift));
+            //promotion right
+            Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
+            while (promotionRight) {
+                Square dst = popLsb(&promotionRight);
+                Square src = dst - captureRightShift;
+
+                if constexpr (doStaticEval) {
+                    moveChunk.moveList.addMove(
+                            Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION_CAPTURE)
+                    );
+                    moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
+                } else {
+                    moveChunk.moveList.addPromotions(src, dst);
+                }
+            }
+
+            // promotion forward
+            Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptyTargetSquares;
+            while (promotionForward) {
+                Square dst = popLsb(&promotionForward);
+                Square src = dst - forward1shift;
+                if constexpr (doStaticEval) {
+                    //todo: check if it's faster to just not calculate the static eval score and check directly using threats
+                    SquareMask dstMask = maskOf(dst);
+                    if ((getThreatsOf(player) & dstMask) | !(getThreatsOf(opponent) & dstMask)) {
+                        // the promotion is a winning promotion
+                        moveChunk.moveList.addMove(
+                                Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION)
+                        );
+                    } else {
+                        // the promoted pawn will immediately be captured and the pawn will be lost
+                        moveChunk.losingCaptures.addMove(
+                                Move::promotionMove(src, dst, PIECE_TYPE_QUEEN)
+                        );
+                    }
+                    // all moves other than a promotion to a queen are added to losing captures, since it is very rare that they will be used
+                    moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
+
+                } else {
+                    moveChunk.moveList.addPromotions(src, dst);
+                }
+            }
+            //capture left
+            Bitboard captureLeft = signedShift<captureLeftShift>(pawns & ~rank7mask & shiftLeftMask) & enemyPieces;
+            while (captureLeft) {
+                Square dst = popLsb(&captureLeft);
+                Square src = dst - captureLeftShift;
+                if constexpr (doStaticEval) {
+                    StaticEvalScore staticScore = evalCapture(dst, pawnPiece);
+                    if (staticScore >= 0) {
+                        moveChunk.moveList.addMove(
+                                Move::normalMove(src, dst, staticScore)
+                        );
+                    } else {
+                        moveChunk.losingCaptures.addMove(
+                                Move::normalMove(src, dst)
+                        );
+                    }
+                } else {
+                    moveChunk.moveList.addMove(Move::normalMove(src, dst));
+                }
+            }
+
+            //capture right
+            Bitboard captureRight = signedShift<captureRightShift>(pawns & ~rank7mask & shiftRightMask) & enemyPieces;
+            while (captureRight) {
+                Square dst = popLsb(&captureLeft);
+                Square src = dst - captureRightShift;
+
+                if constexpr (doStaticEval) {
+                    StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
+                    if (captureEval >= 0) {
+                        moveChunk.moveList.addMove(
+                                Move::normalMove(src, dst, captureEval)
+                        );
+                    } else {
+                        moveChunk.losingCaptures.addMove(
+                                Move::normalMove(src, dst)
+                        );
+                    }
+                } else {
+                    moveChunk.moveList.addMove(
+                            Move::normalMove(src, dst)
+                    );
+                }
+
+            }
+
+            if (enPassantSquare != SQ_INVALID) {
+                // en passent capture left
+                Bitboard enPassantLeft =
+                        signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
+                if (enPassantLeft) {
+                    Square src = enPassantSquare + 1;
+                    Square dst = enPassantSquare + forward1shift;
+                    if constexpr (doStaticEval) {
+                        StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
+                        if (captureEval >= 0) {
+                            moveChunk.moveList.addMove(
+                                    Move::enPassantCapture(src, dst, captureEval)
+                            );
+                        } else {
+                            moveChunk.losingCaptures.addMove(
+                                    Move::enPassantCapture(src, dst)
+                            );
+                        }
+                    } else {
+                        moveChunk.moveList.addMove(
+                                Move::enPassantCapture(src, dst)
+                        );
+                    }
+                }
+
+                // en passent capture right
+                Bitboard enPassantRight =
+                        signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
+                if (enPassantRight) {
+                    Square src = enPassantSquare - 1;
+                    Square dst = enPassantSquare + forward1shift;
+                    if constexpr (doStaticEval) {
+                        StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
+                        if (captureEval >= 0) {
+                            moveChunk.moveList.addMove(
+                                    Move::enPassantCapture(src, dst, captureEval)
+                            );
+                        } else {
+                            moveChunk.losingCaptures.addMove(
+                                    Move::enPassantCapture(src, dst)
+                            );
+                        }
+                    } else {
+                        moveChunk.moveList.addMove(
+                                Move::enPassantCapture(src, dst)
+                        );
+                    }
+                }
             }
         }
 
-        //bestMove_ forward 2
-        Bitboard forward2Move =
-                signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
-                signedShift<forward1shift>(emptySquares);
-        while (forward2Move) {
-            Square dst = popLsb(&forward2Move);
-            moveList.addMove(
-                    Move::pawnForward2(dst - forward2shift, dst)
-            );
-        }
 
-        // bestMove_ forward 1
-        Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
-        while (forward1Move) {
-            Square dst = popLsb(&forward1Move);
-            moveList.addMove(
-                    Move::normalMove(dst - forward1shift, dst)
-            );
-            //moveList.addMove(Move(dst - forward1shift, dst, pawnPiece, pieceOn(dst)));
+        if constexpr (doNonCaptures) {
+            //move forward 2
+            Bitboard forward2Move =
+                    signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
+                    signedShift<forward1shift>(emptySquares);
+            while (forward2Move) {
+                Square dst = popLsb(&forward2Move);
+                moveChunk.moveList.addMove(
+                        Move::pawnForward2(dst - forward2shift, dst)
+                );
+            }
+
+            // move forward 1
+            Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
+            while (forward1Move) {
+                Square dst = popLsb(&forward1Move);
+                moveChunk.moveList.addMove(
+                        Move::normalMove(dst - forward1shift, dst)
+                );
+            }
         }
     }
 
 
-    template<Player player>
-    void ChessBoard::generateKnightMoves(MoveList &moveList, Bitboard source, Bitboard target) {
+    template<Player player, MoveGenType moveGenType>
+    void ChessBoard::generateKnightMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) {
+        //it is assumed that if moveGenType is captures or non-capture, target is adjusted already
         constexpr Piece knightPiece = makePiece(PIECE_TYPE_KNIGHT, player);
+        constexpr bool doStaticEval = moveGenType == MoveGenType::CAPTURES || moveGenType == MoveGenType::NON_CAPTURE;
+        constexpr bool doCaptureEval = moveGenType == MoveGenType::CAPTURES;
         Bitboard knights = getBitboardOf(knightPiece) & source;
-        Bitboard availableSquares = ~bitboardOf(player) & target;
+        Bitboard availableSquares = ~bitboardOf(player) & target; //todo: this line repeats a lot. call bitwise and just once
         while (knights) {
             Square srcSquare = popLsb(&knights);
             Bitboard knightMoves = knightMovesFrom(srcSquare) & availableSquares;
             while (knightMoves) {
-                moveList.addMove(Move::normalMove(srcSquare, popLsb(&knightMoves)));
+                Square dst = popLsb(&knightMoves);
+                if constexpr (doCaptureEval) {
+                    StaticEvalScore captureEval = evalCapture(dst, knightPiece);
+                    if(captureEval>=0){
+                        moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst, captureEval));
+                    } else{
+                        moveChunk.losingCaptures.addMove(Move::normalMove(srcSquare, dst));
+                    }
+                } else{
+                    moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst));
+                }
             }
         }
     }
 
-    template<Player player, PieceType pieceType>
-    void ChessBoard::generateSlidingPieceMoves(MoveList &moveList, Bitboard source, Bitboard target) {
+    template<Player player, PieceType pieceType, MoveGenType moveGenType>
+    void ChessBoard::generateSlidingPieceMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) {
         constexpr Piece piece = makePiece(pieceType, player);
         constexpr Player opponent = ~player;
+
+        constexpr bool doStaticEval = moveGenType == MoveGenType::CAPTURES || moveGenType == MoveGenType::NON_CAPTURE;
+        constexpr bool doCaptureEval = moveGenType == MoveGenType::CAPTURES;
+
         Bitboard pieceBitboard = getBitboardOf(piece) & source;
         Bitboard availableSquares = ~bitboardOf(player) & target;
         Bitboard otherPieces = bitboardOf(player) | bitboardOf(opponent);
         while (pieceBitboard) {
             Square srcSquare = popLsb(&pieceBitboard);
             Bitboard moves = slidingMovesFrom<pieceType>(srcSquare, otherPieces) &
-                             availableSquares;//todo: is | availableSquares necessary
+                             availableSquares;//todo: is & availableSquares necessary
             while (moves) {
-                moveList.addMove(Move::normalMove(srcSquare, popLsb(&moves)));
+                Square dst = popLsb(&moves);
+                if constexpr (doCaptureEval) {
+                    StaticEvalScore captureEval = evalCapture(dst, piece);
+                    if (captureEval >= 0) {
+                        moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst, captureEval));
+                    } else{
+                        moveChunk.losingCaptures.addMove(Move::normalMove(srcSquare, dst));
+                    }
+                } else{
+                    moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst));
+                }
             }
         }
     }
@@ -514,7 +661,7 @@ namespace Chess {
 
     template<Player player>
     GameEndState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
-        const Move *const originalLastMove = moveList.lastMove();
+        const Move *const originalLastMove = moveList.cend();
         calculateThreats<~player>();
         if (!isDoubleCheck) {
             Bitboard notPinned = ~pinned;
@@ -572,7 +719,7 @@ namespace Chess {
         }
         generateKingMoves<player>(moveList);
 
-        if (originalLastMove != moveList.lastMove()) { //at least one move was generated
+        if (originalLastMove != moveList.cend()) { //at least one move was generated
             return NO_GAME_END;
         } else if (isCheck) {
             return MATED;
@@ -773,6 +920,7 @@ namespace Chess {
         threatsOf(kingPiece) = kingMovesFrom(kingSquare);
     }
 
+/*
     template<Player player>
     void ChessBoard::calculateWiningCaptures() {
         constexpr Player opponent = ~player;
@@ -796,6 +944,7 @@ namespace Chess {
             threatsOf
         }
     }
+*/
 
 
     template<Player player>

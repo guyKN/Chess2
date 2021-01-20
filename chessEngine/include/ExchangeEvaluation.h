@@ -9,14 +9,15 @@
 
 namespace Chess {
 
-    extern Score staticExchangeEvalTable[NUM_THREAT_COMBINATIONS][NUM_NON_EMPTY_PIECES];
-    //todo: replace score with char to make the array take less space
 
-    inline Score staticExchangeEval(ThreatMap threatMap, Piece piece){
+    //todo: think about whether or not to include negetive scores, since when we probe these tables, it's after manually doing one capture
+    extern StaticEvalScore staticExchangeEvalTable[NUM_NON_EMPTY_PIECES][NUM_THREAT_COMBINATIONS];
+
+    inline StaticEvalScore staticExchangeEval(ThreatMap threatMap, Piece piece){
         assert(pieceOk(piece) && piece != PIECE_NONE && threatMap<=THREAT_MAP_ALL);
         return staticExchangeEvalTable[threatMap][piece];
     }
 
-    void initExchangeMaps();
+    void initExchangeLookup();
 }
 #endif //CHESS_EXCHANGE_EVALUATION_H

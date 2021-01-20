@@ -5,7 +5,7 @@
 #include "MoveList.h"
 
 Chess::Move Chess::MoveList::getMoveFromInputData(MoveInputData moveInput) const {
-    for (const Move* move = firstMove(); move < lastMove(); move++) {
+    for (const Move* move = cbegin(); move < cend(); move++) {
         if (move->matchesMoveInput(moveInput)){
             return *move;
         }
@@ -14,7 +14,7 @@ Chess::Move Chess::MoveList::getMoveFromInputData(MoveInputData moveInput) const
 }
 
 ostream &Chess::operator<<(ostream &outStream, const Chess::MoveList &moveList) {
-    for (const Move* pMove = moveList.firstMove(); pMove < moveList.lastMove(); pMove++) {
+    for (const Move* pMove = moveList.cbegin(); pMove < moveList.cend(); pMove++) {
         Move move = *pMove;
         cout << move << "\n";
     }
@@ -22,7 +22,7 @@ ostream &Chess::operator<<(ostream &outStream, const Chess::MoveList &moveList) 
 }
 
 void Chess::MoveList::movesFrom(Chess::Square square, MoveList &moveList) const {
-    for (const Move* move = firstMove(); move < lastMove(); move++) {
+    for (const Move* move = cbegin(); move < cend(); move++) {
         if(move->src() == square){
             moveList.addMove(*move);
         }
@@ -30,7 +30,7 @@ void Chess::MoveList::movesFrom(Chess::Square square, MoveList &moveList) const 
 }
 
 bool Chess::MoveList::contains(Chess::Move move) const {
-    for(const Move* pMove = firstMove(); pMove != lastMove();pMove++){
+    for(const Move* pMove = cbegin(); pMove != cend(); pMove++){
         if(*pMove == move){
             return true;
         }
@@ -39,7 +39,7 @@ bool Chess::MoveList::contains(Chess::Move move) const {
 }
 
 bool Chess::MoveList::notFirstContains(Chess::Move move) const {
-    for(const Move* pMove = firstMove()+1; pMove != lastMove();pMove++){
+    for(const Move* pMove = cbegin() + 1; pMove != cend(); pMove++){
         if(*pMove == move){
             return true;
         }

@@ -20,12 +20,13 @@ namespace Chess {
     public:
         MoveList() = default;
         MoveList(MoveList const &) = delete;
+        MoveList(MoveList const &&) = delete;
 
-        inline const Move *firstMove() const {
+        inline const Move *cbegin() const {
             return moves;
         }
 
-        inline const Move *lastMove() const {
+        inline const Move *cend() const {
             return currentMove;
         }
 
@@ -53,6 +54,12 @@ namespace Chess {
             addMove(Move::promotionMove(src, dst, PIECE_TYPE_KNIGHT));
         }
 
+        inline void addNonQueenPromotions(Square src, Square dst){
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_ROOK));
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_BISHOP));
+            addMove(Move::promotionMove(src, dst, PIECE_TYPE_KNIGHT));
+        }
+
         inline unsigned int size() const {
             return currentMove - &moves[0];
         }
@@ -74,6 +81,12 @@ namespace Chess {
         void movesFrom(Chess::Square square, MoveList &moveList) const;
 
         friend ostream &operator<<(ostream &os, const MoveList &list);
+    };
+
+
+    struct MoveChunk{
+        MoveList moveList;
+        MoveList losingCaptures;
     };
 }
 

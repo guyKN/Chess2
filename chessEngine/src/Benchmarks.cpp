@@ -8,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <init.h>
 #include "Bitboards.h"
 #include "ChessBoard.h"
 #include "Search.h"

@@ -9,7 +9,7 @@
 
 namespace Chess {
 
-    Score staticExchangeEvalTable[NUM_THREAT_COMBINATIONS][NUM_NON_EMPTY_PIECES]{};
+    StaticEvalScore staticExchangeEvalTable[NUM_NON_EMPTY_PIECES][NUM_THREAT_COMBINATIONS]{};
 
 
     std::ostream &operator<<(std::ostream &outputStream, ThreatMap threatMap) {
@@ -28,22 +28,16 @@ namespace Chess {
         return outputStream;
     }
 
-
-    Score basicPieceValue(PieceType pieceType) {
-        static int basicPieceValues[NUM_PIECE_TYPES_NOT_EMPTY] = {100, 300, 300, 500, 900, 10000};
-        return static_cast<Score>(basicPieceValues[pieceType]);
-    }
-
-    Score captureEval(ThreatMap threatMap, Piece occupiedPiece) {
+    StaticEvalScore captureEval(ThreatMap threatMap, Piece occupiedPiece) {
         Player opponent = playerOf(occupiedPiece);
         Player currentPlayer = ~opponent;
         if (!(threatMap & threatMapOf(currentPlayer))) {
-            return SCORE_ZERO;
+            return STATIC_SCORE_ZERO;
         }
-        Score captureScore = basicPieceValue(pieceTypeOf(occupiedPiece));
+        StaticEvalScore captureScore = staticPieceValue(occupiedPiece);
         Piece capturingPiece = popLsb(threatMap, currentPlayer);
 
-        Score enemyCaptureScore = captureEval(threatMap, capturingPiece);
+        StaticEvalScore enemyCaptureScore = captureEval(threatMap, capturingPiece);
 
         if (enemyCaptureScore > 0) {
             return captureScore - enemyCaptureScore;
@@ -52,17 +46,16 @@ namespace Chess {
         }
     }
 
-    void initExchangeMaps() {
-        for (ThreatMap threatMap = THREAT_MAP_NONE; threatMap <= THREAT_MAP_ALL; ++threatMap) {
-            for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
-                staticExchangeEvalTable[threatMap][piece] = captureEval(threatMap, piece);
+    void initExchangeLookup() {
+        for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
+            for (ThreatMap threatMap = THREAT_MAP_NONE; threatMap <= THREAT_MAP_ALL; ++threatMap) {
+                staticExchangeEvalTable[piece][threatMap] = captureEval(threatMap, piece);
             }
         }
     }
 
-    void debugExchangeMaps() {
-        PRNG prng{1234567890};
-
+    void debugExchangeLookup() {
+        PRNG prng{12345890};
         for (ThreatMap threatMap = THREAT_MAP_NONE; threatMap <= THREAT_MAP_ALL; ++threatMap) {
             for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
                 if (!(prng.rand<Bitboard>() & 0b11111)) {

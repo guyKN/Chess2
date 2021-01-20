@@ -87,7 +87,7 @@ namespace Chess {
     //todo: check if inline is faster
     void CastlingData::updateCastlingRights(Bitboard moveSquares, CastlingRights &castlingRightsMask) {
         for (CastlingType castlingType = CASTLE_FIRST; castlingType <= CASTLE_LAST; ++castlingType) {
-            const CastlingData& castlingData = fromCastlingType(castlingType);
+            const CastlingData &castlingData = fromCastlingType(castlingType);
             // todo: is a single ? : operation faster than an if
             if (castlingData.moveDisablesCastling(moveSquares)) {
                 castlingRightsMask &= ~castlingRightsOf(castlingType);
@@ -239,12 +239,9 @@ namespace Chess {
     std::default_random_engine key_generator(bitboard_rd());
     std::uniform_int_distribution<long long unsigned> key_distribution(KEY_ZERO, KEY_FULL);
 
-    Key randomKey(){
+    Key randomKey() {
         return static_cast<Key>(key_distribution(key_generator));
     }
-
-
-
 
 
     Bitboard randomBitboard_fewBits() {
@@ -443,7 +440,7 @@ namespace Chess {
                 maxIndex = lookUpData.hashed[i];
             }
         }
-        currentLookupTableLength+=maxIndex;
+        currentLookupTableLength += maxIndex;
         seedOf<pieceType>(square) = magicHashFactor;
 
     }
@@ -485,7 +482,7 @@ namespace Chess {
     constexpr int maxLookupCombinations = 1u << maxLookupTablePopulation;
     constexpr int lookupTableBufferSize = maxLookupCombinations * 3 + maxLookupTablePopulation;
 
-    void generateSeeds(int numAttempts){
+    void generateSeeds(int numAttempts) {
         Bitboard buffer[lookupTableBufferSize];
         SquareMask squareMask = SQUARE_MASK_FIRST;
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square, squareMask <<= 1) {
@@ -502,37 +499,19 @@ namespace Chess {
         cout << "Lookup table Length: " << currentLookupTableLength << "\n";
     }
 
-    void initLookupTables() {
-        //cout << "Lookup table length: " << LOOKUP_TABLE_LENGTH << "\n";
-        Bitboard buffer[lookupTableBufferSize]{};
-        currentBishopRookLookupPointer = rookBishopMoveTable;
-        SquareMask squareMask = SQUARE_MASK_FIRST;
-        for (Square square = SQ_FIRST; square <= SQ_LAST; ++square, squareMask <<= 1) {
-            knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
-            kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
-            initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, buffer);
-            initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, buffer);
-        }
-    }
-
-
     bool lookUpTablesReady = false;
 
-    void initAll() {
+    void initPieceMoveLookup() {
         if (!lookUpTablesReady) {
-            initLookupTables();
-            lookUpTablesReady = true;
-        }
-        if (!transPositionTable.isInitialized()){
-            cout << "init transposition table\n";
-            transPositionTable = TransPositionTable::fromSize(TransPositionTable::TRANSPOSITION_TABLE_SIZE);
-            if(!transPositionTable.isEmpty()){
-                cout << "tt not empty\n";
-            } else{
-                cout << "tt Empty\n";
+            Bitboard buffer[lookupTableBufferSize]{};
+            currentBishopRookLookupPointer = rookBishopMoveTable;
+            SquareMask squareMask = SQUARE_MASK_FIRST;
+            for (Square square = SQ_FIRST; square <= SQ_LAST; ++square, squareMask <<= 1) {
+                knightMovesLookup[square] = knightMovesFrom_slow(squareMask);
+                kingMovesLookup[square] = kingMovesFrom_slow(squareMask);
+                initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, buffer);
+                initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, buffer);
             }
-            cout << "num entries: " << transPositionTable.getNumEntries() << "\n";
         }
-        zobristData.init();
     }
 }

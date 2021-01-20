@@ -3,6 +3,7 @@
 //
 
 #include <Search.h>
+#include <init.h>
 #include "Bitboards.h"
 #include "iostream"
 #include "ChessBoard.h"
