@@ -19,6 +19,7 @@
 
 namespace Chess {
     void initPieceMoveLookup();
+
     void generateSeeds(int numAttempts);
 
 
@@ -140,6 +141,10 @@ namespace Chess {
 
         CastlingData(const CastlingData &&) = delete;
 
+        CastlingData &operator=(const CastlingData &) = delete;
+
+        CastlingData &operator=(const CastlingData &&) = delete;
+
         inline bool mayCastle(Bitboard pieces, Bitboard threats) const {
             return !(pieces & mustBeEmpty) && !(threats & mustNotBeInCheck);
         }
@@ -180,6 +185,15 @@ namespace Chess {
         }
 
         MagicHasData() = default;
+
+        MagicHasData(const MagicHasData &) = delete;
+
+        MagicHasData(const MagicHasData &&) = delete;
+
+        MagicHasData &operator=(const MagicHasData &) = delete;
+
+        MagicHasData &operator=(const MagicHasData &&) = delete;
+
     };
 
     struct XrayData {
@@ -191,8 +205,17 @@ namespace Chess {
 
         XrayData() = default;
 
+        XrayData(const XrayData &) = delete;
+
+        XrayData(const XrayData &&) = delete;
+
+        XrayData &operator=(const XrayData &) = delete;
+
+        XrayData &operator=(const XrayData &&) = delete;
+
+
         template<PieceType pieceType>
-        static XrayData fromSquare(Square square);
+        void setToSquare(Square square);
 
         inline Bitboard directionTo(Bitboard squareMask) {
             if (squareMask & direction1) {
@@ -224,6 +247,15 @@ namespace Chess {
         XrayData xrayData;
 
         SlidingPieceData() = default;
+
+        SlidingPieceData(const SlidingPieceData &) = delete;
+
+        SlidingPieceData(const SlidingPieceData &&) = delete;
+
+        SlidingPieceData &operator=(const SlidingPieceData &) = delete;
+
+        SlidingPieceData &operator=(const SlidingPieceData &&) = delete;
+
     };
 
 
@@ -403,6 +435,13 @@ namespace Chess {
       assert(b);
       return Square(63 ^ __builtin_clzll(b));
     }
+
+    inline Piece lsb(ThreatMap threatMap) {
+        assert(threatMap);
+        unsigned long index;
+        return static_cast<Piece>(__builtin_ctzll(threatMap));
+    }
+
 
 #elif defined(_MSC_VER)  // MSVC
 

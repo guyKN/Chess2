@@ -60,7 +60,7 @@ namespace Chess {
             for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
                 if (!(prng.rand<Bitboard>() & 0b11111)) {
                     std::cout << "occupancy: " << piece << "\n" <<
-                              "threats: " << threatMap << "\n" <<
+                              "threatData: " << threatMap << "\n" <<
                               "see: " << staticExchangeEvalTable[threatMap][piece] << "\n" <<
                               "+++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
                 }

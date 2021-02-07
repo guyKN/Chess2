@@ -9,26 +9,27 @@
 #include "ChessBoard.h"
 #include "types.h"
 #include "WebAssembly.h"
+#include <MoveSelector.h>
+
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+using namespace Chess;
 namespace WASM {
-    ChessBoard chessBoard = ChessBoard();
-    MoveList moveList;
+
+    //todo: bring back what is needed for new chessboard code.
+
+    ChessBoard chessBoard{};
+    MoveChunk moveChunk;
 
     Square selectedSquare;
     MoveList movesFromSquare;
-
-    Move prevMove;
-    MoveRevertData moveRevertData;
 
     WinState winState;
 
     GameHistory gameHistory;
 
     Search search;
-
-    Key prevKey;
 
     void WASM_initData() {
         initAll();
@@ -39,8 +40,8 @@ namespace WASM {
     }
 
     void WASM_calculateMoves() {
-        moveList.clear();
-        winState = winStateOf(chessBoard.generateMoves(moveList), chessBoard.getCurrentPlayer());
+        moveChunk.moveList.clear();
+        winState = chessBoard.generateThreatsAndMoves(moveChunk);
     }
 
     bool WASM_isLegalMoveStart(int square) {
@@ -50,11 +51,10 @@ namespace WASM {
     void WASM_calculateMovesFrom(int square) {
         movesFromSquare.clear();
         selectedSquare = static_cast<Square>(square);
-        moveList.movesFrom(selectedSquare, movesFromSquare);
+        moveChunk.moveList.movesFrom(selectedSquare, movesFromSquare);
     }
 
     bool WASM_isLegalMoveTo(int dstSquare) {
-
         MoveInputData moveInputData = {selectedSquare,
                                        static_cast<Square>(dstSquare),
                                        PIECE_TYPE_NONE,
@@ -73,24 +73,32 @@ namespace WASM {
                                        false,
                                        false};
 
+
         Move move = movesFromSquare.getMoveFromInputData(moveInputData);
         if (!move.isOk()) {
             return false;
         } else {
-            prevKey = chessBoard.getHashKey();
-            moveRevertData = chessBoard.doGameMove(move);
+            chessBoard.doGameMove(move);
             gameHistory.addMove(move);
-            prevMove = move;
             chessBoard.assertOk();
-            cout << "eval: " << chessBoard.evaluateWhite() << "\n";
+            cout << std::hex << "------------------------------------------------\n";
+            cout << "move order: \n";
+            Move ttBestMove =
+                    chessBoard.getCurrentPlayer() == WHITE ?
+                    Move::pawnForward2(SQ_A2, SQ_A4) :
+                    Move::pawnForward2(SQ_H7, SQ_H5);
+            cout << "ttMove: " << ttBestMove << "\n";
+            MoveSelector moveSelector{chessBoard, ttBestMove};
+            while (Move nextMove = moveSelector.nextMove()) {
+                cout << nextMove << "\n";
+            }
+            cout << std::dec;
             return true;
         }
     }
 
-    void WASM_undoMove(){
-        chessBoard.undoMove(prevMove, moveRevertData);
-        chessBoard.assertOk();
-        assert(chessBoard.getHashKey() == prevKey);
+    void WASM_undoMove() {
+        exit(11);
     }
 
     int WASM_checkWinner() {
@@ -98,7 +106,7 @@ namespace WASM {
     }
 
     void WASM_printMoves() {
-        cout << moveList;
+        cout << moveChunk.moveList;
     }
 
     bool WASM_currentPlayer() {
@@ -110,7 +118,7 @@ namespace WASM {
     }
 
     bool WASM_isThreatTo(Square square) {
-        return chessBoard.getPinned() & maskOf(square);
+        return false;
     }
 
     void WASM_printBitboards() {
@@ -119,38 +127,38 @@ namespace WASM {
         cout << search.gameHistory;
     }
 
-    void WASM_doAiMove(int depth){
-        search.chessBoard = chessBoard;
-        Move move = search.bestMove(depth);
-        chessBoard.doGameMove(move);
-        gameHistory.addMove(move);
+    void WASM_doAiMove(int depth) {
+//        search.chessBoard = chessBoard;
+//        Move move = search.bestMove(depth);
+//        chessBoard.doGameMove(move);
+//        gameHistory.addMove(move);
     }
 
-    void doThing(const int& a){
+    void doThing(const int &a) {
         cout << a << "\n";
     }
 
-    void WASM_runTest(){
+    void WASM_runTest() {
         int a = 10;
         doThing(a);
     }
 
     bool WASM_gotoPos() {
         std::string fen = "r1bq1bnr/2pk1Qpp/2p1p3/p2p4/3P4/5N2/PPP2PPP/RNBQK2R w - 1 0";
-        if(chessBoard.parseFen(fen)){
+        if (chessBoard.parseFen(fen)) {
             return true;
-        } else{
+        } else {
             chessBoard = ChessBoard();
             return false;
         }
     }
 
-    bool WASM_doMoveSequence(){
+    bool WASM_doMoveSequence() {
         std::string moveSequence = "e2e4 b8c6 d2d4 e7e6 e4e5 d7d5 f1b5 a7a6 b5c6 b7c6 g1f3 f7f6 e5f6";
         std::stringstream stringStream{moveSequence};
-        if (chessBoard.doMoves(stringStream)){
+        if (chessBoard.doMoves(stringStream)) {
             return true;
-        } else{
+        } else {
             return false;
         }
     }

@@ -48,6 +48,7 @@ namespace Uci {
                         //sucsess
                     } else {
                         error("error with doMoves");
+                        exit(77);
                     }
                 }
             } else if (command == "fen") {
@@ -57,6 +58,7 @@ namespace Uci {
                 while (uciCommand >> str) {
                     if (str == "moves") {
                         parseMoves = true;
+                        break;
                     }
                     fenStream << str << " ";
                 }
@@ -65,7 +67,6 @@ namespace Uci {
                     //sucsess
                     if (parseMoves) {
                         if (search.chessBoard.doMoves(uciCommand)) {
-                            log("sucsess going to pos");
                         } else {
                             error("error going to pos");
                         }
@@ -81,16 +82,25 @@ namespace Uci {
         }
     }
 
+    static const int UCI_DEPTH = 7;
+
     void uciMain() {
         for (string line; getline(cin, line);) {
             stringstream lineStream{line};
             string firstWord;
             if (lineStream >> firstWord) {
                 if (firstWord == "uci") {
-                    cout << "id name EngineTest" << "\n"
-                         << "id author Guy Knaan" << "\n"
-                         << "option name OwnBook type check default true" << "\n"
-                         << "uciok\n";
+                    if constexpr (FOR_RELEASE) {
+                        cout << "id name UCI release" << "\n"
+                             << "id author Guy Knaan" << "\n"
+                             << "option name OwnBook type check default true" << "\n"
+                             << "uciok\n";
+                    } else {
+                        cout << "id name UCI debug" << "\n"
+                             << "id author Guy Knaan" << "\n"
+                             << "option name OwnBook type check default true" << "\n"
+                             << "uciok\n";
+                    }
                 } else if (firstWord == "quit") {
                     return;
                 } else if (firstWord == "isready") {
@@ -103,23 +113,33 @@ namespace Uci {
                 } else if (firstWord == "ucinewgame") {
                     transPositionTable.clear();
                 } else if (firstWord == "position") {
-                    log("trying to go to position");
                     setPosition(lineStream);
-                    log("success in going to position");
                 } else if (firstWord == "go") {
-                    log("searching for best bestMove");
+                    search.chessBoard.printMoves<CAPTURES>();
                     Stopwatch stopwatch{};
                     stopwatch.start();
-                    Move bestMove = search.bestMove(7);
+                    Move bestMove = search.bestMove(UCI_DEPTH);
                     double timeElapsed = stopwatch.getSecondsElapsed();
                     int numNodes = search.getNumNodes();
                     int nodesPerSecond = numNodes / timeElapsed;
                     Score score = search.getScore();
-                    cout << "info score cp " << score << "\n";
-                    cout << "info time " << static_cast<int>(timeElapsed * 1000) << "\n";
-                    cout << "info nodes " << numNodes << "\n";
-                    cout << "info nps " << nodesPerSecond << "\n";
+
                     cout << "bestmove " << bestMove << "\n";
+
+                    cout << "info";
+                    if (score > SCORE_KNOWN_WIN) {
+                        cout << " score mate " << (SCORE_MATE - score + 1) / 2;
+                    } else if (score < SCORE_KNOWN_LOSS) {
+                        cout << " score mate " << -(score - SCORE_MATED + 1) / 2;
+                    } else {
+                        cout << " score cp " << score;
+                    }
+                    cout << " depth " << UCI_DEPTH;
+                    cout << " hashfull " << transPositionTable.perMillEntriesUsed();
+                    cout << " time " << static_cast<int>(timeElapsed * 1000);
+                    cout << " nodes " << numNodes;
+                    cout << " nps " << nodesPerSecond << "\n";
+                    cout << LOG_TAG << "Hash Table Entries deleted:" << transPositionTable.entriesDeleted() << "\n";
                 } else if (firstWord == "stop") {
                     error("not supported");//todo
                 } else if (firstWord == "ponderhit") {

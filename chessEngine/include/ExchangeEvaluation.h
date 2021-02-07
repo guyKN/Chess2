@@ -15,7 +15,7 @@ namespace Chess {
 
     inline StaticEvalScore staticExchangeEval(ThreatMap threatMap, Piece piece){
         assert(pieceOk(piece) && piece != PIECE_NONE && threatMap<=THREAT_MAP_ALL);
-        return staticExchangeEvalTable[threatMap][piece];
+        return staticExchangeEvalTable[piece][threatMap];
     }
 
     void initExchangeLookup();

@@ -15,23 +15,32 @@ using std::ostream;
 using std::cout;
 namespace Chess {
     class MoveList {
-        Move moves[MAX_MOVES];//todo: remove default initialization!!!
+        Move moves[MAX_MOVES]; // todo: ensure this is not initialized
         Move *currentMove = moves;
     public:
         MoveList() = default;
         MoveList(MoveList const &) = delete;
         MoveList(MoveList const &&) = delete;
 
-        inline const Move *cbegin() const {
+        inline Move *begin() {
             return moves;
+        }
+
+        inline const Move* cbegin() const{
+            return moves;
+        }
+
+        inline Move *end() {
+            return currentMove;
         }
 
         inline const Move *cend() const {
             return currentMove;
         }
 
+
         inline void addMove(Move move) {
-            assert(move.isOk());//inside of moveList.h
+            assert(move.isOk());//inside of moveChunk.h
             *(currentMove) = move;
             currentMove++;
             assert(size() < MAX_MOVES);

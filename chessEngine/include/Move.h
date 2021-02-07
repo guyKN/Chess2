@@ -18,8 +18,8 @@ namespace Chess {
         /// the first 16 bits represents the move itself. Moves may be stored in transposition table using just the first 16 bits
         /// bits 0-5 src square
         /// bits 6-11 dst square
-        /// bits 12-13 bestMove_ code. 0b00=normal bestMove_, 0b01=promotion, 0b10=castling, 0b11=en passant
-        /// bits 14-15: extra special bestMove_ data.
+        /// bits 12-13 move code. 0b00=normal move, 0b01=promotion, 0b10=castling, 0b11=en passant
+        /// bits 14-15: extra special move data.
         /// if promotionBits then:
         ///       0b00 means knight
         ///       0b01 mean bishop
@@ -30,6 +30,8 @@ namespace Chess {
         /// if dst==0, and src==0, then the bestMove_ is invalid
         /// the last 16 bits are a score given to the move for move ordering.
         /// Since comparasion functions the later bits first, it means we can easly sort by move value without having to mask or anything
+        /// invalid move is represnted as all zeroes.
+        /// a null move is represented as a move from h8 to h8, the square bits are 1, all the other bits are 0.
 
     public:
         using CodeType = uint32_t;
@@ -56,6 +58,7 @@ namespace Chess {
         static constexpr CodeType MOVE_TYPE_BITS = 0b11 << MOVE_TYPE_SHIFT;
         static constexpr CodeType EN_PASSANT_CAPTURE = 1 << EXTRA_CODE_SHIFT;
         static constexpr CodeType EXTRA_CODE_BITS = 0b11 << EXTRA_CODE_SHIFT;
+        static constexpr CodeType MOVE_BITS = 0xFFFF;
 
         static Move castle_slow(CastlingType castlingType);
 
@@ -101,6 +104,10 @@ namespace Chess {
         inline bool isEnPassantCapture() const {
             assert(moveType() == EN_PASSANT_MOVE);
             return (code & EXTRA_CODE_BITS);
+        }
+
+        inline StaticEvalScore score() const{
+            return static_cast<StaticEvalScore>(code >> MOVE_SCORE_SHIFT);
         }
 
         inline bool isOk() const {
@@ -149,6 +156,18 @@ namespace Chess {
 
         static constexpr inline Move invalid() {
             return Move(0);
+        }
+
+        static constexpr inline Move nullMove(){
+            return Move::normalMove(SQ_H8, SQ_H8);
+        }
+
+        inline constexpr operator bool() const{
+            return code;
+        }
+
+        inline bool isSameAs(const Move& other) const{
+            return (this->code & MOVE_BITS) == (other.code & MOVE_BITS);
         }
 
         inline constexpr bool operator==(const Move &other) const {

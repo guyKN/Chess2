@@ -8,6 +8,7 @@
 #include "Search.h"
 #include "Uci.h"
 #include <ostream>
+#include <MoveSelector.h>
 
 namespace Chess {
 
@@ -16,24 +17,19 @@ namespace Chess {
 
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
         if (depthLeft == 0) {
-            numLeaves++;
-            Score score = chessBoard.evaluate();
-            return score;
+            return quiescenceSearch(alpha, beta);
+            //return chessBoard.evaluate();
         }
 
         numNonLeafNodes++;
-        MoveList moveList;
 
         if (!chessBoard.isOk()) {
             cout << "chessBoard not OK\n";
-            chessBoard.printBitboards();
-            cout << gameHistory_;
-            exit(987);
+            onError();
         }
 
         //check for threefold repetition
         if (repeatedPositions.count(chessBoard.getHashKey())) {
-            cout << "in threefold repetition. \n";
             return SCORE_DRAW;
         }
 
@@ -48,74 +44,54 @@ namespace Chess {
                 // todo: ensure this is only called in the correct times
                 return SCORE_DRAW;
             }
+
             if (ttEntry.depth() >= depthLeft) {
                 //todo: already use fromTranspositionTable() when comparing scores
                 //todo: bring back upon implementing PV search
-
-//                if (ttEntry.isExact() ||
-//                    (ttEntry.isUpperBound() && ttEntry.score() <= alpha) ||
-//                    (ttEntry.isLowerBound() && ttEntry.score() >= beta)) {
-//                    return fromTranspositionTable(ttEntry.score(), depthLeft);
-//                }
             }
+
             ttBestMove = ttEntry.bestMove();
-            moveList.addMove(ttBestMove);
-            assert(ttBestMove.isOk());
+            if(ttBestMove == Move::invalid()){
+                // the position is checkmate or stalemate. return the score from it.
+                return fromTranspositionTable(ttEntry.score(), depthLeft);
+            }
+            if(!ttBestMove.isOk()){
+                cout << ttBestMove;
+                cout << "ttBestMove not Ok";
+                onError();
+            }
             assert(ttEntry.key() == chessBoard.getHashKey());
-        }
-
-
-        GameEndState gameEndState = chessBoard.generateMoves(moveList);
-
-        switch (gameEndState) {
-            case DRAW:
-                //todo: handle putting data into transposition table
-                return SCORE_DRAW;
-            case MATED:
-                return matedIn(startingDepth - depthLeft);
-            case NO_GAME_END:
-                break;
+        } else {
+            ttEntry.setKey(chessBoard.getHashKey());
         }
 
         if (ttEntry.isCurrentlySearched()) {
             cout << "key: " << chessBoard.getHashKey() << "\n";
             Uci::error("empty ttEntry is currently being searched\n ");
-            exit(713);
+            onError();
         }
-
 
         ttEntry.startSearching();
 
-        if (!ttEntryFound) {
-            ttEntry.setKey(chessBoard.getHashKey());
-        }
-
         Score bestScore = -SCORE_INFINITY;
-        bool skipTtMove = ttEntryFound && !moveList.notFirstContains(ttBestMove);
-
-        if (skipTtMove) {
-            Uci::log("skipping TT move Due to key conflict. ");
-        }
+        MoveSelector moveSelector{chessBoard, true, ttBestMove, this};
 
         Move bestMove = Move::invalid();
 
         bool passedAlpha = false;
-
-        for (const Move *pMove = moveList.cbegin() + (skipTtMove ? 1 : 0); pMove != moveList.cend(); pMove++) {
-            if (pMove != moveList.cbegin() && (*pMove == ttBestMove)) {
-                //since the best bestMove apears both in the movelist by natural generating by being pushed to its front, we ignore it
-                continue;
-            }
-            gameHistory_.addMove(*pMove);
-            MoveRevertData moveRevertData = chessBoard.doMove(*pMove);
+        bool noLegalMoves = true;
+        while (Move move = moveSelector.nextMove()) {
+            noLegalMoves = false;
+            gameHistory_.addMove(move);
+            MoveRevertData moveRevertData = chessBoard.doMove(move);
             Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
-            chessBoard.undoMove(*pMove, moveRevertData);
+            chessBoard.undoMove(move, moveRevertData);
 
             gameHistory_.pop();
             //todo: changed order, make sure this isn't completely wrong
             if (score > bestScore) {
                 bestScore = score;
-                bestMove = *pMove;
+                bestMove = move;
                 if (score > alpha) {
                     passedAlpha = true;
                     if (score < beta) {
@@ -128,8 +104,26 @@ namespace Chess {
         }
 
         ttEntry.stopSearching();
+        if (noLegalMoves) {
+            if (chessBoard.isInCheck()) {
+                ttEntry.setScore(SCORE_MATED);
+                ttEntry.setBoundType(BOUND_EXACT);
+                ttEntry.setDepth(0);
+                ttEntry.setBestMove(Move::invalid());
+                return matedIn(depthLeft);
+            } else {
+                ttEntry.setScore(SCORE_DRAW);
+                ttEntry.setBoundType(BOUND_EXACT);
+                ttEntry.setDepth(0);
+                ttEntry.setBestMove(Move::invalid());
+                return SCORE_DRAW;
+            }
+        }
+        if(!bestMove.isOk()){
+            cout << "bestMove is found as not OK!";
+            onError();
+        }
         ttEntry.setBestMove(bestMove);
-        //if (bestScore <= alpha) {
         if (!passedAlpha) {
             ttEntry.setBoundType(BOUND_UPPER);
         } else if (bestScore > beta) {
@@ -142,12 +136,57 @@ namespace Chess {
 
         if (ttEntry.key() != chessBoard.getHashKey()) {
             Uci::error("ttEntry key changed mid search. ");
-            exit(171);
+            onError();
         }
         return bestScore;
     }
 
+    Score Search::quiescenceSearch(Score alpha, Score beta) {
+        numLeaves++;
+
+        if (!chessBoard.isOk()) {
+            cout << "chessBoard not OK\n";
+            onError();
+        }
+
+        //check for threefold repetition
+        if (repeatedPositions.count(chessBoard.getHashKey())) {
+            return SCORE_DRAW;
+        }
+
+        Score currentScore = chessBoard.evaluate();
+        if (currentScore > alpha) {
+            alpha = currentScore;
+        }
+        if (alpha > beta) {
+            return alpha;
+        }
+
+        MoveSelector moveSelector{chessBoard, false, Move::invalid(), this};
+        while (Move move = moveSelector.nextMove()) {
+            gameHistory_.addMove(move);
+            MoveRevertData moveRevertData =  chessBoard.doMove(move);
+            Score score = -quiescenceSearch(-beta, -alpha);
+            chessBoard.undoMove(move, moveRevertData);
+            gameHistory_.pop();
+            if (score > currentScore) {
+                currentScore = score;
+                if (score > alpha) {
+                    alpha = score;
+                    if (score >= beta) {
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        return currentScore;
+
+    }
+
     Move Search::alphaBetaRoot(int depth) {
+        numLeaves++;
         startingDepth = depth;
         gameHistory_.clear();
         Score alpha = -SCORE_INFINITY;
@@ -158,46 +197,51 @@ namespace Chess {
         numExactBound = 0;
 
         Move bestMove;
+        Move ttBestMove = Move::invalid();
 
-        MoveList moveList;
-        GameEndState gameEndState = chessBoard.generateMoves(moveList);
+        bool ttEntryFound;
+        TransPositionTable::Entry &ttEntry = transPositionTable.probe(chessBoard.getHashKey(), ttEntryFound);
+        if (ttEntryFound) {
+            ttBestMove = ttEntry.bestMove();
+        }
 
-        assert(gameEndState == NO_GAME_END && depth > 0);
+        MoveSelector moveSelector{chessBoard, true, ttBestMove, this};
 
-        for (const Move *pMove = moveList.cbegin(); pMove < moveList.cend(); pMove++) {
-            gameHistory_.addMove(*pMove);
-            MoveRevertData moveRevertData = chessBoard.doMove(*pMove);
+        while (Move move = moveSelector.nextMove()) {
+            gameHistory_.addMove(move);
+            MoveRevertData moveRevertData = chessBoard.doMove(move);
             Score score = -alphaBeta(-beta, -alpha, depth - 1);
             gameHistory_.pop();
-            chessBoard.undoMove(*pMove, moveRevertData);
+            chessBoard.undoMove(move, moveRevertData);
             if (score > alpha) {
                 alpha = score;
-                bestMove = *pMove;
+                bestMove = move;
             }
+
+            cout << "Move: " << move << " score: " << score << "\n";
         }
 
         bestLineScore = alpha;
-        if (false) {
-            if (transPositionTable.numPositionsCurrentlySearched() != 0) {
-                Uci::error("positions are still being searched after search is done");
-                exit(129);
-            }
-        }
-
         return bestMove;
     }
 
+    void Search::onError() const {
+        cout << gameHistory_;
+        chessBoard.printBitboards();
+        exit(987);
+    }
+
     uint64_t Search::perft(int depth) {
-        MoveList moveList;
+        MoveChunk moveChunk{};
         uint64_t numNodes = 0;
-        chessBoard.generateMoves(moveList);
+        chessBoard.generateMoves<ALL>(moveChunk);
         if (depth == 1) {
-            return moveList.size();
+            return moveChunk.moveList.size();
         }
-        for (const Move *move = moveList.cbegin(); move != moveList.cend(); ++move) {
-            MoveRevertData moveRevertData = chessBoard.doMove(*move);
+        for (auto &move : moveChunk.moveList) {
+            MoveRevertData moveRevertData = chessBoard.doMove(move);
             numNodes += perft(depth - 1);
-            chessBoard.undoMove(*move, moveRevertData);
+            chessBoard.undoMove(move, moveRevertData);
         }
         return numNodes;
     }

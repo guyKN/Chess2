@@ -8,6 +8,8 @@
 
 namespace Chess {
 
+    ZobristData zobristData{};
+
     void ZobristData::init() {
         PRNG rng{1070372};
         if (!initialized) {
@@ -27,7 +29,25 @@ namespace Chess {
         }
     }
 
-    ZobristData zobristData{};
+    std::ostream &operator<<(ostream &os, MoveGenType moveGenType) {
+        const static string moveGenTypeToString[] = {"ALL", "CAPTURES", "NON_CAPTURES"};
+        return os << moveGenTypeToString[moveGenType];
+    }
+
+    bool ThreatData::isEmpty() {
+        if (threatsByPlayer[WHITE] || threatsByPlayer[BLACK] || _isInCheck[WHITE] || _isInCheck[BLACK] ||
+            _isInDoubleCheck[WHITE] || _isInDoubleCheck[BLACK] ||
+            kingBlockers[WHITE] || kingBlockers[BLACK] || (checkEvasionSquares != BITBOARD_FULL)) {
+            return false;
+        }
+        for (Bitboard& threats:threatsByPiece){
+            if(threats){
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     const Piece ChessBoard::startingBoard[] = {PIECE_WHITE_ROOK, PIECE_WHITE_KNIGHT, PIECE_WHITE_BISHOP,
                                                PIECE_WHITE_QUEEN, PIECE_WHITE_KING, PIECE_WHITE_BISHOP,
@@ -53,13 +73,8 @@ namespace Chess {
 
         this->currentPlayer = currentPlayer;
         enPassantSquare = SQ_INVALID;
-        isCheck = false;
-        isDoubleCheck = false;
 
         castlingRights = CASTLE_RIGHTS_ALL;
-
-        checkEvasionSquares = BITBOARD_FULL;
-        pinned = BITBOARD_EMPTY;
 
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
             Piece piece = piecesArray[square];
@@ -86,66 +101,70 @@ namespace Chess {
     //todo: optimize templates, see if there's a way to make more stuff inline.
 
     void ChessBoard::printBitboards() const {
+        if (threatData != nullptr) {
+            cout << "\n" << (threatData->isInCheck(currentPlayer) ? "Check" : "Not Check");
+
+            cout << "\n" << (threatData->isInDoubleCheck(currentPlayer) ? "Double Check" : "Not Double Check");
+
+            cout << "\nPinned: ";
+
+            printBitboard(threatData->kingBlockersOf(currentPlayer));
+
+            cout << "\nCheckEvasionsSquares: ";
+
+            printBitboard(threatData->checkEvasionSquares);
+        } else {
+            cout << "threatData == nullptr\n";
+        }
+
         cout << "\nCurrent player: " << currentPlayer;
-
-        cout << "\n" << (isCheck ? "Check" : "Not Check");
-
-        cout << "\n" << (isDoubleCheck ? "Double Check" : "Not Double Check");
 
         cout << "\nen passant square: " << toString(enPassantSquare);
 
-        cout << "\nPinned: ";
-
-        printBitboard(pinned);
-
-        cout << "\nCheckEvasionsSquares: ";
-
-        printBitboard(checkEvasionSquares);
-
         cout << "\nWhite Pawns:";
-        printBitboard(getBitboardOf(PIECE_WHITE_PAWN));
+        printBitboard(bitboardOf(PIECE_WHITE_PAWN));
 
         cout << "\nWhite Knights";
-        printBitboard(getBitboardOf(PIECE_WHITE_KNIGHT));
+        printBitboard(bitboardOf(PIECE_WHITE_KNIGHT));
 
         cout << "\nWhite Bishops";
-        printBitboard(getBitboardOf(PIECE_WHITE_BISHOP));
+        printBitboard(bitboardOf(PIECE_WHITE_BISHOP));
 
         cout << "\nWhite Rook";
-        printBitboard(getBitboardOf(PIECE_WHITE_ROOK));
+        printBitboard(bitboardOf(PIECE_WHITE_ROOK));
 
         cout << "\nWhite Queen";
-        printBitboard(getBitboardOf(PIECE_WHITE_QUEEN));
+        printBitboard(bitboardOf(PIECE_WHITE_QUEEN));
 
         cout << "\nWhite King";
-        printBitboard(getBitboardOf(PIECE_WHITE_KING));
+        printBitboard(bitboardOf(PIECE_WHITE_KING));
 
         cout << "\nBlack Pawns:";
-        printBitboard(getBitboardOf(PIECE_BLACK_PAWN));
+        printBitboard(bitboardOf(PIECE_BLACK_PAWN));
 
         cout << "\nBlack Knights";
-        printBitboard(getBitboardOf(PIECE_BLACK_KNIGHT));
+        printBitboard(bitboardOf(PIECE_BLACK_KNIGHT));
 
         cout << "\nBlack Bishops";
-        printBitboard(getBitboardOf(PIECE_BLACK_BISHOP));
+        printBitboard(bitboardOf(PIECE_BLACK_BISHOP));
 
         cout << "\nBlack Rook";
-        printBitboard(getBitboardOf(PIECE_BLACK_ROOK));
+        printBitboard(bitboardOf(PIECE_BLACK_ROOK));
 
         cout << "\nBlack Queen";
-        printBitboard(getBitboardOf(PIECE_BLACK_QUEEN));
+        printBitboard(bitboardOf(PIECE_BLACK_QUEEN));
 
         cout << "\nBlack King";
-        printBitboard(getBitboardOf(PIECE_BLACK_KING));
+        printBitboard(bitboardOf(PIECE_BLACK_KING));
 
         cout << "\nEmpty squares:";
-        printBitboard(getBitboardOf(PIECE_NONE));
+        printBitboard(bitboardOf(PIECE_NONE));
 
         cout << "\nWhite Pieces:";
-        printBitboard(getBitboardOf(WHITE));
+        printBitboard(bitboardOf(WHITE));
 
         cout << "\nBlack Pieces:";
-        printBitboard(getBitboardOf(BLACK));
+        printBitboard(bitboardOf(BLACK));
 
         cout << "\nFen String: \n";
         getFen(cout);
@@ -311,26 +330,26 @@ namespace Chess {
         /// ensures that each Square is occupied by either exactly one piece, or by PIECE_NONE
         Bitboard pieces = BITBOARD_EMPTY;
         for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST; ++piece) {
-            if (pieces & getBitboardOf(piece)) {
+            if (pieces & bitboardOf(piece)) {
                 return false;
             }
-            pieces |= getBitboardOf(piece);
+            pieces |= bitboardOf(piece);
         }
         return pieces == BITBOARD_FULL;
     }
 
     bool ChessBoard::noColorOverlap() const {
         /// ensures that each Square is occupied by either exactly one player, or by PIECE_NONE
-        Bitboard pieces = getBitboardOf(PIECE_NONE);
-        if (pieces & getBitboardOf(WHITE)) {
+        Bitboard pieces = bitboardOf(PIECE_NONE);
+        if (pieces & bitboardOf(WHITE)) {
             return false;
         }
-        pieces |= getBitboardOf(WHITE);
+        pieces |= bitboardOf(WHITE);
 
-        if (pieces & getBitboardOf(BLACK)) {
+        if (pieces & bitboardOf(BLACK)) {
             return false;
         }
-        pieces |= getBitboardOf(BLACK);
+        pieces |= bitboardOf(BLACK);
 
         return pieces == BITBOARD_FULL;
     }
@@ -339,20 +358,20 @@ namespace Chess {
         Bitboard white = BITBOARD_EMPTY;
         Bitboard black = BITBOARD_EMPTY;
         for (Piece piece = PIECE_FIRST_WHITE; piece <= PIECE_LAST_WHITE; ++piece) {
-            white |= getBitboardOf(piece);
+            white |= bitboardOf(piece);
         }
 
         for (Piece piece = PIECE_FIRST_BLACK; piece <= PIECE_LAST_BLACK; ++piece) {
-            black |= getBitboardOf(piece);
+            black |= bitboardOf(piece);
         }
 
-        return (white == getBitboardOf(WHITE)) && (black == getBitboardOf(BLACK));
+        return (white == bitboardOf(WHITE)) && (black == bitboardOf(BLACK));
     }
 
     bool ChessBoard::piecesMatchArray() const {
         for (Square square = SQ_FIRST; square < SQ_LAST; ++square) {
             Piece actualPiece = getPieceOn(square);
-            if (!(getBitboardOf(actualPiece) & maskOf(square))) {
+            if (!(bitboardOf(actualPiece) & maskOf(square))) {
                 return false;
             }
         }
@@ -362,9 +381,10 @@ namespace Chess {
     /// maybe also get rid of template<Player player>, since it just makes functions bigger, and harder to all keep in the cache
 
     template<Player player, MoveGenType moveGenType>
-    void ChessBoard::generatePawnMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) {
+    void ChessBoard::generatePawnMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) const {
         // todo: pawn captures can never be losing, so make it an error if they are and don't add to losing move list.
         // todo: merge similar actions with captures for readability and speed
+        // todo: enclose everything into scopes
         constexpr int direction = directionOf(player);
         constexpr int forward1shift = direction * 8;
         constexpr int forward2shift = 2 * forward1shift;
@@ -386,168 +406,180 @@ namespace Chess {
 
 
         constexpr bool doCaptures = (moveGenType == MoveGenType::CAPTURES) || (moveGenType == MoveGenType::ALL);
-        constexpr bool doNonCaptures = (moveGenType == MoveGenType::NON_CAPTURE) || (moveGenType == MoveGenType::ALL);
+        constexpr bool doNonCaptures = (moveGenType == MoveGenType::NON_CAPTURES) || (moveGenType == MoveGenType::ALL);
         constexpr bool doStaticEval =
-                (moveGenType == MoveGenType::CAPTURES) || (moveGenType == MoveGenType::NON_CAPTURE);
+                (moveGenType == MoveGenType::CAPTURES) || (moveGenType == MoveGenType::NON_CAPTURES);
 
         Bitboard pawns = bitboardOf(pawnPiece) & source;
-        Bitboard &emptySquares = bitboardOf(PIECE_NONE);
+        const Bitboard &emptySquares = bitboardOf(PIECE_NONE);
         Bitboard emptyTargetSquares = emptySquares & target;
         Bitboard enemyPieces = bitboardOf(~player) & target;
         Bitboard enPassantTarget = signedShift<forward1shift>(target);
 
 
         if constexpr (doCaptures) {
-
-            //promotion left
-            Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
-            while (promotionLeft) {
-                Square dst = popLsb(&promotionLeft);
-                Square src = dst - captureLeftShift;
-                if constexpr (doStaticEval) {
-                    moveChunk.moveList.addMove(
-                            Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION_CAPTURE)
-                    );
-                    moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
-                } else {
-                    moveChunk.moveList.addPromotions(src, dst);
-                }
-            }
-
-            //promotion right
-            Bitboard promotionRight = signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
-            while (promotionRight) {
-                Square dst = popLsb(&promotionRight);
-                Square src = dst - captureRightShift;
-
-                if constexpr (doStaticEval) {
-                    moveChunk.moveList.addMove(
-                            Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION_CAPTURE)
-                    );
-                    moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
-                } else {
-                    moveChunk.moveList.addPromotions(src, dst);
-                }
-            }
-
-            // promotion forward
-            Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptyTargetSquares;
-            while (promotionForward) {
-                Square dst = popLsb(&promotionForward);
-                Square src = dst - forward1shift;
-                if constexpr (doStaticEval) {
-                    //todo: check if it's faster to just not calculate the static eval score and check directly using threats
-                    SquareMask dstMask = maskOf(dst);
-                    if ((getThreatsOf(player) & dstMask) | !(getThreatsOf(opponent) & dstMask)) {
-                        // the promotion is a winning promotion
+            {
+                //promotion left
+                Bitboard promotionLeft = signedShift<captureLeftShift>(pawns & rank7mask & shiftLeftMask) & enemyPieces;
+                while (promotionLeft) {
+                    Square dst = popLsb(&promotionLeft);
+                    Square src = dst - captureLeftShift;
+                    if constexpr (doStaticEval) {
                         moveChunk.moveList.addMove(
-                                Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION)
+                                Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION_CAPTURE)
                         );
+                        moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
                     } else {
-                        // the promoted pawn will immediately be captured and the pawn will be lost
-                        moveChunk.losingCaptures.addMove(
-                                Move::promotionMove(src, dst, PIECE_TYPE_QUEEN)
-                        );
+                        moveChunk.moveList.addPromotions(src, dst);
                     }
-                    // all moves other than a promotion to a queen are added to losing captures, since it is very rare that they will be used
-                    moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
-
-                } else {
-                    moveChunk.moveList.addPromotions(src, dst);
                 }
             }
-            //capture left
-            Bitboard captureLeft = signedShift<captureLeftShift>(pawns & ~rank7mask & shiftLeftMask) & enemyPieces;
-            while (captureLeft) {
-                Square dst = popLsb(&captureLeft);
-                Square src = dst - captureLeftShift;
-                if constexpr (doStaticEval) {
-                    StaticEvalScore staticScore = evalCapture(dst, pawnPiece);
-                    if (staticScore >= 0) {
+            {
+                //promotion right
+                Bitboard promotionRight =
+                        signedShift<captureRightShift>(pawns & rank7mask & shiftRightMask) & enemyPieces;
+                while (promotionRight) {
+                    Square dst = popLsb(&promotionRight);
+                    Square src = dst - captureRightShift;
+
+                    if constexpr (doStaticEval) {
                         moveChunk.moveList.addMove(
-                                Move::normalMove(src, dst, staticScore)
+                                Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION_CAPTURE)
                         );
+                        moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
                     } else {
-                        moveChunk.losingCaptures.addMove(
+                        moveChunk.moveList.addPromotions(src, dst);
+                    }
+                }
+            }
+            {
+                // promotion forward
+                Bitboard promotionForward = signedShift<forward1shift>(pawns & rank7mask) & emptyTargetSquares;
+                while (promotionForward) {
+                    Square dst = popLsb(&promotionForward);
+                    Square src = dst - forward1shift;
+                    if constexpr (doStaticEval) {
+                        //todo: check if it's faster to just not calculate the static eval score and check directly using threatData
+                        SquareMask dstMask = maskOf(dst);
+                        if ((threatData->threatsOf(player) & dstMask) | !(threatData->threatsOf(opponent) & dstMask)) {
+                            // the promotion is a winning promotion
+                            moveChunk.moveList.addMove(
+                                    Move::promotionMove(src, dst, PIECE_TYPE_QUEEN, STATIC_SCORE_PROMOTION)
+                            );
+                        } else {
+                            // the promoted pawn will immediately be captured and the pawn will be lost
+                            moveChunk.losingCaptures.addMove(
+                                    Move::promotionMove(src, dst, PIECE_TYPE_QUEEN)
+                            );
+                        }
+                        // all moves other than a promotion to a queen are added to losing captures, since it is very rare that they will be used
+                        moveChunk.losingCaptures.addNonQueenPromotions(src, dst);
+
+                    } else {
+                        moveChunk.moveList.addPromotions(src, dst);
+                    }
+                }
+            }
+
+            {
+                //capture left
+                Bitboard captureLeft = signedShift<captureLeftShift>(pawns & ~rank7mask & shiftLeftMask) & enemyPieces;
+                while (captureLeft) {
+                    Square dst = popLsb(&captureLeft);
+                    Square src = dst - captureLeftShift;
+                    if constexpr (doStaticEval) {
+                        StaticEvalScore staticScore = evalCapture(dst, pawnPiece);
+                        if (staticScore >= 0) {
+                            moveChunk.moveList.addMove(
+                                    Move::normalMove(src, dst, staticScore)
+                            );
+                        } else {
+                            moveChunk.losingCaptures.addMove(
+                                    Move::normalMove(src, dst)
+                            );
+                        }
+                    } else {
+                        moveChunk.moveList.addMove(Move::normalMove(src, dst));
+                    }
+                }
+            }
+
+            {
+                //capture right
+                Bitboard captureRight =
+                        signedShift<captureRightShift>(pawns & ~rank7mask & shiftRightMask) & enemyPieces;
+                while (captureRight) {
+                    Square dst = popLsb(&captureRight);
+                    Square src = dst - captureRightShift;
+
+                    if constexpr (doStaticEval) {
+                        StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
+                        if (captureEval >= 0) {
+                            moveChunk.moveList.addMove(
+                                    Move::normalMove(src, dst, captureEval)
+                            );
+                        } else {
+                            moveChunk.losingCaptures.addMove(
+                                    Move::normalMove(src, dst)
+                            );
+                        }
+                    } else {
+                        moveChunk.moveList.addMove(
                                 Move::normalMove(src, dst)
                         );
                     }
-                } else {
-                    moveChunk.moveList.addMove(Move::normalMove(src, dst));
+
                 }
             }
-
-            //capture right
-            Bitboard captureRight = signedShift<captureRightShift>(pawns & ~rank7mask & shiftRightMask) & enemyPieces;
-            while (captureRight) {
-                Square dst = popLsb(&captureLeft);
-                Square src = dst - captureRightShift;
-
-                if constexpr (doStaticEval) {
-                    StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
-                    if (captureEval >= 0) {
-                        moveChunk.moveList.addMove(
-                                Move::normalMove(src, dst, captureEval)
-                        );
-                    } else {
-                        moveChunk.losingCaptures.addMove(
-                                Move::normalMove(src, dst)
-                        );
-                    }
-                } else {
-                    moveChunk.moveList.addMove(
-                            Move::normalMove(src, dst)
-                    );
-                }
-
-            }
-
             if (enPassantSquare != SQ_INVALID) {
-                // en passent capture left
-                Bitboard enPassantLeft =
-                        signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
-                if (enPassantLeft) {
-                    Square src = enPassantSquare + 1;
-                    Square dst = enPassantSquare + forward1shift;
-                    if constexpr (doStaticEval) {
-                        StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
-                        if (captureEval >= 0) {
-                            moveChunk.moveList.addMove(
-                                    Move::enPassantCapture(src, dst, captureEval)
-                            );
+                {
+                    // en passent capture left
+                    Bitboard enPassantLeft =
+                            signedShift<-1>(pawns & shiftLeftMask) & maskOf(enPassantSquare) & enPassantTarget;
+                    if (enPassantLeft) {
+                        Square src = enPassantSquare + 1;
+                        Square dst = enPassantSquare + forward1shift;
+                        if constexpr (doStaticEval) {
+                            StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
+                            if (captureEval >= 0) {
+                                moveChunk.moveList.addMove(
+                                        Move::enPassantCapture(src, dst, captureEval)
+                                );
+                            } else {
+                                moveChunk.losingCaptures.addMove(
+                                        Move::enPassantCapture(src, dst)
+                                );
+                            }
                         } else {
-                            moveChunk.losingCaptures.addMove(
+                            moveChunk.moveList.addMove(
                                     Move::enPassantCapture(src, dst)
                             );
                         }
-                    } else {
-                        moveChunk.moveList.addMove(
-                                Move::enPassantCapture(src, dst)
-                        );
                     }
                 }
-
-                // en passent capture right
-                Bitboard enPassantRight =
-                        signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
-                if (enPassantRight) {
-                    Square src = enPassantSquare - 1;
-                    Square dst = enPassantSquare + forward1shift;
-                    if constexpr (doStaticEval) {
-                        StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
-                        if (captureEval >= 0) {
-                            moveChunk.moveList.addMove(
-                                    Move::enPassantCapture(src, dst, captureEval)
-                            );
+                {
+                    // en passent capture right
+                    Bitboard enPassantRight =
+                            signedShift<1>(pawns & shiftRightMask) & maskOf(enPassantSquare) & enPassantTarget;
+                    if (enPassantRight) {
+                        Square src = enPassantSquare - 1;
+                        Square dst = enPassantSquare + forward1shift;
+                        if constexpr (doStaticEval) {
+                            StaticEvalScore captureEval = evalCapture(dst, pawnPiece);
+                            if (captureEval >= 0) {
+                                moveChunk.moveList.addMove(
+                                        Move::enPassantCapture(src, dst, captureEval)
+                                );
+                            } else {
+                                moveChunk.losingCaptures.addMove(
+                                        Move::enPassantCapture(src, dst)
+                                );
+                            }
                         } else {
-                            moveChunk.losingCaptures.addMove(
+                            moveChunk.moveList.addMove(
                                     Move::enPassantCapture(src, dst)
                             );
                         }
-                    } else {
-                        moveChunk.moveList.addMove(
-                                Move::enPassantCapture(src, dst)
-                        );
                     }
                 }
             }
@@ -555,37 +587,41 @@ namespace Chess {
 
 
         if constexpr (doNonCaptures) {
-            //move forward 2
-            Bitboard forward2Move =
-                    signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
-                    signedShift<forward1shift>(emptySquares);
-            while (forward2Move) {
-                Square dst = popLsb(&forward2Move);
-                moveChunk.moveList.addMove(
-                        Move::pawnForward2(dst - forward2shift, dst)
-                );
+            {
+                // move forward 1
+                Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
+                while (forward1Move) {
+                    Square dst = popLsb(&forward1Move);
+                    moveChunk.moveList.addMove(
+                            Move::normalMove(dst - forward1shift, dst)
+                    );
+                }
             }
-
-            // move forward 1
-            Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
-            while (forward1Move) {
-                Square dst = popLsb(&forward1Move);
-                moveChunk.moveList.addMove(
-                        Move::normalMove(dst - forward1shift, dst)
-                );
+            {
+                //move forward 2
+                Bitboard forward2Move =
+                        signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
+                        signedShift<forward1shift>(emptySquares);
+                while (forward2Move) {
+                    Square dst = popLsb(&forward2Move);
+                    moveChunk.moveList.addMove(
+                            Move::pawnForward2(dst - forward2shift, dst)
+                    );
+                }
             }
         }
     }
 
 
     template<Player player, MoveGenType moveGenType>
-    void ChessBoard::generateKnightMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) {
+    void ChessBoard::generateKnightMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) const {
         //it is assumed that if moveGenType is captures or non-capture, target is adjusted already
         constexpr Piece knightPiece = makePiece(PIECE_TYPE_KNIGHT, player);
-        constexpr bool doStaticEval = moveGenType == MoveGenType::CAPTURES || moveGenType == MoveGenType::NON_CAPTURE;
+        constexpr bool doStaticEval = moveGenType == MoveGenType::CAPTURES || moveGenType == MoveGenType::NON_CAPTURES;
         constexpr bool doCaptureEval = moveGenType == MoveGenType::CAPTURES;
-        Bitboard knights = getBitboardOf(knightPiece) & source;
-        Bitboard availableSquares = ~bitboardOf(player) & target; //todo: this line repeats a lot. call bitwise and just once
+        Bitboard knights = bitboardOf(knightPiece) & source;
+        Bitboard availableSquares =
+                ~bitboardOf(player) & target; //todo: this line repeats a lot. call bitwise and just once
         while (knights) {
             Square srcSquare = popLsb(&knights);
             Bitboard knightMoves = knightMovesFrom(srcSquare) & availableSquares;
@@ -593,12 +629,12 @@ namespace Chess {
                 Square dst = popLsb(&knightMoves);
                 if constexpr (doCaptureEval) {
                     StaticEvalScore captureEval = evalCapture(dst, knightPiece);
-                    if(captureEval>=0){
+                    if (captureEval >= 0) {
                         moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst, captureEval));
-                    } else{
+                    } else {
                         moveChunk.losingCaptures.addMove(Move::normalMove(srcSquare, dst));
                     }
-                } else{
+                } else {
                     moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst));
                 }
             }
@@ -606,14 +642,14 @@ namespace Chess {
     }
 
     template<Player player, PieceType pieceType, MoveGenType moveGenType>
-    void ChessBoard::generateSlidingPieceMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) {
+    void ChessBoard::generateSlidingPieceMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) const {
         constexpr Piece piece = makePiece(pieceType, player);
         constexpr Player opponent = ~player;
 
-        constexpr bool doStaticEval = moveGenType == MoveGenType::CAPTURES || moveGenType == MoveGenType::NON_CAPTURE;
+        constexpr bool doStaticEval = moveGenType == MoveGenType::CAPTURES || moveGenType == MoveGenType::NON_CAPTURES;
         constexpr bool doCaptureEval = moveGenType == MoveGenType::CAPTURES;
 
-        Bitboard pieceBitboard = getBitboardOf(piece) & source;
+        Bitboard pieceBitboard = bitboardOf(piece) & source;
         Bitboard availableSquares = ~bitboardOf(player) & target;
         Bitboard otherPieces = bitboardOf(player) | bitboardOf(opponent);
         while (pieceBitboard) {
@@ -626,136 +662,161 @@ namespace Chess {
                     StaticEvalScore captureEval = evalCapture(dst, piece);
                     if (captureEval >= 0) {
                         moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst, captureEval));
-                    } else{
+                    } else {
                         moveChunk.losingCaptures.addMove(Move::normalMove(srcSquare, dst));
                     }
-                } else{
+                } else {
                     moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst));
                 }
             }
         }
     }
 
-    template<Player player>
-    void ChessBoard::generateKingMoves(MoveList &moveList) {
+    template<Player player, MoveGenType moveGenType>
+    void ChessBoard::generateKingMoves(MoveChunk &moveChunk, Bitboard target) const {
+        constexpr bool doStaticEval = moveGenType == CAPTURES || moveGenType == NON_CAPTURES;
+        constexpr bool doCaptureEval = moveGenType == MoveGenType::CAPTURES;
         constexpr Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
         constexpr Player opponent = ~player;
-        Bitboard availableSquares = ~bitboardOf(player) & ~threatsOf(opponent);
+        Bitboard availableSquares = ~bitboardOf(player) & ~threatData->threatsOf(opponent) & target;
         Bitboard king = bitboardOf(kingPiece);
         assert(king);
         Square srcSquare = lsb(king);
         Bitboard kingMoves = kingMovesFrom(srcSquare) & availableSquares;
         while (kingMoves) {
-            moveList.addMove(Move::normalMove(srcSquare, popLsb(&kingMoves)));
+            Square dst = popLsb(&kingMoves);
+            if constexpr (doCaptureEval) {
+                Piece dstPiece = getPieceOn(dst);
+                StaticEvalScore captureScore = staticPieceValue(
+                        dstPiece); // since legal king captures are always unprotected, there is no need for SEE
+                moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst, captureScore));
+            } else {
+                moveChunk.moveList.addMove(Move::normalMove(srcSquare, dst));
+            }
         }
     }
 
-    template<Player player>
-    void ChessBoard::generateAllPieces(MoveList &moveList, Bitboard source, Bitboard target) {
-        generatePawnMoves<player>(moveList, source, target);
-        generateKnightMoves<player>(moveList, source, target);
-        generateSlidingPieceMoves<player, PIECE_TYPE_BISHOP>(moveList, source, target);
-        generateSlidingPieceMoves<player, PIECE_TYPE_ROOK>(moveList, source, target);
-        generateSlidingPieceMoves<player, PIECE_TYPE_QUEEN>(moveList, source, target);
+    template<Player player, MoveGenType moveGenType>
+    void ChessBoard::generateAllPieces(MoveChunk &moveChunk, Bitboard source, Bitboard target) const {
+        //todo: add back pawn moves
+        generateKnightMoves<player, moveGenType>(moveChunk, source, target);
+        generateSlidingPieceMoves<player, PIECE_TYPE_BISHOP, moveGenType>(moveChunk, source, target);
+        generateSlidingPieceMoves<player, PIECE_TYPE_ROOK, moveGenType>(moveChunk, source, target);
+        generateSlidingPieceMoves<player, PIECE_TYPE_QUEEN, moveGenType>(moveChunk, source, target);
     }
 
-    template<Player player>
-    GameEndState ChessBoard::generateMovesForPlayer(MoveList &moveList) {
-        const Move *const originalLastMove = moveList.cend();
-        calculateThreats<~player>();
-        if (!isDoubleCheck) {
-            Bitboard notPinned = ~pinned;
-            if (!isCheck) {
+    template<Player player, MoveGenType moveGenType>
+    void ChessBoard::generateMovesForPlayer(MoveChunk &moveChunk) const {
+        //todo: add const where necessary
+
+        constexpr bool generateCaptures = moveGenType == CAPTURES || moveGenType == ALL;
+        constexpr bool generateNonCaptures = moveGenType == NON_CAPTURES || moveGenType == ALL;
+        const Bitboard target = targetForMoveGenType<player, moveGenType>();
+        if (!threatData->isInDoubleCheck(player)) {
+            if (generateNonCaptures && !threatData->isInCheck(player)) {
                 //castling
                 Bitboard pieces = bitboardOf(player) | bitboardOf(~player); //todo: speed up
-                Bitboard threats = threatsOf(~player);
+                Bitboard threats = threatData->threatsOf(~player);
 
                 if (mayCastleKingSide<player>() &&
                     CastlingData::kingSideCastleOf<player>().mayCastle(pieces, threats)) {
-                    moveList.addMove(Move::castle(kingSideCastleOf<player>()));
+                    moveChunk.moveList.addMove(Move::castle(kingSideCastleOf<player>()));
                 }
 
                 if (mayCastleQueenSide<player>() &&
                     CastlingData::queenSideCastleOf<player>().mayCastle(pieces, threats)) {
-                    moveList.addMove(Move::castle(queenSideCastleOf<player>()));
+                    moveChunk.moveList.addMove(Move::castle(queenSideCastleOf<player>()));
                 }
             }
+            Bitboard notPinned = ~threatData->kingBlockersOf(player);
+            generatePawnMoves<player, moveGenType>(moveChunk, notPinned, threatData->checkEvasionSquares);
+            generateAllPieces<player, moveGenType>(moveChunk, notPinned, target & threatData->checkEvasionSquares);
 
-            generateAllPieces<player>(moveList, notPinned, checkEvasionSquares);
+            Bitboard targetPinned = target & threatData->kingBlockersOf(player);
 
-            if (!isCheck && pinned) {
+            if (!threatData->isInCheck(player) && targetPinned) {
                 //calculate pins
                 Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
                 Square kingSquare = lsb(bitboardOf(kingPiece));
 
-                XrayData rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
-                XrayData bishopXray = slidingPieceDataOf<PIECE_TYPE_BISHOP>(kingSquare).xrayData;
-
-                Bitboard kingRank = rookXray.rankFileDiagonal1();
-                Bitboard kingFile = rookXray.rankFileDiagonal2();
-                Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
-                Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
+                XrayData &rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
+                XrayData &bishopXray = slidingPieceDataOf<PIECE_TYPE_BISHOP>(kingSquare).xrayData;
 
                 //todo: optimize for speed. Check whether ifs are helping or slowing down
-                /// also think about not checking redundant pins, like a pinned knight which can't bestMove_ at all
-                /// like a rook pinned on a diagonal or a bishop pinned on a rank
-
-                if (pinned & kingRank) {
-                    generateAllPieces<player>(moveList, pinned & kingRank, kingRank);
+                /// also think about not checking redundant pins, like a kingBlockers knight which can't bestMove_ at all
+                /// like a rook kingBlockers on a diagonal or a bishop kingBlockers on a rank
+                // todo: remove repeated bitwise &
+                {
+                    Bitboard kingRank = rookXray.rankFileDiagonal1();
+                    if (targetPinned & kingRank) {
+                        generatePawnMoves<player, moveGenType>(moveChunk, targetPinned & kingRank, kingRank);
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingRank, kingRank);
+                    }
+                }
+                {
+                    Bitboard kingFile = rookXray.rankFileDiagonal2();
+                    if (targetPinned & kingFile) {
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingFile, kingFile);
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingFile, kingFile);
+                    }
                 }
 
-                if (pinned & kingFile) {
-                    generateAllPieces<player>(moveList, pinned & kingFile, kingFile);
+                {
+                    Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
+                    if (targetPinned & kingDiagonal1) {
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal1, kingDiagonal1);
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal1, kingDiagonal1);
+                    }
                 }
 
-                if (pinned & kingDiagonal1) {
-                    generateAllPieces<player>(moveList, pinned & kingDiagonal1, kingDiagonal1);
-                }
-
-                if (pinned & kingDiagonal2) {
-                    generateAllPieces<player>(moveList, pinned & kingDiagonal2, kingDiagonal2);
+                {
+                    Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
+                    if (targetPinned & kingDiagonal2) {
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal2, kingDiagonal2);
+                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal2, kingDiagonal2);
+                    }
                 }
             }
         }
-        generateKingMoves<player>(moveList);
-
-        if (originalLastMove != moveList.cend()) { //at least one move was generated
-            return NO_GAME_END;
-        } else if (isCheck) {
-            return MATED;
-        } else {
-            return DRAW;
-        }
+        generateKingMoves<player, moveGenType>(moveChunk, target);
     }
 
-
-    GameEndState ChessBoard::generateMoves(MoveList &moveList) {
+    template<MoveGenType moveGenType>
+    void ChessBoard::generateMoves(MoveChunk &moveChunk) const {
         if (currentPlayer == WHITE) {
-            return generateMovesForPlayer<WHITE>(moveList);
+            generateMovesForPlayer<WHITE, moveGenType>(moveChunk);
         } else {
-            return generateMovesForPlayer<BLACK>(moveList);
+            generateMovesForPlayer<BLACK, moveGenType>(moveChunk);
         }
     }
+
+    template void ChessBoard::generateMoves<ALL>(MoveChunk &moveChunk) const;
+
+    template void ChessBoard::generateMoves<CAPTURES>(MoveChunk &moveChunk) const;
+
+    template void ChessBoard::generateMoves<NON_CAPTURES>(MoveChunk &moveChunk) const;
 
     template<Player player>
     void ChessBoard::calculatePawnThreats() {
         constexpr int rankShift = directionOf(player);
         constexpr Piece pawnPiece = makePiece(PIECE_TYPE_PAWN, player);
         constexpr Piece enemyKing = makePiece(PIECE_TYPE_KING, ~player);
+        constexpr Player opponent = ~player;
         //todo: check if bitboardOf should be extracted
-        Bitboard &threats = threatsOf(pawnPiece);
+        Bitboard &threats = threatData->threatsOf(pawnPiece);
         Bitboard &enemyKingBitboard = bitboardOf(enemyKing);
         threats = shiftWithMask<rankShift, 1>(bitboardOf(pawnPiece))
                   | shiftWithMask<rankShift, -1>(bitboardOf(pawnPiece));
         if (threats & enemyKingBitboard) {
             // the pawns have check
-            if (isCheck) {
-                isDoubleCheck = true;
+            if (threatData->isInCheck(opponent)) {
+                threatData->isInDoubleCheck(opponent) = true;
             } else {
-                isCheck = true;
-                checkEvasionSquares = (shiftWithMask<-rankShift, 1>(enemyKingBitboard) |
-                                       shiftWithMask<-rankShift, -1>(enemyKingBitboard)) & bitboardOf(pawnPiece);
-                assert(populationCout(checkEvasionSquares) == 1);
+                threatData->isInCheck(opponent) = true;
+                threatData->checkEvasionSquares = (shiftWithMask<-rankShift, 1>(enemyKingBitboard) |
+                                                   shiftWithMask<-rankShift, -1>(enemyKingBitboard)) &
+                                                  bitboardOf(pawnPiece);
+                assert(populationCout(threatData->checkEvasionSquares) == 1);
             }
         }
     }
@@ -766,19 +827,20 @@ namespace Chess {
     void ChessBoard::calculateKnightThreats() {
         constexpr Piece knightPiece = makePiece(PIECE_TYPE_KNIGHT, player);
         constexpr Piece enemyKing = makePiece(PIECE_TYPE_KING, ~player);
+        constexpr Player opponent = ~player;
         Bitboard knights = bitboardOf(knightPiece);
-        threatsOf(knightPiece) = BITBOARD_EMPTY;
+        Bitboard &threats = threatData->threatsOf(knightPiece);
         while (knights) {
             Square square = popLsb(&knights);
             Bitboard moves = knightMovesFrom(square);
-            threatsOf(knightPiece) |= moves;
+            threats |= moves;
 
             if (moves & bitboardOf(enemyKing)) {
-                if (isCheck) {
-                    isDoubleCheck = true;
+                if (threatData->isInCheck(opponent)) {
+                    threatData->isInDoubleCheck(opponent) = true;
                 } else {
-                    isCheck = true;
-                    checkEvasionSquares = maskOf(square);
+                    threatData->isInCheck(opponent) = true;
+                    threatData->checkEvasionSquares = maskOf(square);
                 }
             }
         }
@@ -793,32 +855,31 @@ namespace Chess {
         constexpr Piece enemyKing = makePiece(PIECE_TYPE_KING, opponent);
         Bitboard pieceBitboard = bitboardOf(piece);
         Bitboard otherPieces = bitboardOf(player) | bitboardOf(opponent); //todo: speed up
-        threatsOf(piece) = BITBOARD_EMPTY;
         while (pieceBitboard) {
             Square square = popLsb(&pieceBitboard);
             SlidingPieceData &slidingPieceData = slidingPieceDataOf<pieceType>(square);
             Bitboard threats = slidingPieceData.magicHashData.calculateSlidingMoves(otherPieces);
             if (threats & bitboardOf(enemyKing)) {
                 //check
-                if (isCheck) {
-                    isDoubleCheck = true;
+                if (threatData->isInCheck(opponent)) {
+                    threatData->isInDoubleCheck(opponent) = true;
                 } else {
-                    isCheck = true;
+                    threatData->isInCheck(opponent) = true;
                     Bitboard checkDirection = slidingPieceData.xrayData.directionTo(bitboardOf(enemyKing));
                     if (checkDirection == BITBOARD_FULL) {
                         printBitboards();
-                        cout << "Square: " << toString(square) << "\nthreats: ";
+                        cout << "Square: " << toString(square) << "\nthreatData: ";
                         printBitboard(threats);
                         cout << "otherPieces: ";
                         printBitboard(otherPieces);
                         cout << std::hex << "otherPiecesHex: 0x" << otherPieces << std::dec << "\n";
                         assert(false);
                     }
-                    checkEvasionSquares = (checkDirection & threats) | maskOf(square);
+                    threatData->checkEvasionSquares = (checkDirection & threats) | maskOf(square);
                 }
-                threatsOf(piece) |= slidingPieceData.xrayData.allDirections;
+                threatData->threatsOf(piece) |= slidingPieceData.xrayData.allDirections;
             } else {
-                threatsOf(piece) |= threats;
+                threatData->threatsOf(piece) |= threats;
 
                 //check pins
                 if (slidingPieceData.xrayData.allDirections & bitboardOf(enemyKing)) {
@@ -826,8 +887,8 @@ namespace Chess {
                     Bitboard directionMask = slidingPieceData.xrayData.directionTo(bitboardOf(enemyKing));
                     Bitboard kingBlockersMask = slidingPieceData.magicHashData.calculateSlidingMoves
                             (bitboardOf(enemyKing)) & ~bitboardOf(enemyKing);
-                    Bitboard kingBlockers = directionMask & kingBlockersMask & otherPieces;
-                    if (!kingBlockers) {
+                    Bitboard blockers = directionMask & kingBlockersMask & otherPieces;
+                    if (!blockers) {
                         printBitboards();
                         cout << "directionMask: \n";
                         printBitboard(directionMask);
@@ -837,10 +898,10 @@ namespace Chess {
                         printBitboard(otherPieces);
                         assert(false);
                     }
-                    Square firstBlockerSquare = popLsb(&kingBlockers);
-                    if (!kingBlockers) {
+                    Square firstBlockerSquare = popLsb(&blockers);
+                    if (!blockers) {
                         // there is exactly one piece blocking the king, so it is a pin.
-                        pinned |= maskOf(firstBlockerSquare);
+                        threatData->kingBlockersOf(opponent) |= maskOf(firstBlockerSquare);
                     }
                 }
             }
@@ -855,7 +916,6 @@ namespace Chess {
         constexpr Piece enemyKing = makePiece(PIECE_TYPE_KING, opponent);
         Bitboard queens = bitboardOf(queenPiece);
         Bitboard otherPieces = bitboardOf(player) | bitboardOf(opponent); //todo: speed up
-        threatsOf(queenPiece) = BITBOARD_EMPTY;
         while (queens) {
             Square square = popLsb(&queens);
             SlidingPieceData &rookPieceData = slidingPieceDataOf<PIECE_TYPE_ROOK>(square);
@@ -864,22 +924,22 @@ namespace Chess {
                                bishopPieceData.magicHashData.calculateSlidingMoves(otherPieces);
             if (threats & bitboardOf(enemyKing)) {
                 //check
-                if (isCheck) {
-                    isDoubleCheck = true;
+                if (threatData->isInCheck(opponent)) {
+                    threatData->isInDoubleCheck(opponent) = true;
                 } else {
-                    isCheck = true;
+                    threatData->isInCheck(opponent) = true;
                     if (rookPieceData.xrayData.allDirections & bitboardOf(enemyKing)) {
                         Bitboard checkDirection = rookPieceData.xrayData.directionTo(bitboardOf(enemyKing));
-                        checkEvasionSquares = (checkDirection & threats) | maskOf(square);
+                        threatData->checkEvasionSquares = (checkDirection & threats) | maskOf(square);
                     } else {
                         Bitboard checkDirection = bishopPieceData.xrayData.directionTo(bitboardOf(enemyKing));
-                        checkEvasionSquares = (checkDirection & threats) | maskOf(square);
+                        threatData->checkEvasionSquares = (checkDirection & threats) | maskOf(square);
                     }
                 }
-                threatsOf(queenPiece) |= rookPieceData.xrayData.allDirections |
-                                         bishopPieceData.xrayData.allDirections;
+                threatData->threatsOf(queenPiece) |= rookPieceData.xrayData.allDirections |
+                                                     bishopPieceData.xrayData.allDirections;
             } else {
-                threatsOf(queenPiece) |= threats;
+                threatData->threatsOf(queenPiece) |= threats;
                 //check pins
                 if ((rookPieceData.xrayData.allDirections | bishopPieceData.xrayData.allDirections)
                     & bitboardOf(enemyKing)) {
@@ -904,7 +964,7 @@ namespace Chess {
                     Square firstBlockerSquare = popLsb(&kingBlockers);
                     if (!kingBlockers) {
                         // there is exactly one piece blocking the king, so it is a pin.
-                        pinned |= maskOf(firstBlockerSquare);
+                        threatData->kingBlockersOf(opponent) |= maskOf(firstBlockerSquare);
                     }
                 }
             }
@@ -917,43 +977,12 @@ namespace Chess {
         constexpr Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
         assert(kingPiece);
         Square kingSquare = lsb(bitboardOf(kingPiece));
-        threatsOf(kingPiece) = kingMovesFrom(kingSquare);
+        threatData->threatsOf(kingPiece) = kingMovesFrom(kingSquare);
     }
-
-/*
-    template<Player player>
-    void ChessBoard::calculateWiningCaptures() {
-        constexpr Player opponent = ~player;
-
-        Bitboard allWinningCaptures = BITBOARD_EMPTY;
-
-
-
-        // at least stores all enemy pieces that are more valuable than a certain piece. moreValuableThan[ROOK] = ROOK | QUEEN | KING, etc.
-        Bitboard moreValuableThan[NUM_PIECE_VALUES];
-        moreValuableThan[PIECE_VALUE_KING] = BITBOARD_EMPTY;
-        moreValuableThan[PIECE_VALUE_QUEEN] = bitboardOf(makePiece(PIECE_TYPE_KING, opponent));
-        moreValuableThan[PIECE_VALUE_ROOK] =
-                moreValuableThan[PIECE_VALUE_QUEEN] | bitboardOf(makePiece(PIECE_TYPE_QUEEN, opponent));
-        moreValuableThan[PIECE_VALUE_KNIGHT_BISHOP] = moreValuableThan[PIECE_VALUE_ROOK] |
-                                                      bitboardOf(makePiece(PIECE_TYPE_ROOK, opponent));
-        moreValuableThan[PIECE_VALUE_PAWN] = bitboardOf(opponent) ^ bitboardOf(makePiece(PIECE_TYPE_PAWN, opponent));
-
-        for (PieceValue pieceValue = PIECE_VALUE_PAWN; pieceValue <= PIECE_VALUE_KING; ++pieceValue) {
-            allWinningCaptures |= moreValuableThan[pieceValue];
-            threatsOf
-        }
-    }
-*/
-
 
     template<Player player>
     inline void ChessBoard::calculateThreats() {
-        isCheck = false;
-        isDoubleCheck = false;
-        checkEvasionSquares = BITBOARD_FULL;
-        pinned = BITBOARD_EMPTY;
-
+        //todo: initialize threatData beforehand
         calculatePawnThreats<player>();
         calculateKnightThreats<player>();
         calculateSlidingPieceThreats<player, PIECE_TYPE_BISHOP>();
@@ -961,7 +990,7 @@ namespace Chess {
         calculateQueenThreats<player>();
         calculateKingThreats<player>();
 
-        // todo: optimize. maybe have each function return the threats, instead of fetching them directly.
+        // todo: optimize. maybe have each function return the threatData, instead of fetching them directly.
         /// See if that's faster. Or maybe use a for loop
 
         constexpr Piece pawnPiece = makePiece(PIECE_TYPE_PAWN, player);
@@ -971,8 +1000,12 @@ namespace Chess {
         constexpr Piece queenPiece = makePiece(PIECE_TYPE_QUEEN, player);
         constexpr Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
 
-        threatsOf(player) = threatsOf(pawnPiece) | threatsOf(knightPiece) | threatsOf(bishopPiece) |
-                            threatsOf(rookPiece) | threatsOf(queenPiece) | threatsOf(kingPiece);
+        threatData->threatsOf(player) = threatData->threatsOf(pawnPiece) |
+                                        threatData->threatsOf(knightPiece) |
+                                        threatData->threatsOf(bishopPiece) |
+                                        threatData->threatsOf(rookPiece) |
+                                        threatData->threatsOf(queenPiece) |
+                                        threatData->threatsOf(kingPiece);
     }
 
     Score ChessBoard::evaluateWhite() {
@@ -990,19 +1023,13 @@ namespace Chess {
 
     ChessBoard &ChessBoard::operator=(const ChessBoard &other) {
         assert(&other != this);
-        isCheck = other.isCheck;
-        isDoubleCheck = other.isDoubleCheck;
-
         castlingRights = other.castlingRights;
 
         evalData = other.evalData;
         enPassantSquare = other.enPassantSquare;
         currentPlayer = other.currentPlayer;
-        checkEvasionSquares = other.checkEvasionSquares;
-        pinned = other.pinned;
         for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
             pieceBitboards[piece] = other.pieceBitboards[piece];
-            threatsByPiece[piece] = other.threatsByPiece[piece];
         }
 
         pieceBitboards[PIECE_NONE] = other.pieceBitboards[PIECE_NONE];
@@ -1010,9 +1037,6 @@ namespace Chess {
 
         byPlayerBitboards[WHITE] = other.byPlayerBitboards[WHITE];
         byPlayerBitboards[BLACK] = other.byPlayerBitboards[BLACK];
-
-        threatsBypLayer[WHITE] = other.threatsBypLayer[WHITE];
-        threatsBypLayer[BLACK] = other.threatsBypLayer[BLACK];
 
         for (int square = SQ_FIRST; square <= SQ_LAST; ++square) {
             pieceBitboards[square] = other.pieceBitboards[square];
@@ -1041,6 +1065,8 @@ namespace Chess {
 
         return true;
     }
+
+
 
     bool ChessBoard::parseFen(const string &fenString) {
 
@@ -1369,9 +1395,10 @@ namespace Chess {
             if (!moveInputData.isOk()) {
                 return false;
             }
-            MoveList moveList;
-            generateMoves(moveList);
-            Move move = moveList.getMoveFromInputData(moveInputData);
+            MoveChunk moveChunk;
+            generateThreatsAndMoves(moveChunk);
+
+            Move move = moveChunk.moveList.getMoveFromInputData(moveInputData);
             if (move.isOk()) {
                 doMove(move);
             } else {
@@ -1382,15 +1409,14 @@ namespace Chess {
     }
 
     bool ChessBoard::doMoves(stringstream &moveStream) {
-        // position startpos moves e2e4 e7e5
         for (string str; moveStream >> str && !str.empty();) {
             MoveInputData moveInputData = MoveInputData::parse(str);
             if (!moveInputData.isOk()) {
                 return false;
             }
-            MoveList moveList;
-            generateMoves(moveList);
-            Move move = moveList.getMoveFromInputData(moveInputData);
+            MoveChunk moveChunk;
+            generateThreatsAndMoves(moveChunk);
+            Move move = moveChunk.moveList.getMoveFromInputData(moveInputData);
             if (move.isOk()) {
                 doGameMove(move);
             } else {
@@ -1403,7 +1429,7 @@ namespace Chess {
     void ChessBoard::initHashKey() {
         hashKey = KEY_ZERO;
         for (Square square = SQ_FIRST; square <= SQ_LAST; ++square) {
-            Piece piece = getPieceOn(square);
+            Piece piece = pieceOn(square);
             if (piece != PIECE_NONE) {
                 hashKey ^= zobristData.keyOf(square, piece);
             }
@@ -1430,7 +1456,6 @@ namespace Chess {
     }
 
     set<Key> ChessBoard::getRepeatedPositions() {
-        printList(cout << "positions for repetition: ", positionsForRepetition) << "\n";
         set<Key> repeatedPositions{};
         for (int i = 0; i < positionsForRepetition.size(); ++i) {
             const Key &key = positionsForRepetition[i];
@@ -1448,16 +1473,42 @@ namespace Chess {
         return repeatedPositions;
     }
 
+    void ChessBoard::calculateAllThreats() {
+        assert(threatData->isEmpty());
+        // always calculate threatData for the inactive player first
+        if (currentPlayer == WHITE) {
+            calculateThreats<BLACK>();
+            calculateThreats<WHITE>();
+        } else {
+            calculateThreats<WHITE>();
+            calculateThreats<BLACK>();
+        }
+    }
+
     /// todo: see if this should be inline or not
-    /// see if loop unrolling can help. See if an incrementally updated makeThreatMap mask can help
-    ThreatMap ChessBoard::makeThreatMap(SquareMask squareMask) const {
+    /// see if loop unrolling can help. See if an incrementally updated makeThreatMap mask can help. See if there's a way to optimize multiple pieces attacking the same square.
+    ThreatMap ThreatData::makeThreatMap(SquareMask squareMask) const {
+        assert(this != nullptr);
         ThreatMap threatMap = THREAT_MAP_NONE;
         for (Piece piece = PIECE_FIRST; piece <= PIECE_LAST_NOT_EMPTY; ++piece) {
-            if (getThreatsOf(piece) & squareMask) {
+            if (threatsOf(piece) & squareMask) {
                 threatMap |= threatMapOf(piece);
             }
         }
         return threatMap;
     }
 
+    std::ostream &operator<<(ostream &os, ThreatData &threatData) {
+        for (Piece piece=PIECE_FIRST; piece<=PIECE_LAST_NOT_EMPTY;++piece){
+            cout << "threats of " << piece << ":\n";
+            printBitboard(threatData.threatsOf(piece), cout);
+        }
+
+        cout << "threats of WHITE: \n";
+        printBitboard(threatData.threatsOf(WHITE));
+
+        cout << "threats of BLACK: \n";
+        printBitboard(threatData.threatsOf(BLACK));
+        return os;
+    }
 }

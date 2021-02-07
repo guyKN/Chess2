@@ -9,7 +9,7 @@
 namespace Chess{
     void initAll() {
         initPieceMoveLookup();
-        if (!transPositionTable.isInitialized()){
+        if (!transPositionTable.isInitialized() && USE_TRANSPOSITION_TABLE){
             transPositionTable = TransPositionTable::fromSize(TransPositionTable::TRANSPOSITION_TABLE_SIZE);
             cout << "num TT entries: " << transPositionTable.getNumEntries() << "\n";
         }

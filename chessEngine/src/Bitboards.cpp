@@ -144,28 +144,22 @@ namespace Chess {
 
 
     template<PieceType pieceType>
-    XrayData XrayData::fromSquare(Square square) {
+    void XrayData::setToSquare(Square square) {
         static_assert(pieceType == PIECE_TYPE_ROOK || pieceType == PIECE_TYPE_BISHOP, "Must be rook or bishop");
         SquareMask squareMask = maskOf(square);
-        XrayData xrayData{};
         if constexpr (pieceType == PIECE_TYPE_ROOK) {
-            xrayData = {
-                    expandToEdgeInclusive<1, 0>(squareMask),
-                    expandToEdgeInclusive<-1, 0>(squareMask),
-                    expandToEdgeInclusive<0, 1>(squareMask),
-                    expandToEdgeInclusive<0, -1>(squareMask)
-            };
+            direction1 = expandToEdgeInclusive<1, 0>(squareMask);
+            direction2 = expandToEdgeInclusive<-1, 0>(squareMask);
+            direction3 = expandToEdgeInclusive<0, 1>(squareMask);
+            direction4 = expandToEdgeInclusive<0, -1>(squareMask);
         } else if constexpr (pieceType == PIECE_TYPE_BISHOP) {
-            xrayData = {
-                    expandToEdgeInclusive<1, 1>(squareMask),
-                    expandToEdgeInclusive<-1, -1>(squareMask),
-                    expandToEdgeInclusive<1, -1>(squareMask),
-                    expandToEdgeInclusive<-1, 1>(squareMask)
-            };
+            direction1 = expandToEdgeInclusive<1, 1>(squareMask);
+            direction2 = expandToEdgeInclusive<-1, -1>(squareMask);
+            direction3 = expandToEdgeInclusive<1, -1>(squareMask);
+            direction4 = expandToEdgeInclusive<-1, 1>(squareMask);
         }
-        xrayData.allDirections = xrayData.direction1 | xrayData.direction2 |
-                                 xrayData.direction3 | xrayData.direction4;
-        return xrayData;
+        allDirections = direction1 | direction2 |
+                                 direction3 | direction4;
     }
 
 
@@ -464,16 +458,16 @@ namespace Chess {
             }
         }
 
-        MagicHasData magicHashData{
-                shift,
-                lookUpData.blockersMask,
-                magicHashFactor,
-                currentBishopRookLookupPointer
-        };
+        MagicHasData &magicHashData = slidingPieceDataOf<pieceType>(square).magicHashData;
 
-        XrayData xrayData = XrayData::fromSquare<pieceType>(square);
-        slidingPieceDataOf<pieceType>(square).magicHashData = magicHashData;
-        slidingPieceDataOf<pieceType>(square).xrayData = xrayData;
+        magicHashData.shift = shift;
+        magicHashData.mask = lookUpData.blockersMask;
+        magicHashData.magicHashFactor = magicHashFactor;
+        magicHashData.moveLookup = currentBishopRookLookupPointer;
+
+
+        SlidingPieceData& slidingPieceData = slidingPieceDataOf<pieceType>(square);
+        slidingPieceData.xrayData.setToSquare<pieceType>(square);
 
         currentBishopRookLookupPointer += maxIndex + 1;
     }
@@ -503,7 +497,7 @@ namespace Chess {
 
     void initPieceMoveLookup() {
         if (!lookUpTablesReady) {
-            Bitboard buffer[lookupTableBufferSize]{};
+            Bitboard buffer[lookupTableBufferSize];
             currentBishopRookLookupPointer = rookBishopMoveTable;
             SquareMask squareMask = SQUARE_MASK_FIRST;
             for (Square square = SQ_FIRST; square <= SQ_LAST; ++square, squareMask <<= 1) {
@@ -512,6 +506,7 @@ namespace Chess {
                 initSlidingPieceLookup<PIECE_TYPE_BISHOP>(square, buffer);
                 initSlidingPieceLookup<PIECE_TYPE_ROOK>(square, buffer);
             }
+            lookUpTablesReady = true;
         }
     }
 }

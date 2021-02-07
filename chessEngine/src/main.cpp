@@ -19,28 +19,36 @@ using std::cout;
     Search search;
     ChessBoard chessBoard;
     while (true) {
-        cout << "hashKey: 0x" << std::hex << chessBoard.getHashKey() << std::dec << "\n";
-        chessBoard.getFen(cout);
         chessBoard.assertOk();
-        MoveList moveList;
-        chessBoard.generateMoves(moveList);
-        cout << chessBoard << "\n" << "Enter a bestMove_: ";
+        MoveChunk moveChunk{};
+
+        ThreatData threatData{};
+        chessBoard.threatData = &threatData;
+
+        chessBoard.calculateAllThreats();
+        chessBoard.generateMoves<CAPTURES>(moveChunk);
+        cout << "Winning captures: \n" << moveChunk.moveList << "\n";
+        moveChunk.moveList.clear();
+        chessBoard.generateMoves<NON_CAPTURES>(moveChunk);
+        cout << "Normal Moves: \n" << moveChunk.moveList << "\n"
+        << "Losing Captures: :\n" << moveChunk.losingCaptures;
+
+        chessBoard.generateMoves<ALL>(moveChunk);
+
+        cout << chessBoard << "\n" << "Enter a move: ";
         MoveInputData moveInput;
         cin >> moveInput;
 
-        Move move = moveList.getMoveFromInputData(moveInput);
+        Move move = moveChunk.moveList.getMoveFromInputData(moveInput);
         if (move.isOk()) {
-            MoveRevertData moveRevertData =  chessBoard.doGameMove(move);
+            chessBoard.doGameMove(move);
             assert(chessBoard.isOk());
-            //chessBoard_.undoMove(bestMove_, moveRevertData);
-
-//            cout << "eval: " << chessBoard_.evaluateWhite() << "\n";
-//            search.chessBoard_ = chessBoard_;
-//            Move aiMove = search.bestMove_(4);
-//            cout << aiMove << "\n";
-//            chessBoard_.doMove(aiMove);
+//            search.chessBoard = chessBoard;
+//            Move aiMove = search.bestMove(5);
+//            chessBoard.doGameMove(aiMove);
+//            cout << "AI move: " << aiMove << "\n";
         } else {
-            cout << "Invalid bestMove_. Please enter a bestMove_ again.";
+            cout << "Invalid move. Please enter a move again.\n";
         }
     }
 }

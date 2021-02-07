@@ -43,7 +43,6 @@ namespace Chess {
             numNonLeafNodes = 0;
             numLeaves = 0;
             repeatedPositions = chessBoard.getRepeatedPositions();
-            printList(cout << "repeatedPositions: ", repeatedPositions) << "\n";
             return alphaBetaRoot(depth);
         }
 
@@ -61,6 +60,8 @@ namespace Chess {
 
 
         uint64_t perft(int depth);
+
+        void onError() const;
 
     private:
         /// since score is mesured in terms of ply to mate from root, when we write the score in the transposition table
@@ -88,7 +89,10 @@ namespace Chess {
 
         Score alphaBeta(Score alpha, Score beta, int depthLeft);
 
+        Score quiescenceSearch(Score alpha, Score beta);
+
         Move alphaBetaRoot(int depth);
+
     };
 }
 

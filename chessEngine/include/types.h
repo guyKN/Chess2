@@ -254,6 +254,10 @@ namespace Chess {
         BLACK = false
     };
 
+    inline constexpr bool isOk(Player player) {
+        return player == WHITE || player == BLACK;
+    }
+
     inline constexpr int multiplierOf(Player player) {
         return player == WHITE ? 1 : -1;
     }
@@ -452,6 +456,14 @@ namespace Chess {
         MATED
     };
 
+    inline constexpr WinState playerLoses(Player player){
+        return (player == WHITE) ? BLACK_WINS:WHITE_WINS;
+    }
+
+    inline constexpr WinState playerWins(Player player){
+        return playerLoses(~player);
+    }
+
     inline constexpr WinState winStateOf(GameEndState gameEndState, Player currentPlayer) {
         switch (gameEndState) {
             case DRAW:
@@ -610,7 +622,7 @@ namespace Chess {
     }
 
 
-    enum StaticEvalScore: int8_t {
+    enum StaticEvalScore : int8_t {
         STATIC_SCORE_ZERO = 0,
         STATIC_SCORE_PAWN = 1,
         STATIC_SCORE_KNIGHT,
@@ -624,16 +636,18 @@ namespace Chess {
 
     inline StaticEvalScore staticPieceValue(Piece piece) {
         static StaticEvalScore basicPieceValues[NUM_PIECES] = {STATIC_SCORE_PAWN, STATIC_SCORE_KNIGHT,
-                                                                              STATIC_SCORE_BISHOP, STATIC_SCORE_ROOK,
-                                                                              STATIC_SCORE_QUEEN, STATIC_SCORE_KING,
-                                                                              STATIC_SCORE_PAWN, STATIC_SCORE_KNIGHT,
-                                                                              STATIC_SCORE_BISHOP, STATIC_SCORE_ROOK,
-                                                                              STATIC_SCORE_QUEEN, STATIC_SCORE_KING, STATIC_SCORE_ZERO};
+                                                               STATIC_SCORE_BISHOP, STATIC_SCORE_ROOK,
+                                                               STATIC_SCORE_QUEEN, STATIC_SCORE_KING,
+                                                               STATIC_SCORE_PAWN, STATIC_SCORE_KNIGHT,
+                                                               STATIC_SCORE_BISHOP, STATIC_SCORE_ROOK,
+                                                               STATIC_SCORE_QUEEN, STATIC_SCORE_KING,
+                                                               STATIC_SCORE_ZERO};
         return basicPieceValues[piece];
     }
 
     constexpr inline StaticEvalScore operator-(StaticEvalScore staticEvalScore1, StaticEvalScore staticEvalScore2) {
-        return static_cast<StaticEvalScore>(static_cast<int8_t>(staticEvalScore1) - static_cast<int8_t>(staticEvalScore2));
+        return static_cast<StaticEvalScore>(static_cast<int8_t>(staticEvalScore1) -
+                                            static_cast<int8_t>(staticEvalScore2));
     }
 
     struct Indent {

@@ -23,6 +23,7 @@ using std::set;
 using std::vector;
 namespace Chess {
 
+
     class ZobristData {
         bool initialized = false;
         Key pieceKeys[NUM_SQUARES][NUM_NON_EMPTY_PIECES];
@@ -63,33 +64,112 @@ namespace Chess {
         Piece capturedPiece;
     };
 
-    enum class MoveGenType{
+    enum MoveGenType {
         ALL,
         CAPTURES, // note: promotions are also included as captures
-        NON_CAPTURE
+        NON_CAPTURES
+    };
+
+    std::ostream &operator<<(ostream &os, MoveGenType moveGenType);
+
+    struct ThreatData {
+    private:
+        Bitboard threatsByPiece[NUM_NON_EMPTY_PIECES]{};
+        Bitboard threatsByPlayer[NUM_PLAYERS]{};
+        bool _isInCheck[NUM_PLAYERS]{};
+        bool _isInDoubleCheck[NUM_PLAYERS]{};
+        Bitboard kingBlockers[NUM_PLAYERS]{};  // all pieces of both colors that block the king of a certain player
+        // used for discovery checks and pins
+    public:
+
+        Bitboard checkEvasionSquares = BITBOARD_FULL;
+
+        inline ThreatData() = default;
+
+        inline bool isEmpty();
+
+        ThreatData(const ThreatData &) = delete;
+
+        ThreatData(const ThreatData &&) = delete;
+
+        ThreatData &operator=(const ThreatData &) = delete;
+
+        ThreatData &operator=(const ThreatData &&) = delete;
+
+        ThreatMap makeThreatMap(SquareMask squareMask) const;
+
+        inline Bitboard &threatsOf(Player player) {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return threatsByPlayer[player];
+        }
+
+        inline const Bitboard &threatsOf(Player player) const {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return threatsByPlayer[player];
+        }
+
+        inline Bitboard &threatsOf(Piece piece) {
+            assert(this != nullptr);
+            assert(pieceOk(piece) && piece != PIECE_NONE);
+            return threatsByPiece[piece];
+        }
+
+        inline const Bitboard &threatsOf(Piece piece) const {
+            assert(this != nullptr);
+            assert(pieceOk(piece) && piece != PIECE_NONE);
+            return threatsByPiece[piece];
+        }
+
+        inline bool &isInCheck(Player player) {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return _isInCheck[player];
+        }
+
+        inline const bool &isInCheck(Player player) const {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return _isInCheck[player];
+        }
+
+        inline bool &isInDoubleCheck(Player player) {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return _isInDoubleCheck[player];
+        }
+
+        inline const bool &isInDoubleCheck(Player player) const {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return _isInDoubleCheck[player];
+        }
+
+        inline Bitboard &kingBlockersOf(Player player) {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return kingBlockers[player];
+        }
+
+        inline const Bitboard &kingBlockersOf(Player player) const {
+            assert(this != nullptr);
+            assert(isOk(player));
+            return kingBlockers[player];
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, ThreatData &threatData);
+
+
     };
 
     class ChessBoard {
         Bitboard pieceBitboards[NUM_PIECES] = {};
         Bitboard byPlayerBitboards[NUM_PLAYERS] = {};
-
-        //todo: have threats just for pieces of the inactive player, to save memory
-        // (but remember that this may harm the value of pieces for static bestMove_ evaluation)
-        Bitboard threatsByPiece[NUM_NON_EMPTY_PIECES] = {};
-        Bitboard threatsBypLayer[NUM_PLAYERS] = {};
-
-        Bitboard checkEvasionSquares = BITBOARD_FULL;
-        Bitboard pinned = BITBOARD_EMPTY;
-
         Piece piecesBySquare[NUM_SQUARES] = {};
         Player currentPlayer = WHITE;
-
-        Square enPassantSquare = SQ_INVALID;
-
-        bool isCheck;
-        bool isDoubleCheck;
-
         CastlingRights castlingRights;
+        Square enPassantSquare = SQ_INVALID;
 
         Key hashKey = KEY_ZERO;
 
@@ -98,8 +178,9 @@ namespace Chess {
         vector<Key> positionsForRepetition{};
 
         unsigned int moveCount = 0;
-        static constexpr bool DISABLE_SPECIAL_MOVES = false;
-
+    public:
+        ThreatData *threatData = nullptr;
+    private:
         inline Bitboard &bitboardOf(Piece piece) {
             return pieceBitboards[piece];
         }
@@ -108,10 +189,24 @@ namespace Chess {
             return byPlayerBitboards[player];
         }
 
+        inline const Bitboard &bitboardOf(Piece piece) const {
+            return pieceBitboards[piece];
+        }
+
+        inline const Bitboard &bitboardOf(Player player) const {
+            return byPlayerBitboards[player];
+        }
+
         inline Piece &pieceOn(Square square) {
             return piecesBySquare[square];
         }
 
+    public:
+        inline const Piece &getPieceOn(Square square) const {
+            return piecesBySquare[square];
+        }
+
+    private:
 
         /// used when there wasn't previously a piece on a square, and now there needs to be one
         inline void placePieceOn(Square square,
@@ -196,32 +291,6 @@ namespace Chess {
         }
 
 
-        inline Bitboard getBitboardOf(Piece piece) const {
-            return pieceBitboards[piece];
-        }
-
-        inline Bitboard getBitboardOf(Player player) const {
-            return byPlayerBitboards[player];
-        }
-
-        inline Bitboard &threatsOf(Player player) {
-            return threatsBypLayer[player];
-        }
-
-        inline const Bitboard &getThreatsOf(Player player) const {
-            return threatsBypLayer[player];
-        }
-
-        inline Bitboard &threatsOf(Piece piece) {
-            assert(piece != PIECE_NONE);
-            return threatsByPiece[piece];
-        }
-
-        inline const Bitboard &getThreatsOf(Piece piece) const {
-            assert(piece != PIECE_NONE);
-            return threatsByPiece[piece];
-        }
-
         inline void swapPlayer() {
             currentPlayer = ~currentPlayer;
             hashKey ^= zobristData.keyBlackToMove();
@@ -256,23 +325,23 @@ namespace Chess {
                    (getPieceOn(move.dst()) != PIECE_NONE) || move.moveType() == Move::CASTLING_MOVE;
         }
 
-        template<Player player>
-        void generateAllPieces(MoveList &moveList, Bitboard source, Bitboard target);
+        template<Player player, MoveGenType moveGenType>
+        void generateAllPieces(MoveChunk &moveChunk, Bitboard source, Bitboard target) const;
 
         template<Player player, MoveGenType moveGenType>
-        void generatePawnMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target);
+        void generatePawnMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) const;
 
         template<Player player, MoveGenType moveGenType>
-        void generateKnightMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target);
+        void generateKnightMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) const;
 
         template<Player player, PieceType pieceType, MoveGenType moveGenType>
-        void generateSlidingPieceMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target);
+        void generateSlidingPieceMoves(MoveChunk &moveChunk, Bitboard source, Bitboard target) const;
 
-        template<Player player>
-        void generateKingMoves(MoveList &moveList);
+        template<Player player, MoveGenType moveGenType>
+        void generateKingMoves(MoveChunk &moveChunk, Bitboard target) const;
 
-        template<Player player>
-        GameEndState generateMovesForPlayer(MoveList &moveList);
+        template<Player player, MoveGenType moveGenType1>
+        void generateMovesForPlayer(MoveChunk &moveChunk) const;
 
         template<Player player>
         void calculateThreats();
@@ -292,11 +361,9 @@ namespace Chess {
         template<Player player>
         void calculateKingThreats();
 
-        ThreatMap makeThreatMap(SquareMask squareMask) const;
-
-        inline StaticEvalScore evalCapture(Square dstSquare, Piece srcPiece){
-            Piece dstPiece = pieceOn(dstSquare);
-            ThreatMap threatMap = makeThreatMap(maskOf(dstSquare));
+        inline StaticEvalScore evalCapture(Square dstSquare, Piece srcPiece) const {
+            Piece dstPiece = getPieceOn(dstSquare);
+            ThreatMap threatMap = threatData->makeThreatMap(maskOf(dstSquare));
             assert(threatMap & threatMapOf(srcPiece));
             return staticPieceValue(dstPiece) - staticExchangeEval(threatMap ^ threatMapOf(srcPiece), srcPiece);
         }
@@ -315,6 +382,17 @@ namespace Chess {
 
         void initHashKey();
 
+        template<Player player, MoveGenType moveGenType>
+        inline Bitboard targetForMoveGenType() const {
+            if constexpr (moveGenType == ALL) {
+                return BITBOARD_FULL;
+            } else if constexpr (moveGenType == CAPTURES) {
+                return bitboardOf(~player);
+            } else if constexpr (moveGenType == NON_CAPTURES) {
+                return ~bitboardOf(~player);
+            }
+        }
+
     public:
 
         inline ChessBoard(const Piece piecesBySquare[NUM_SQUARES], Player currentPlayerColor) :
@@ -326,7 +404,6 @@ namespace Chess {
         inline ChessBoard() {
             resetPosition();
         }
-
 
         ChessBoard &operator=(const ChessBoard &other);
 
@@ -342,6 +419,10 @@ namespace Chess {
             return hashKey;
         }
 
+        inline bool isInCheck() {
+            return threatData->isInCheck(currentPlayer);
+        }
+
         void setPosition(const Piece piecesArray[NUM_SQUARES], Player currentPlayer);
 
         void setGameHistory(GameHistory &gameHistory);
@@ -354,20 +435,18 @@ namespace Chess {
             return currentPlayer;
         }
 
-        inline bool getIsCheck() {
-            return isCheck;
-        }
-
-        inline Bitboard getBitboardOf(Piece piece) {
-            return bitboardOf(piece);
-        }
-
-        inline Bitboard getPinned() const {
-            return pinned;
-        }
-
         inline unsigned int getMoveCount() const {
             return moveCount;
+        }
+
+        inline bool isPartiallyLegal(Move move) const {
+            // when looking at moves from the transposition table, it's possible for a key collision which would cause an illegal
+            // which can create very wired effects on the game
+            // this function doesn't fully check move legality completely, but it checks it enough to eliminate moves that would cause major errors.
+            Piece srcPiece = getPieceOn(move.src());
+            Piece dstPiece = getPieceOn(move.dst());
+            return (srcPiece != PIECE_NONE) && (playerOf(srcPiece) == currentPlayer) &&
+                   (dstPiece == PIECE_NONE || playerOf(dstPiece) != currentPlayer);
         }
 
         const static Piece startingBoard[NUM_SQUARES];
@@ -375,7 +454,7 @@ namespace Chess {
         void printBitboards() const;
 
         inline bool isLegalMoveStart(Square square) {
-            Piece piece = getPieceOn(square);
+            Piece piece = pieceOn(square);
             return (piece != PIECE_NONE) && (playerOf(piece) == currentPlayer);
         }
 
@@ -385,19 +464,35 @@ namespace Chess {
 
         void undoMove(Move move, MoveRevertData &moveRevertData);
 
-        inline const Piece &getPieceOn(Square square) const {
-            return piecesBySquare[square];
-        }
-
-        inline Bitboard getCheckEvasions() const {
-            return checkEvasionSquares;
-        }
-
         friend std::ostream &operator<<(std::ostream &os, const ChessBoard &chessBoard);
 
         void assertOk() const;
 
-        GameEndState generateMoves(MoveList &moveList);
+        template<MoveGenType moveGenType>
+        void generateMoves(MoveChunk &moveChunk) const;
+
+        WinState generateThreatsAndMoves(MoveChunk &moveChunk) {
+            ThreatData threatData{};
+            this->threatData = &threatData;
+            calculateAllThreats();
+            generateMoves<ALL>(moveChunk);
+            if(moveChunk.moveList.isEmpty()){
+                if (this->threatData->isInCheck(currentPlayer)){
+                    return playerLoses(currentPlayer);
+                } else{
+                    return WIN_STATE_DRAW;
+                }
+            } else{
+                return NO_WINNER;
+            }
+        }
+
+        void calculateAllThreats();
+
+        inline bool checksOk() {
+            return !(threatData->isInCheck(~currentPlayer) ||
+                     threatData->isInDoubleCheck(~currentPlayer));
+        }
 
         Score evaluateWhite();
 
@@ -418,6 +513,17 @@ namespace Chess {
         ostream &getFen(ostream &outputStream) const;
 
         set<Key> getRepeatedPositions();
+
+        template<MoveGenType moveGenType>
+        void printMoves(){
+            ThreatData threatData{};
+            this->threatData = &threatData;
+            calculateAllThreats();
+            MoveChunk moveChunk{};
+            generateMoves<moveGenType>(moveChunk);
+            cout << moveChunk.moveList;
+            cout << moveChunk.losingCaptures;
+        }
     };
 }
 
