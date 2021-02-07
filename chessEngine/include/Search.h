@@ -23,7 +23,7 @@ namespace Chess {
 
         int numLowerBound = 0;
         int numUpperBound = 0;
-        int numExactBound =0;
+        int numExactBound = 0;
 
         std::set<Key> repeatedPositions;
 
@@ -39,18 +39,37 @@ namespace Chess {
 
         Search() = default;
 
-        inline Move bestMove(int depth) {
+        template<typename Timeout>
+        Move bestMove(Timeout timeout) {
+            repeatedPositions = chessBoard.getRepeatedPositions();
             numNonLeafNodes = 0;
             numLeaves = 0;
-            repeatedPositions = chessBoard.getRepeatedPositions();
-            return alphaBetaRoot(depth);
+            startingDepth = 2;
+            Move bestMove;
+            while (!timeout(startingDepth)) {
+                bestMove = alphaBetaRoot(startingDepth);
+                startingDepth++;
+            }
+            return bestMove;
         }
 
-        int getNumLeaves() const {
+        Move bestMoveAtDepth(int depth) {
+            repeatedPositions = chessBoard.getRepeatedPositions();
+            numNonLeafNodes = 0;
+            numLeaves = 0;
+            startingDepth = depth;
+            return alphaBetaRoot(startingDepth);
+        }
+
+        inline int getDepth(){
+            return startingDepth;
+        }
+
+        inline int getNumLeaves() const {
             return numLeaves;
         }
 
-        int getNumNodes() const {
+        inline int getNumNodes() const {
             return numNonLeafNodes + numLeaves;
         }
 
@@ -80,13 +99,14 @@ namespace Chess {
         inline Score fromTranspositionTable(Score score, int depthLeft) const {
             if (score > SCORE_KNOWN_WIN) {
                 return score - (startingDepth - depthLeft);
-            } else if(score < SCORE_KNOWN_LOSS){
+            } else if (score < SCORE_KNOWN_LOSS) {
                 return score + (startingDepth - depthLeft);
-            } else{
+            } else {
                 return score;
             }
         }
 
+        template<bool pvNode>
         Score alphaBeta(Score alpha, Score beta, int depthLeft);
 
         Score quiescenceSearch(Score alpha, Score beta);
@@ -95,6 +115,5 @@ namespace Chess {
 
     };
 }
-
 
 #endif //CHESS_SEARCH_H

@@ -17,7 +17,8 @@ using std::cout;
 
 [[noreturn]] void playGameAscii() {
     Search search;
-    ChessBoard chessBoard;
+    ChessBoard chessBoard{};
+    chessBoard.parseFen("5rk1/pbp2ppp/2p1rn2/2NpN3/1q1P4/4PP2/PPQ3PP/R4RK1 b - - 0 16");
     while (true) {
         chessBoard.assertOk();
         MoveChunk moveChunk{};
@@ -74,13 +75,21 @@ void test(){
     assert(move.isEnPassantCapture());
     cout << move << "\n";
 
-    int a[5]{};
+    Move moves[MAX_MOVES];
     cout << "\n\n\n";
-    cout << a[0] << "\n";
-    cout << a[1]<< "\n";
-    cout << a[2]<< "\n";
-    cout << a[3]<< "\n";
-    cout << a[4]<< "\n";
+    cout << moves[0] << "\n";
+    cout << moves[1] << "\n";
+    cout << moves[2] << "\n";
+    cout << moves[3] << "\n";
+    cout << moves[4] << "\n";
+
+    MoveList moveList;
+    cout << "\n\n\n";
+    cout << moveList[0] << "\n";
+    cout << moveList[1] << "\n";
+    cout << moveList[2] << "\n";
+    cout << moveList[3] << "\n";
+    cout << moveList[4] << "\n";
 }
 
 int main(int argc, char *argv[]) {

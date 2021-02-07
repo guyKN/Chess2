@@ -172,14 +172,12 @@ namespace Chess {
         cout << *this;
     }
 
-    //todo: make this not run in release mode
     void ChessBoard::assertOk() const {
-#if FOR_RELEASE == 0
         if (!isOk()) {
+            cout << "chessboard not ok!\n";
             printBitboards();
-            assert(false);
+            exit(1771);
         }
-#endif
     }
 
     void ChessBoard::setGameHistory(GameHistory &gameHistory) {
@@ -416,7 +414,6 @@ namespace Chess {
         Bitboard enemyPieces = bitboardOf(~player) & target;
         Bitboard enPassantTarget = signedShift<forward1shift>(target);
 
-
         if constexpr (doCaptures) {
             {
                 //promotion left
@@ -588,16 +585,6 @@ namespace Chess {
 
         if constexpr (doNonCaptures) {
             {
-                // move forward 1
-                Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
-                while (forward1Move) {
-                    Square dst = popLsb(&forward1Move);
-                    moveChunk.moveList.addMove(
-                            Move::normalMove(dst - forward1shift, dst)
-                    );
-                }
-            }
-            {
                 //move forward 2
                 Bitboard forward2Move =
                         signedShift<forward2shift>(pawns & rank2mask) & emptyTargetSquares &
@@ -606,6 +593,16 @@ namespace Chess {
                     Square dst = popLsb(&forward2Move);
                     moveChunk.moveList.addMove(
                             Move::pawnForward2(dst - forward2shift, dst)
+                    );
+                }
+            }
+            {
+                // move forward 1
+                Bitboard forward1Move = signedShift<forward1shift>(pawns & ~rank7mask) & emptyTargetSquares;
+                while (forward1Move) {
+                    Square dst = popLsb(&forward1Move);
+                    moveChunk.moveList.addMove(
+                            Move::normalMove(dst - forward1shift, dst)
                     );
                 }
             }
@@ -704,11 +701,13 @@ namespace Chess {
         generateSlidingPieceMoves<player, PIECE_TYPE_ROOK, moveGenType>(moveChunk, source, target);
         generateSlidingPieceMoves<player, PIECE_TYPE_QUEEN, moveGenType>(moveChunk, source, target);
     }
-
+    constexpr bool EXTRA_DEBUG = false;
     template<Player player, MoveGenType moveGenType>
     void ChessBoard::generateMovesForPlayer(MoveChunk &moveChunk) const {
-        //todo: add const where necessary
 
+        if constexpr (EXTRA_DEBUG) cout << "generating moves. MoveGentype: " << moveGenType << "\n";
+
+        //todo: add const where necessary
         constexpr bool generateCaptures = moveGenType == CAPTURES || moveGenType == ALL;
         constexpr bool generateNonCaptures = moveGenType == NON_CAPTURES || moveGenType == ALL;
         const Bitboard target = targetForMoveGenType<player, moveGenType>();
@@ -732,11 +731,12 @@ namespace Chess {
             generatePawnMoves<player, moveGenType>(moveChunk, notPinned, threatData->checkEvasionSquares);
             generateAllPieces<player, moveGenType>(moveChunk, notPinned, target & threatData->checkEvasionSquares);
 
-            Bitboard targetPinned = target & threatData->kingBlockersOf(player);
+            Bitboard pinned = threatData->kingBlockersOf(player);
 
-            if (!threatData->isInCheck(player) && targetPinned) {
+            if (!threatData->isInCheck(player) && pinned) {
+                if constexpr (EXTRA_DEBUG) cout << "Calculating Pins" << "\n";
                 //calculate pins
-                Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
+                constexpr Piece kingPiece = makePiece(PIECE_TYPE_KING, player);
                 Square kingSquare = lsb(bitboardOf(kingPiece));
 
                 XrayData &rookXray = slidingPieceDataOf<PIECE_TYPE_ROOK>(kingSquare).xrayData;
@@ -748,32 +748,36 @@ namespace Chess {
                 // todo: remove repeated bitwise &
                 {
                     Bitboard kingRank = rookXray.rankFileDiagonal1();
-                    if (targetPinned & kingRank) {
-                        generatePawnMoves<player, moveGenType>(moveChunk, targetPinned & kingRank, kingRank);
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingRank, kingRank);
+                    if (pinned & kingRank) {
+                        if constexpr (EXTRA_DEBUG) cout << "Calculating for kingRank" << "\n";
+                        generatePawnMoves<player, moveGenType>(moveChunk, pinned & kingRank, kingRank & target);
+                        generateAllPieces<player, moveGenType>(moveChunk, pinned & kingRank, kingRank & target);
                     }
                 }
                 {
                     Bitboard kingFile = rookXray.rankFileDiagonal2();
-                    if (targetPinned & kingFile) {
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingFile, kingFile);
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingFile, kingFile);
+                    if (pinned & kingFile) {
+                        if constexpr (EXTRA_DEBUG) cout << "Calculating for kingFile" << "\n";
+                        generatePawnMoves<player, moveGenType>(moveChunk, pinned & kingFile, kingFile & target);
+                        generateAllPieces<player, moveGenType>(moveChunk, pinned & kingFile, kingFile & target);
                     }
                 }
 
                 {
                     Bitboard kingDiagonal1 = bishopXray.rankFileDiagonal1();
-                    if (targetPinned & kingDiagonal1) {
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal1, kingDiagonal1);
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal1, kingDiagonal1);
+                    if (pinned & kingDiagonal1) {
+                        if constexpr (EXTRA_DEBUG) cout << "Calculating for kingDiagonal1" << "\n";
+                        generatePawnMoves<player, moveGenType>(moveChunk, pinned & kingDiagonal1, kingDiagonal1 & target);
+                        generateAllPieces<player, moveGenType>(moveChunk, pinned & kingDiagonal1, kingDiagonal1 & target);
                     }
                 }
 
                 {
                     Bitboard kingDiagonal2 = bishopXray.rankFileDiagonal2();
-                    if (targetPinned & kingDiagonal2) {
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal2, kingDiagonal2);
-                        generateAllPieces<player, moveGenType>(moveChunk, targetPinned & kingDiagonal2, kingDiagonal2);
+                    if (pinned & kingDiagonal2) {
+                        if constexpr (EXTRA_DEBUG) cout << "Calculating for kingDiagonal2" << "\n";
+                        generatePawnMoves<player, moveGenType>(moveChunk, pinned & kingDiagonal2, kingDiagonal2 & target);
+                        generateAllPieces<player, moveGenType>(moveChunk, pinned & kingDiagonal2, kingDiagonal2 & target);
                     }
                 }
             }

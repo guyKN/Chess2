@@ -14,26 +14,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveSelector.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../chessEngine/log.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../chessEngine/src/MoveSelector.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Bitboards.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/ChessBoard.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/ExchangeEvaluation.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/ExchangeEvaluation.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Move.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Move.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/MoveList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/Search.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/Search.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/include/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/include/types.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Benchmarks.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Benchmarks.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Bitboards.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/ExchangeEvaluation.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/ExchangeEvaluation.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Move.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/init.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/init.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -197,6 +182,8 @@
       <workItem from="1610985322380" duration="72000" />
       <workItem from="1611425250064" duration="4953000" />
       <workItem from="1611587082631" duration="11000" />
+      <workItem from="1612692829725" duration="1797000" />
+      <workItem from="1612695526125" duration="1896000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <created>1606146393380</created>

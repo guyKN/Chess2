@@ -12,13 +12,20 @@
 
 namespace Chess {
 
+    // todo: PV search
+    // todo: mate distance pruning
+    // todo: better use of transposition table
+    // todo: null move pruning
+    // todo: depth reduction/extensions
     //todo: fuilty pruning. have a threshold for max improvement per depth, and if the score physicly can't surpass that, given the number of moves, return the evaluation
 
-
+    template<bool pvNode>
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
+        if (pvNode){
+            assert(beta == alpha + 1);
+        }
         if (depthLeft == 0) {
             return quiescenceSearch(alpha, beta);
-            //return chessBoard.evaluate();
         }
 
         numNonLeafNodes++;
@@ -79,16 +86,31 @@ namespace Chess {
         Move bestMove = Move::invalid();
 
         bool passedAlpha = false;
-        bool noLegalMoves = true;
+        bool isFirstMove = true;
+        int newDepth = depthLeft - 1;
         while (Move move = moveSelector.nextMove()) {
-            noLegalMoves = false;
             gameHistory_.addMove(move);
             MoveRevertData moveRevertData = chessBoard.doMove(move);
-            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
-            chessBoard.undoMove(move, moveRevertData);
+            bool doPvSearch;
+            if(!pvNode || !isFirstMove){
+                Score score = -alphaBeta<false>(-alpha, -alpha+1, newDepth);
+                if(score>bestScore){
+                    bestScore = score; //todo: is this right. Is the score from a non-pv search reliable?
+                    if (score>alpha){
+                        doPvSearch = pvNode;
+                    }
+                }
+            } else{
+                doPvSearch = true;
+            }
+            if(doPvSearch && ){
 
+            }
+            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
+
+            chessBoard.undoMove(move, moveRevertData);
             gameHistory_.pop();
-            //todo: changed order, make sure this isn't completely wrong
+
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;
@@ -101,10 +123,12 @@ namespace Chess {
                     }
                 }
             }
+
+            isFirstMove = false;
         }
 
         ttEntry.stopSearching();
-        if (noLegalMoves) {
+        if (isFirstMove) {
             if (chessBoard.isInCheck()) {
                 ttEntry.setScore(SCORE_MATED);
                 ttEntry.setBoundType(BOUND_EXACT);
@@ -185,6 +209,8 @@ namespace Chess {
 
     }
 
+    constexpr bool PRINT_MOVES = false;
+
     Move Search::alphaBetaRoot(int depth) {
         numLeaves++;
         startingDepth = depth;
@@ -218,7 +244,7 @@ namespace Chess {
                 bestMove = move;
             }
 
-            cout << "Move: " << move << " score: " << score << "\n";
+            if constexpr (PRINT_MOVES) cout << "Move: " << move << " score: " << score << "\n";
         }
 
         bestLineScore = alpha;

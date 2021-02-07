@@ -44,21 +44,30 @@ namespace Chess {
         }
     };
 
-    void alphaBetaSearchBenchmark(int depth){
+    void alphaBetaSearchBenchmark(int depth, bool iterativeDeepening){
         cout << "Preforming benchmark for AlphaBeta Search ..\n";
         ChessBoard chessBoard{};
-        //chessBoard_.parseFen("5r2/8/8/3p2R1/3k4/8/6K1/8 b - - 1 1");
+        //chessBoard.parseFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - ");
         Search search{chessBoard};
         Stopwatch stopwatch{};
         stopwatch.start();
-        Move move = search.bestMove(depth);
+        Move move;
+
+        if(iterativeDeepening){
+            move = search.bestMove([depth](int currentDepth){
+                return currentDepth > depth;
+            });
+        } else{
+            move = search.bestMoveAtDepth(depth);
+        }
         double timeElapsed = stopwatch.getSecondsElapsed();
         int numNodes = search.getNumNodes();
         int numLeaves = search.getNumLeaves();
         double nodesPerSecond = numNodes/timeElapsed;
 
         cout << std::dec << "Done with benchmark for AlphaBeta Search\n" <<
-        "best bestMove_: " << move <<  "\n" <<
+        "best move: " << move <<  "\n" <<
+        "eval: " << search.getScore() << "\n"
         "Depth: " << depth << "\n" <<
         "Time elapsed: " << timeElapsed << "\n" <<
         "num nodes searched: " << std::scientific << numNodes << "\n" <<
@@ -92,7 +101,7 @@ namespace Chess {
         double timeElapsed = stopwatch.getSecondsElapsed();
         cout << "time for initLookUpTables: " << timeElapsed << "sec" << "\n";
 
-        alphaBetaSearchBenchmark(8);
+        alphaBetaSearchBenchmark(8, true);
 
         //perftBenchmarks(7);
 

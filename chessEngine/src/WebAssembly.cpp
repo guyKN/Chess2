@@ -83,12 +83,7 @@ namespace WASM {
             chessBoard.assertOk();
             cout << std::hex << "------------------------------------------------\n";
             cout << "move order: \n";
-            Move ttBestMove =
-                    chessBoard.getCurrentPlayer() == WHITE ?
-                    Move::pawnForward2(SQ_A2, SQ_A4) :
-                    Move::pawnForward2(SQ_H7, SQ_H5);
-            cout << "ttMove: " << ttBestMove << "\n";
-            MoveSelector moveSelector{chessBoard, ttBestMove};
+            MoveSelector moveSelector{chessBoard};
             while (Move nextMove = moveSelector.nextMove()) {
                 cout << nextMove << "\n";
             }
@@ -144,7 +139,7 @@ namespace WASM {
     }
 
     bool WASM_gotoPos() {
-        std::string fen = "r1bq1bnr/2pk1Qpp/2p1p3/p2p4/3P4/5N2/PPP2PPP/RNBQK2R w - 1 0";
+        std::string fen = "5rk1/pbp2ppp/2p1rn2/2NpN3/1q1P4/4PP2/PPQ3PP/R4RK1 b - - 0 16";
         if (chessBoard.parseFen(fen)) {
             return true;
         } else {

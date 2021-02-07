@@ -69,6 +69,7 @@ namespace Uci {
                         if (search.chessBoard.doMoves(uciCommand)) {
                         } else {
                             error("error going to pos");
+                            exit(0);
                         }
                     }
                 } else {
@@ -118,23 +119,24 @@ namespace Uci {
                     search.chessBoard.printMoves<CAPTURES>();
                     Stopwatch stopwatch{};
                     stopwatch.start();
-                    Move bestMove = search.bestMove(UCI_DEPTH);
+                    Move bestMove = search.bestMove([&stopwatch](auto) {
+                        return stopwatch.getSecondsElapsed() > 2;
+                    });
                     double timeElapsed = stopwatch.getSecondsElapsed();
                     int numNodes = search.getNumNodes();
                     int nodesPerSecond = numNodes / timeElapsed;
                     Score score = search.getScore();
 
-                    cout << "bestmove " << bestMove << "\n";
-
-                    cout << "info";
                     if (score > SCORE_KNOWN_WIN) {
-                        cout << " score mate " << (SCORE_MATE - score + 1) / 2;
+                        cout << "info score mate " << (SCORE_MATE - score + 1) / 2;
                     } else if (score < SCORE_KNOWN_LOSS) {
-                        cout << " score mate " << -(score - SCORE_MATED + 1) / 2;
+                        cout << "info score mate " << -(score - SCORE_MATED + 1) / 2;
                     } else {
-                        cout << " score cp " << score;
+                        cout << "info score cp " << score;
                     }
-                    cout << " depth " << UCI_DEPTH;
+                    cout << "\n";
+                    cout << "bestmove " << bestMove << "\n";
+                    cout << "info depth " << search.getDepth();
                     cout << " hashfull " << transPositionTable.perMillEntriesUsed();
                     cout << " time " << static_cast<int>(timeElapsed * 1000);
                     cout << " nodes " << numNodes;
