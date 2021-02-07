@@ -21,7 +21,7 @@ namespace Chess {
 
     template<bool pvNode>
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
-        if (pvNode){
+        if (pvNode) {
             assert(beta == alpha + 1);
         }
         if (depthLeft == 0) {
@@ -58,11 +58,11 @@ namespace Chess {
             }
 
             ttBestMove = ttEntry.bestMove();
-            if(ttBestMove == Move::invalid()){
+            if (ttBestMove == Move::invalid()) {
                 // the position is checkmate or stalemate. return the score from it.
                 return fromTranspositionTable(ttEntry.score(), depthLeft);
             }
-            if(!ttBestMove.isOk()){
+            if (!ttBestMove.isOk()) {
                 cout << ttBestMove;
                 cout << "ttBestMove not Ok";
                 onError();
@@ -92,24 +92,25 @@ namespace Chess {
             gameHistory_.addMove(move);
             MoveRevertData moveRevertData = chessBoard.doMove(move);
             bool doPvSearch;
-            if(!pvNode || !isFirstMove){
-                Score score = -alphaBeta<false>(-alpha, -alpha+1, newDepth);
-                if(score>bestScore){
-                    bestScore = score; //todo: is this right. Is the score from a non-pv search reliable?
-                    if (score>alpha){
-                        doPvSearch = pvNode;
-                    }
+            Score score;
+            if (!pvNode || !isFirstMove) {
+                score = -alphaBeta<false>(-alpha, -alpha + 1, newDepth);
+                if(pvNode && score>alpha){
+                    doPvSearch = true;
+                } else{
+                    doPvSearch = false;
                 }
-            } else{
+            } else {
                 doPvSearch = true;
             }
-            if(doPvSearch && ){
-
+            if (pvNode && doPvSearch) {
+                score = -alphaBeta<true>(-beta, -alpha, newDepth);
             }
-            Score score = -alphaBeta(-beta, -alpha, depthLeft - 1);
 
             chessBoard.undoMove(move, moveRevertData);
             gameHistory_.pop();
+
+            isFirstMove = false;
 
             if (score > bestScore) {
                 bestScore = score;
@@ -123,12 +124,11 @@ namespace Chess {
                     }
                 }
             }
-
-            isFirstMove = false;
         }
 
         ttEntry.stopSearching();
         if (isFirstMove) {
+            // no moves were found. This position is either checkmate or stalemate.
             if (chessBoard.isInCheck()) {
                 ttEntry.setScore(SCORE_MATED);
                 ttEntry.setBoundType(BOUND_EXACT);
@@ -143,7 +143,7 @@ namespace Chess {
                 return SCORE_DRAW;
             }
         }
-        if(!bestMove.isOk()){
+        if (!bestMove.isOk()) {
             cout << "bestMove is found as not OK!";
             onError();
         }
@@ -189,7 +189,7 @@ namespace Chess {
         MoveSelector moveSelector{chessBoard, false, Move::invalid(), this};
         while (Move move = moveSelector.nextMove()) {
             gameHistory_.addMove(move);
-            MoveRevertData moveRevertData =  chessBoard.doMove(move);
+            MoveRevertData moveRevertData = chessBoard.doMove(move);
             Score score = -quiescenceSearch(-beta, -alpha);
             chessBoard.undoMove(move, moveRevertData);
             gameHistory_.pop();
@@ -218,10 +218,6 @@ namespace Chess {
         Score alpha = -SCORE_INFINITY;
         Score beta = SCORE_INFINITY;
 
-        numLowerBound = 0;
-        numUpperBound = 0;
-        numExactBound = 0;
-
         Move bestMove;
         Move ttBestMove = Move::invalid();
 
@@ -230,13 +226,30 @@ namespace Chess {
         if (ttEntryFound) {
             ttBestMove = ttEntry.bestMove();
         }
+        ttEntry.onVisit(chessBoard.getMoveCount());
+        ttEntry.startSearching();
+        ttEntry.setKey(chessBoard.getHashKey());
 
         MoveSelector moveSelector{chessBoard, true, ttBestMove, this};
 
+        bool isFirstMove = true;
+
         while (Move move = moveSelector.nextMove()) {
+            bool doPvSearch;
+            Score score;
+
             gameHistory_.addMove(move);
             MoveRevertData moveRevertData = chessBoard.doMove(move);
-            Score score = -alphaBeta(-beta, -alpha, depth - 1);
+
+            if(!isFirstMove){
+                score = -alphaBeta<false>(-alpha, -alpha+1, depth-1);
+                doPvSearch = score>alpha;
+            } else{
+                doPvSearch = true;
+            }
+            if(doPvSearch){
+                score = -alphaBeta<true>(-beta, -alpha, depth - 1);
+            }
             gameHistory_.pop();
             chessBoard.undoMove(move, moveRevertData);
             if (score > alpha) {
@@ -244,9 +257,16 @@ namespace Chess {
                 bestMove = move;
             }
 
+            isFirstMove = false;
+
             if constexpr (PRINT_MOVES) cout << "Move: " << move << " score: " << score << "\n";
         }
-
+        //todo: save best move to TT in root
+        ttEntry.stopSearching();
+        ttEntry.setBoundType(BOUND_UPPER);//todo: actually find the right bound type
+        ttEntry.setBestMove(bestMove);
+        ttEntry.setScore(alpha);
+        ttEntry.setDepth(depth);
         bestLineScore = alpha;
         return bestMove;
     }

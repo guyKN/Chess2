@@ -101,7 +101,7 @@ namespace Chess {
         double timeElapsed = stopwatch.getSecondsElapsed();
         cout << "time for initLookUpTables: " << timeElapsed << "sec" << "\n";
 
-        alphaBetaSearchBenchmark(8, true);
+        alphaBetaSearchBenchmark(9, true);
 
         //perftBenchmarks(7);
 

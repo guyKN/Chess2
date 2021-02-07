@@ -120,7 +120,7 @@ namespace Uci {
                     Stopwatch stopwatch{};
                     stopwatch.start();
                     Move bestMove = search.bestMove([&stopwatch](auto) {
-                        return stopwatch.getSecondsElapsed() > 2;
+                        return stopwatch.getSecondsElapsed() > 1;
                     });
                     double timeElapsed = stopwatch.getSecondsElapsed();
                     int numNodes = search.getNumNodes();

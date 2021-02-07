@@ -44,6 +44,9 @@ namespace Chess {
             repeatedPositions = chessBoard.getRepeatedPositions();
             numNonLeafNodes = 0;
             numLeaves = 0;
+            numLowerBound = 0;
+            numUpperBound = 0;
+            numExactBound = 0;
             startingDepth = 2;
             Move bestMove;
             while (!timeout(startingDepth)) {
