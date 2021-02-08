@@ -47,7 +47,7 @@ namespace Chess {
     void alphaBetaSearchBenchmark(int depth, bool iterativeDeepening){
         cout << "Preforming benchmark for AlphaBeta Search ..\n";
         ChessBoard chessBoard{};
-        chessBoard.parseFen("r2q1rk1/3nbppp/p2pbn2/1p2p3/4P1P1/1NN1BP2/PPPQ3P/2KR1B1R w - - 0 12");
+        chessBoard.parseFen("r4rk1/1p1n1ppp/2pqpn2/p2p4/2PP4/1Q1BPN1P/PP3PP1/R4RK1 w - - 0 13");
         Search search{chessBoard};
         Stopwatch stopwatch{};
         stopwatch.start();
