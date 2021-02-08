@@ -21,8 +21,10 @@ namespace Chess {
 
     template<bool pvNode>
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
-        if (pvNode) {
+        if constexpr (!pvNode) {
             assert(beta == alpha + 1);
+        } else{
+            numPvNodes++;
         }
         if (depthLeft == 0) {
             return quiescenceSearch(alpha, beta);

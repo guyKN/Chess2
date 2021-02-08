@@ -24,6 +24,7 @@ namespace Chess {
         int numLowerBound = 0;
         int numUpperBound = 0;
         int numExactBound = 0;
+        int numPvNodes;
 
         std::set<Key> repeatedPositions;
 
@@ -48,11 +49,13 @@ namespace Chess {
             numUpperBound = 0;
             numExactBound = 0;
             startingDepth = 2;
+            numPvNodes = 0;
             Move bestMove;
             while (!timeout(startingDepth)) {
                 bestMove = alphaBetaRoot(startingDepth);
                 startingDepth++;
             }
+            cout << "num PV nodes: " << numPvNodes << "\n";
             return bestMove;
         }
 
@@ -60,8 +63,11 @@ namespace Chess {
             repeatedPositions = chessBoard.getRepeatedPositions();
             numNonLeafNodes = 0;
             numLeaves = 0;
+            numPvNodes = 0;
             startingDepth = depth;
-            return alphaBetaRoot(startingDepth);
+            const Move &bestMove = alphaBetaRoot(startingDepth);
+            cout << "num PV nodes: " << numPvNodes << "\n";
+            return bestMove;
         }
 
         inline int getDepth(){
