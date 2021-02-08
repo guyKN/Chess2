@@ -14,12 +14,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e90c170c-bffd-4cd6-9c13-b55c1621290e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/ChessBoard.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Search.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Uci.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/WebAssembly.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../chessEngine/src/Benchmarks.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../chessEngine/src/Benchmarks.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -184,6 +179,7 @@
       <workItem from="1611587082631" duration="11000" />
       <workItem from="1612692829725" duration="1797000" />
       <workItem from="1612695526125" duration="1896000" />
+      <workItem from="1612796044272" duration="12000" />
     </task>
     <task id="LOCAL-00001" summary="First Commit">
       <created>1606146393380</created>

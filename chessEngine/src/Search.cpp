@@ -22,7 +22,10 @@ namespace Chess {
     template<bool pvNode>
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
         if constexpr (!pvNode) {
-            assert(beta == alpha + 1);
+            if(beta != alpha+1){
+                cout << "beta != alpha+1";
+                onError();
+            }
         } else{
             numPvNodes++;
         }
@@ -93,19 +96,12 @@ namespace Chess {
         while (Move move = moveSelector.nextMove()) {
             gameHistory_.addMove(move);
             MoveRevertData moveRevertData = chessBoard.doMove(move);
-            bool doPvSearch;
             Score score;
             if (!pvNode || !isFirstMove) {
-                score = -alphaBeta<false>(-alpha, -alpha + 1, newDepth);
-                if(pvNode && score>alpha){
-                    doPvSearch = true;
-                } else{
-                    doPvSearch = false;
-                }
-            } else {
-                doPvSearch = true;
+                score = -alphaBeta<false>(-(alpha + 1), -alpha, newDepth);
+//                score = -alphaBeta<false>(-alpha, -alpha+1, newDepth);
             }
-            if (pvNode && doPvSearch) {
+            if (pvNode && (isFirstMove || (score>alpha && score<beta))) {
                 score = -alphaBeta<true>(-beta, -alpha, newDepth);
             }
 
@@ -237,19 +233,16 @@ namespace Chess {
         bool isFirstMove = true;
 
         while (Move move = moveSelector.nextMove()) {
-            bool doPvSearch;
             Score score;
 
             gameHistory_.addMove(move);
             MoveRevertData moveRevertData = chessBoard.doMove(move);
 
             if(!isFirstMove){
-                score = -alphaBeta<false>(-alpha, -alpha+1, depth-1);
-                doPvSearch = score>alpha;
-            } else{
-                doPvSearch = true;
+//                score = -alphaBeta<false>(-alpha, -alpha+1, depth-1);
+                score = -alphaBeta<false>(-(alpha+1), -alpha, depth-1);
             }
-            if(doPvSearch){
+            if(isFirstMove || score>alpha){
                 score = -alphaBeta<true>(-beta, -alpha, depth - 1);
             }
             gameHistory_.pop();
@@ -265,7 +258,7 @@ namespace Chess {
         }
         //todo: save best move to TT in root
         ttEntry.stopSearching();
-        ttEntry.setBoundType(BOUND_UPPER);//todo: actually find the right bound type
+        ttEntry.setBoundType(BOUND_EXACT);//todo: actually find the right bound type
         ttEntry.setBestMove(bestMove);
         ttEntry.setScore(alpha);
         ttEntry.setDepth(depth);
