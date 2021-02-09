@@ -30,7 +30,8 @@ namespace Chess {
             numPvNodes++;
         }
         if (depthLeft == 0) {
-            return quiescenceSearch(alpha, beta);
+            //return quiescenceSearch(alpha, beta);
+            return chessBoard.evaluate();
         }
 
         numNonLeafNodes++;
