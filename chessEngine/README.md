@@ -1,1 +1,0 @@
-A simple UCI chess engine I made a while ago. Still currently a work in progress. 
