@@ -12,7 +12,7 @@
 
 namespace Chess {
 
-    // todo: PV search
+    // todo: PV search: try to see if https://www.chessprogramming.org/NegaScout improves performance
     // todo: mate distance pruning
     // todo: better use of transposition table
     // todo: null move pruning
@@ -23,15 +23,16 @@ namespace Chess {
     Score Search::alphaBeta(Score alpha, Score beta, int depthLeft) {
         if constexpr (!pvNode) {
             if(beta != alpha+1){
-                cout << "beta != alpha+1";
+                cout << "beta != alpha+1\n";
                 onError();
             }
         } else{
             numPvNodes++;
         }
         if (depthLeft == 0) {
-            //return quiescenceSearch(alpha, beta);
-            return chessBoard.evaluate();
+            return quiescenceSearch(alpha, beta);
+//            numLeaves++;
+//            return chessBoard.evaluate();
         }
 
         numNonLeafNodes++;
@@ -211,7 +212,7 @@ namespace Chess {
     constexpr bool PRINT_MOVES = false;
 
     Move Search::alphaBetaRoot(int depth) {
-        numLeaves++;
+        numNonLeafNodes++;
         startingDepth = depth;
         gameHistory_.clear();
         Score alpha = -SCORE_INFINITY;
@@ -268,18 +269,19 @@ namespace Chess {
     }
 
     void Search::onError() const {
+        cout << "Error!\n";
         cout << gameHistory_;
         chessBoard.printBitboards();
         exit(987);
     }
 
     uint64_t Search::perft(int depth) {
+        if(depth ==0){
+            return 1;
+        }
         MoveChunk moveChunk{};
         uint64_t numNodes = 0;
-        chessBoard.generateMoves<ALL>(moveChunk);
-        if (depth == 1) {
-            return moveChunk.moveList.size();
-        }
+        chessBoard.generateThreatsAndMoves(moveChunk);
         for (auto &move : moveChunk.moveList) {
             MoveRevertData moveRevertData = chessBoard.doMove(move);
             numNodes += perft(depth - 1);
